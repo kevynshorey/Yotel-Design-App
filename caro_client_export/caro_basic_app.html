@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Caro Basic App</title>
+    <style>
+      :root {
+        --bg: #f3f4f6;
+        --panel: #ffffff;
+        --border: #d8dbe2;
+        --text: #2f3136;
+        --sub: #6e7480;
+        --accent: #7a45eb;
+        --accent-soft: rgba(122, 69, 235, 0.12);
+        --shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .app {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .topbar {
+        height: 52px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px;
+      }
+
+      .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        background: var(--accent);
+      }
+
+      .title {
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .topbar-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        height: 30px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: #fff;
+        padding: 0 10px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .btn.primary {
+        background: var(--accent);
+        border-color: transparent;
+        color: #fff;
+      }
+
+      .main {
+        flex: 1;
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        min-height: 0;
+      }
+
+      .viewer-wrap {
+        flex: 1;
+        position: relative;
+        min-width: 0;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #dde3eb;
+        border: 1px solid #cfd5dd;
+      }
+
+      .viewer {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(145deg, #d7dde6 0%, #c7d0dd 100%);
+      }
+
+      .viewer-label {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 12px;
+        color: var(--sub);
+      }
+
+      .floating-toolbar {
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px;
+        display: flex;
+        gap: 6px;
+        box-shadow: var(--shadow);
+      }
+
+      .tool-btn {
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: #fff;
+        color: var(--sub);
+        font-size: 11px;
+        font-weight: 600;
+        height: 28px;
+        padding: 0 9px;
+        cursor: pointer;
+      }
+
+      .tool-btn.active {
+        background: var(--accent-soft);
+        color: #5f37b8;
+        border-color: rgba(122, 69, 235, 0.35);
+      }
+
+      .hud {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 8px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #4a4f58;
+      }
+
+      .sidebar {
+        width: 270px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .sidebar-head {
+        padding: 12px;
+        border-bottom: 1px solid #eceef2;
+      }
+
+      .sidebar-title {
+        margin: 0 0 8px 0;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .search {
+        width: 100%;
+        height: 30px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 0 8px;
+        font-size: 11px;
+      }
+
+      .layer-list {
+        overflow: auto;
+        padding: 8px 0;
+      }
+
+      .group-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #818896;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        padding: 6px 12px;
+      }
+
+      .layer-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        font-size: 11px;
+        cursor: pointer;
+      }
+
+      .layer-row:hover {
+        background: rgba(122, 69, 235, 0.08);
+      }
+
+      .swatch {
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="logo"></div>
+          <div class="title">Caro Basic Viewer</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn">Share</button>
+          <button class="btn primary">Publish</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="viewer-wrap">
+          <div class="viewer" id="viewer">
+            <div class="viewer-label" id="viewerText">
+              Caro Viewer - View: 3D - Style: Real
+            </div>
+          </div>
+
+          <div class="floating-toolbar">
+            <button class="tool-btn active" data-view="3D">3D</button>
+            <button class="tool-btn" data-view="West">West</button>
+            <button class="tool-btn" data-view="Plan">Plan</button>
+            <button class="tool-btn active" data-style="Real">Real</button>
+            <button class="tool-btn" data-style="Wire">Wire</button>
+          </div>
+
+          <div class="hud">Caro 3D · 1:500</div>
+        </section>
+
+        <aside class="sidebar">
+          <div class="sidebar-head">
+            <h3 class="sidebar-title">Layers</h3>
+            <input id="layerSearch" class="search" placeholder="Search layers..." />
+          </div>
+          <div class="layer-list" id="layerList">
+            <div class="group-label">Site</div>
+            <label class="layer-row" data-name="Terrain">
+              <input type="checkbox" checked />
+              <span class="swatch" style="background:#b0b8a4"></span>
+              <span>Terrain</span>
+            </label>
+            <label class="layer-row" data-name="Roads">
+              <input type="checkbox" />
+              <span class="swatch" style="background:#bbbec4"></span>
+              <span>Roads</span>
+            </label>
+            <label class="layer-row" data-name="Vegetation">
+              <input type="checkbox" />
+              <span class="swatch" style="background:#3a6830"></span>
+              <span>Vegetation</span>
+            </label>
+
+            <div class="group-label">Model</div>
+            <label class="layer-row" data-name="Building">
+              <input type="checkbox" checked />
+              <span class="swatch" style="background:#2e8a76"></span>
+              <span>Building</span>
+            </label>
+            <label class="layer-row" data-name="Outdoor">
+              <input type="checkbox" checked />
+              <span class="swatch" style="background:#4e8e3e"></span>
+              <span>Outdoor</span>
+            </label>
+
+            <div class="group-label">Context</div>
+            <label class="layer-row" data-name="Context Buildings">
+              <input type="checkbox" />
+              <span class="swatch" style="background:#9ca4ae"></span>
+              <span>Context Buildings</span>
+            </label>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        let currentView = "3D";
+        let currentStyle = "Real";
+
+        const viewerText = document.getElementById("viewerText");
+        const viewButtons = Array.from(document.querySelectorAll("[data-view]"));
+        const styleButtons = Array.from(document.querySelectorAll("[data-style]"));
+
+        function updateViewerLabel() {
+          viewerText.textContent = `Caro Viewer - View: ${currentView} - Style: ${currentStyle}`;
+        }
+
+        viewButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            currentView = btn.dataset.view;
+            viewButtons.forEach((b) => b.classList.toggle("active", b === btn));
+            updateViewerLabel();
+          });
+        });
+
+        styleButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            currentStyle = btn.dataset.style;
+            styleButtons.forEach((b) => b.classList.toggle("active", b === btn));
+            updateViewerLabel();
+          });
+        });
+
+        const search = document.getElementById("layerSearch");
+        const rows = Array.from(document.querySelectorAll(".layer-row"));
+        search.addEventListener("input", () => {
+          const q = search.value.trim().toLowerCase();
+          rows.forEach((row) => {
+            const name = (row.dataset.name || "").toLowerCase();
+            row.style.display = name.includes(q) ? "flex" : "none";
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

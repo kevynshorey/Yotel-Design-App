@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Legacy Viewer (Vite)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--port", "3000"],
+      "port": 3000,
+      "cwd": "caro_client_export/full_clean_export/frontend"
+    },
+    {
+      "name": "YOTEL Studio (Next.js)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3001,
+      "cwd": "studio"
+    },
+    {
+      "name": "Visual Companion (Brainstorm)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".superpowers/brainstorm/33327-1774037973/../../../.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/start-server.sh"],
+      "port": 53089
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "source": "DWG/Dynamo-derived boundary control data",
+  "units": "metres",
+  "coordinate_system": "Revit project base point local XY",
+  "dwg_boundary_line": {
+    "name": "original_site_boundary",
+    "points": [
+      {"x": 1.009, "y": -0.301},
+      {"x": -10.767, "y": 26.325},
+      {"x": 9.35, "y": 34.945},
+      {"x": 41.455, "y": 54.551},
+      {"x": 70.225, "y": 57.869},
+      {"x": 99.271, "y": 64.064},
+      {"x": 116.286, "y": 65.293},
+      {"x": 120.661, "y": 7.772},
+      {"x": 71.756, "y": 5.659},
+      {"x": 23.308, "y": 3.414}
+    ]
+  },
+  "offset_buildable_boundary": {
+    "name": "offset_boundary_buildable_zone",
+    "offsets_by_side_m": {"W": 55, "N": 8, "E": 5, "S": 5},
+    "points": [
+      {"x": 66.161, "y": 8.403},
+      {"x": 35.597, "y": 8.403},
+      {"x": 35.597, "y": 46.533},
+      {"x": 42.789, "y": 50.678},
+      {"x": 70.873, "y": 53.917},
+      {"x": 85.741, "y": 57.088},
+      {"x": 113.901, "y": 57.088},
+      {"x": 115.434, "y": 36.933},
+      {"x": 115.434, "y": 10.549},
+      {"x": 71.622, "y": 8.656}
+    ]
+  },
+  "viewer_building_placement": {"x": 65, "y": 9, "rot_deg": 8},
+  "computed": {
+    "gross_area_m2": 5965,
+    "buildable_area_m2": 3599.1,
+    "max_coverage_pct": 50,
+    "max_footprint_m2": 1800
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "source": "YOTEL Feasibility Guidelines D01-C08 + project notes",
+  "units": {
+    "distance": "m",
+    "width": "mm (for corridor/width minima)",
+    "area": "m2"
+  },
+  "planning": {
+    "max_coverage_pct": 50,
+    "min_side_setback_m": 0,
+    "max_height_m": 25.0,
+    "site_area_m2": 3599.1,
+    "site_length_m": 79.84,
+    "site_width_m": 48.69
+  },
+  "brand": {
+    "dual_min_width_mm": 13600,
+    "single_min_width_mm": 8000,
+    "pad_dual_min_width_mm": 16100,
+    "max_travel_m": 35,
+    "min_accessible_pct": 0.05,
+    "accessibility": {
+      "yotel_accessible_pct_of_yt_rooms": 0.10,
+      "yotel_accessible_type_name": "Accessible",
+      "yotel_firstclass_pct_of_yt_rooms": 0.12,
+      "yotelpad_accessible_pct_of_pad_units": 0.07,
+      "yotelpad_accessible_type_name": "AccStudio"
+    },
+    "foh_lifts_per_100": 2,
+    "min_komyuniti_m2": 150,
+    "min_mission_control_m2": 35,
+    "min_gym_m2": 40,
+    "min_kitchen_m2": 35
+  },
+  "circulation": {
+    "min_corridor_clear_width_mm": 1600,
+    "max_dead_end_corridor_length_m": 10,
+    "max_travel_distance_m_two_directions": 35,
+    "min_corridor_clear_height_mm": 2400,
+    "luggage_clear_width_ideal_m": 1.6,
+    "luggage_clear_turning_diameter_if_needed_m": 1.5
+  }
+}
+

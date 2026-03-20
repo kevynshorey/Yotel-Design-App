@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 620" width="480" height="620">
+<rect width="480" height="620" fill="#0F1923"/>
+<text x="240.0" y="22" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="16" font-weight="bold" fill="#9B59B6">YOTEL Twin Room</text>
+<text x="240.0" y="42" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#8E8E93">16.7 m² NIA · 3,100 × 5,400mm</text>
+<rect x="30" y="60" width="420" height="510" fill="none" stroke="#9B59B6" stroke-width="2" rx="3"/>
+<rect x="51.0" y="85.5" width="113.4" height="204.0" fill="#7B2D8E" fill-opacity="0.25" stroke="#7B2D8E" stroke-opacity="0.5" stroke-width="1" rx="2"/>
+<text x="107.7" y="185.5" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">SmartBed</text>
+<text x="107.7" y="197.5" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">Twin A</text>
+<rect x="172.8" y="85.5" width="113.4" height="204.0" fill="#9B59B6" fill-opacity="0.25" stroke="#9B59B6" stroke-opacity="0.5" stroke-width="1" rx="2"/>
+<text x="229.5" y="185.5" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">SmartBed</text>
+<text x="229.5" y="197.5" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">Twin B</text>
+<rect x="294.6" y="85.5" width="134.4" height="204.0" fill="#3498DB" fill-opacity="0.25" stroke="#3498DB" stroke-opacity="0.5" stroke-width="1" rx="2"/>
+<text x="361.8" y="185.5" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">Shower</text>
+<text x="361.8" y="197.5" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">+ WC</text>
+<rect x="51.0" y="304.8" width="105.0" height="112.2" fill="#2C3E50" fill-opacity="0.25" stroke="#2C3E50" stroke-opacity="0.5" stroke-width="1" rx="2"/>
+<text x="103.5" y="364.9" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">Desk</text>
+<rect x="294.6" y="304.8" width="134.4" height="112.2" fill="#8E44AD" fill-opacity="0.25" stroke="#8E44AD" stroke-opacity="0.5" stroke-width="1" rx="2"/>
+<text x="361.8" y="364.9" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">Vanity</text>
+<rect x="168.6" y="304.8" width="117.6" height="112.2" fill="#34495E" fill-opacity="0.25" stroke="#34495E" stroke-opacity="0.5" stroke-width="1" rx="2"/>
+<text x="227.4" y="364.9" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">Storage</text>
+<rect x="51.0" y="432.3" width="378.0" height="61.2" fill="#95A5A6" fill-opacity="0.25" stroke="#95A5A6" stroke-opacity="0.5" stroke-width="1" rx="2"/>
+<text x="240.0" y="466.9" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">Entry + Hooks</text>
+<rect x="51.0" y="503.7" width="378.0" height="51.0" fill="#1A1A2E" fill-opacity="0.25" stroke="#1A1A2E" stroke-opacity="0.5" stroke-width="1" rx="2"/>
+<text x="240.0" y="533.2" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="bold" fill="#FAFAFA">Technowall + TV</text>
+<line x1="30" y1="588" x2="450" y2="588" stroke="#8E8E93" stroke-width="0.5"/>
+<text x="240.0" y="602" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#8E8E93">3100mm</text>
+<line x1="16" y1="60" x2="16" y2="570" stroke="#8E8E93" stroke-width="0.5"/>
+<text x="16" y="315.0" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#8E8E93" transform="rotate(-90,16,315.0)">5400mm</text>
+<rect x="35" y="56" width="410" height="4" fill="#3498DB" fill-opacity="0.5" rx="2"/>
+<text x="240.0" y="52" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#3498DB">↑ FACADE / WINDOW (Floor-to-ceiling glazing)</text>
+<text x="240.0" y="618" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#95A5A6">↓ CORRIDOR (1,600mm)</text>
+</svg>

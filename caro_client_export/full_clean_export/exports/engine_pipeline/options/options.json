@@ -1,0 +1,7261 @@
+{
+  "project": {
+    "name": "YOTEL+YOTELPAD Barbados",
+    "client": "Coruscant Developments",
+    "date": "2026-03"
+  },
+  "scoring": {
+    "room_count": {
+      "weight": 0.18,
+      "description": "Total keys vs 130 target. More = more revenue."
+    },
+    "gia_efficiency": {
+      "weight": 0.14,
+      "description": "GIA per key. Sweet spot 33-38 m\u00b2/key."
+    },
+    "sea_views": {
+      "weight": 0.14,
+      "description": "West-facing facade length. More = more premium rooms."
+    },
+    "building_height": {
+      "weight": 0.1,
+      "description": "Lower = easier planning approval."
+    },
+    "outdoor_amenity": {
+      "weight": 0.1,
+      "description": "Total outdoor area (ground + roof + courtyard)."
+    },
+    "cost_per_key": {
+      "weight": 0.12,
+      "description": "Lower cost/key = better investment return."
+    },
+    "daylight_quality": {
+      "weight": 0.08,
+      "description": "Natural light in corridors and rooms."
+    },
+    "pad_mix": {
+      "weight": 0.06,
+      "description": "YOTELPAD ratio. 20-28% is revenue-optimal."
+    },
+    "form_simplicity": {
+      "weight": 0.08,
+      "description": "Simpler forms = lower cost, faster build."
+    }
+  },
+  "groups": {
+    "best_overall": [
+      "OPT-A1",
+      "OPT-A2",
+      "OPT-A3",
+      "OPT-A4",
+      "OPT-A5"
+    ],
+    "most_rooms": [
+      "OPT-A1",
+      "OPT-A6",
+      "OPT-A9",
+      "OPT-A2",
+      "OPT-A8"
+    ],
+    "lowest_height": [
+      "OPT-C3",
+      "OPT-A1",
+      "OPT-A6",
+      "OPT-C9",
+      "OPT-A2"
+    ],
+    "best_views": [
+      "OPT-A6",
+      "OPT-A8",
+      "OPT-A1",
+      "OPT-A9",
+      "OPT-B2"
+    ],
+    "lowest_cost": [
+      "OPT-A5",
+      "OPT-B1",
+      "OPT-A4",
+      "OPT-A7",
+      "OPT-C1"
+    ],
+    "most_outdoor": [
+      "OPT-A4",
+      "OPT-B3",
+      "OPT-B6",
+      "OPT-C3",
+      "OPT-C9"
+    ],
+    "most_efficient": [
+      "OPT-A2",
+      "OPT-A3",
+      "OPT-C2",
+      "OPT-A1",
+      "OPT-B4"
+    ],
+    "pad_heavy": [
+      "OPT-A1",
+      "OPT-A6",
+      "OPT-A9",
+      "OPT-A2",
+      "OPT-A8"
+    ]
+  },
+  "options": [
+    {
+      "id": "OPT-A1",
+      "rank": 1,
+      "score": 90.1,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 13600mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "130 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "35.3 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.912,
+          "weighted": 0.128,
+          "reason": "46m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "17.3m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.608,
+          "weighted": 0.061,
+          "reason": "547m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$221,544/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "23% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 130,
+        "yt_rooms": 100,
+        "pad_units": 30,
+        "storeys": 5,
+        "footprint_m2": 917,
+        "gia_m2": 4583,
+        "gia_per_key": 35.3,
+        "nia_m2": 2677,
+        "nia_gia_pct": 58.4,
+        "building_height_m": 17.3,
+        "coverage_pct": 25.5,
+        "far": 1.27,
+        "west_facade_m": 45.6,
+        "total_facade_m": 162,
+        "total_facade_m2": 2803,
+        "outdoor_ground_m2": 547,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 547,
+        "accessible_count": 13,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 13.6,
+        "yt_per_floor": 34,
+        "pad_per_floor": 32,
+        "bounding_L": 49,
+        "bounding_W": 45.6,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 49,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 35.4,
+            "y": 0,
+            "l": 32,
+            "w": 13.6,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 28800769,
+        "per_key_usd": 221544,
+        "construction_usd": 14552244,
+        "facade_usd": 1821950,
+        "ffe_tech_usd": 3555000,
+        "outdoor_usd": 246150,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1614028,
+        "contingency_usd": 1311397,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 221544,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (34 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 20
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (34 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 20
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (32 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 19
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotelpad",
+          "label": "Floor 4 \u2014 YOTELPAD (30 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 20
+            },
+            {
+              "type": "OneBed",
+              "count": 6
+            },
+            {
+              "type": "TwoBed",
+              "count": 2
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-A2",
+      "rank": 2,
+      "score": 88.3,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 13600mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "126 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "36.5 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.832,
+          "weighted": 0.116,
+          "reason": "42m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.554,
+          "weighted": 0.055,
+          "reason": "499m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$227,051/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "21% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 126,
+        "yt_rooms": 100,
+        "pad_units": 26,
+        "storeys": 6,
+        "footprint_m2": 767,
+        "gia_m2": 4602,
+        "gia_per_key": 36.5,
+        "nia_m2": 2560,
+        "nia_gia_pct": 55.6,
+        "building_height_m": 20.5,
+        "coverage_pct": 21.3,
+        "far": 1.28,
+        "west_facade_m": 41.6,
+        "total_facade_m": 140,
+        "total_facade_m2": 2870,
+        "outdoor_ground_m2": 499,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 499,
+        "accessible_count": 12,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 13.6,
+        "yt_per_floor": 28,
+        "pad_per_floor": 26,
+        "bounding_L": 42,
+        "bounding_W": 41.6,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 42,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 28.4,
+            "y": 0,
+            "l": 28,
+            "w": 13.6,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 28608416,
+        "per_key_usd": 227051,
+        "construction_usd": 14496300,
+        "facade_usd": 1865500,
+        "ffe_tech_usd": 3421000,
+        "outdoor_usd": 224550,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1600588,
+        "contingency_usd": 1300478,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 227051,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (16 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 10
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (26 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 17
+            },
+            {
+              "type": "OneBed",
+              "count": 5
+            },
+            {
+              "type": "TwoBed",
+              "count": 2
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-A3",
+      "rank": 3,
+      "score": 88.2,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 14000mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "124 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "36.6 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.82,
+          "weighted": 0.115,
+          "reason": "41m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.547,
+          "weighted": 0.055,
+          "reason": "492m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$227,653/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "19% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 124,
+        "yt_rooms": 100,
+        "pad_units": 24,
+        "storeys": 6,
+        "footprint_m2": 756,
+        "gia_m2": 4536,
+        "gia_per_key": 36.6,
+        "nia_m2": 2490,
+        "nia_gia_pct": 54.9,
+        "building_height_m": 20.5,
+        "coverage_pct": 21.0,
+        "far": 1.26,
+        "west_facade_m": 41.0,
+        "total_facade_m": 136,
+        "total_facade_m2": 2788,
+        "outdoor_ground_m2": 492,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 492,
+        "accessible_count": 12,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 28,
+        "pad_per_floor": 24,
+        "bounding_L": 41,
+        "bounding_W": 41.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 41,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 27.0,
+            "y": 0,
+            "l": 27,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 28229020,
+        "per_key_usd": 227653,
+        "construction_usd": 14288400,
+        "facade_usd": 1812200,
+        "ffe_tech_usd": 3354000,
+        "outdoor_usd": 221400,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1574080,
+        "contingency_usd": 1278940,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 227653,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (16 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 10
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (24 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 16
+            },
+            {
+              "type": "OneBed",
+              "count": 5
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-A4",
+      "rank": 4,
+      "score": 85.7,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 13600mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "124 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "29.6 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.844,
+          "weighted": 0.118,
+          "reason": "42m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.812,
+          "weighted": 0.081,
+          "reason": "731m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$210,482/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "U-shape with courtyard daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "19% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.5,
+          "weighted": 0.04,
+          "reason": "U \u2014 complex"
+        }
+      },
+      "metrics": {
+        "form": "U",
+        "total_keys": 124,
+        "yt_rooms": 100,
+        "pad_units": 24,
+        "storeys": 6,
+        "footprint_m2": 612,
+        "gia_m2": 3672,
+        "gia_per_key": 29.6,
+        "nia_m2": 2480,
+        "nia_gia_pct": 67.5,
+        "building_height_m": 20.5,
+        "coverage_pct": 17.0,
+        "far": 1.02,
+        "west_facade_m": 42.2,
+        "total_facade_m": 144.4,
+        "total_facade_m2": 2960,
+        "outdoor_ground_m2": 506,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 225,
+        "outdoor_total_m2": 731,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 13.6,
+        "yt_per_floor": 26,
+        "pad_per_floor": 24,
+        "bounding_L": 15,
+        "bounding_W": 42.2,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 15,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "South Wing"
+          },
+          {
+            "x": 0,
+            "y": 28.6,
+            "l": 15,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "North Wing"
+          },
+          {
+            "x": 1.4000000000000004,
+            "y": 0,
+            "l": 42.2,
+            "w": 13.6,
+            "dir": "NS",
+            "label": "East Connector"
+          }
+        ],
+        "total_usd": 26099721,
+        "per_key_usd": 210482,
+        "construction_usd": 12209400,
+        "facade_usd": 1924000,
+        "ffe_tech_usd": 3354000,
+        "outdoor_usd": 328950,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1425308,
+        "contingency_usd": 1158063,
+        "form_multiplier": 1.14,
+        "cost_per_key_usd": 210482,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (24 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 16
+            },
+            {
+              "type": "OneBed",
+              "count": 5
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-A5",
+      "rank": 5,
+      "score": 84.3,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 13600mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "124 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "29.6 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.844,
+          "weighted": 0.118,
+          "reason": "42m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.586,
+          "weighted": 0.059,
+          "reason": "527m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$206,667/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "C-shape with courtyard daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "19% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.6,
+          "weighted": 0.048,
+          "reason": "C \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "C",
+        "total_keys": 124,
+        "yt_rooms": 100,
+        "pad_units": 24,
+        "storeys": 6,
+        "footprint_m2": 612,
+        "gia_m2": 3672,
+        "gia_per_key": 29.6,
+        "nia_m2": 2480,
+        "nia_gia_pct": 67.5,
+        "building_height_m": 20.5,
+        "coverage_pct": 17.0,
+        "far": 1.02,
+        "west_facade_m": 42.2,
+        "total_facade_m": 144.4,
+        "total_facade_m2": 2960,
+        "outdoor_ground_m2": 506,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 21,
+        "outdoor_total_m2": 527,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 13.6,
+        "yt_per_floor": 26,
+        "pad_per_floor": 24,
+        "bounding_L": 15,
+        "bounding_W": 42.2,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 15,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "South Wing"
+          },
+          {
+            "x": 0,
+            "y": 28.6,
+            "l": 15,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "North Wing"
+          },
+          {
+            "x": 0,
+            "y": 0,
+            "l": 42.2,
+            "w": 13.6,
+            "dir": "NS",
+            "label": "West Connector"
+          }
+        ],
+        "total_usd": 25626721,
+        "per_key_usd": 206667,
+        "construction_usd": 11888100,
+        "facade_usd": 1924000,
+        "ffe_tech_usd": 3354000,
+        "outdoor_usd": 237150,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1392260,
+        "contingency_usd": 1131211,
+        "form_multiplier": 1.11,
+        "cost_per_key_usd": 206667,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (24 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 16
+            },
+            {
+              "type": "OneBed",
+              "count": 5
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-A6",
+      "rank": 6,
+      "score": 83.9,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "130 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "39.6 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.962,
+          "weighted": 0.135,
+          "reason": "48m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "17.3m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.641,
+          "weighted": 0.064,
+          "reason": "577m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$237,151/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "23% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 130,
+        "yt_rooms": 100,
+        "pad_units": 30,
+        "storeys": 5,
+        "footprint_m2": 1029,
+        "gia_m2": 5144,
+        "gia_per_key": 39.6,
+        "nia_m2": 2677,
+        "nia_gia_pct": 52.0,
+        "building_height_m": 17.3,
+        "coverage_pct": 28.6,
+        "far": 1.43,
+        "west_facade_m": 48.1,
+        "total_facade_m": 160,
+        "total_facade_m2": 2768,
+        "outdoor_ground_m2": 577,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 577,
+        "accessible_count": 13,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 16.1,
+        "yt_per_floor": 34,
+        "pad_per_floor": 30,
+        "bounding_L": 48,
+        "bounding_W": 48.1,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 48,
+            "w": 16.1,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 31.9,
+            "y": 0,
+            "l": 32,
+            "w": 16.1,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 30829578,
+        "per_key_usd": 237151,
+        "construction_usd": 16333380,
+        "facade_usd": 1799200,
+        "ffe_tech_usd": 3555000,
+        "outdoor_usd": 259650,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1755778,
+        "contingency_usd": 1426570,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 237151,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (34 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 20
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (34 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 20
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (32 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 19
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotelpad",
+          "label": "Floor 4 \u2014 YOTELPAD (30 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 20
+            },
+            {
+              "type": "OneBed",
+              "count": 6
+            },
+            {
+              "type": "TwoBed",
+              "count": 2
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-A7",
+      "rank": 7,
+      "score": 83.6,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 14000mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "120 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "29.4 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.84,
+          "weighted": 0.118,
+          "reason": "42m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.778,
+          "weighted": 0.078,
+          "reason": "700m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$210,959/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "U-shape with courtyard daylight"
+        },
+        "pad_mix": {
+          "raw": 0.7,
+          "weighted": 0.042,
+          "reason": "17% PAD \u2014 acceptable"
+        },
+        "form_simplicity": {
+          "raw": 0.5,
+          "weighted": 0.04,
+          "reason": "U \u2014 complex"
+        }
+      },
+      "metrics": {
+        "form": "U",
+        "total_keys": 120,
+        "yt_rooms": 100,
+        "pad_units": 20,
+        "storeys": 6,
+        "footprint_m2": 588,
+        "gia_m2": 3528,
+        "gia_per_key": 29.4,
+        "nia_m2": 2382,
+        "nia_gia_pct": 67.5,
+        "building_height_m": 20.5,
+        "coverage_pct": 16.3,
+        "far": 0.98,
+        "west_facade_m": 42.0,
+        "total_facade_m": 140.0,
+        "total_facade_m2": 2870,
+        "outdoor_ground_m2": 504,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 196,
+        "outdoor_total_m2": 700,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 26,
+        "pad_per_floor": 20,
+        "bounding_L": 14,
+        "bounding_W": 42.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 14,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "South Wing"
+          },
+          {
+            "x": 0,
+            "y": 28.0,
+            "l": 14,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "North Wing"
+          },
+          {
+            "x": 0.0,
+            "y": 0,
+            "l": 42.0,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "East Connector"
+          }
+        ],
+        "total_usd": 25315110,
+        "per_key_usd": 210959,
+        "construction_usd": 11730600,
+        "facade_usd": 1865500,
+        "ffe_tech_usd": 3220000,
+        "outdoor_usd": 315000,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1370488,
+        "contingency_usd": 1113522,
+        "form_multiplier": 1.14,
+        "cost_per_key_usd": 210959,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (20 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 13
+            },
+            {
+              "type": "OneBed",
+              "count": 4
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-A8",
+      "rank": 8,
+      "score": 83.4,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "126 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 0.696,
+          "weighted": 0.097,
+          "reason": "46.3 m\u00b2/key \u2014 review layout"
+        },
+        "sea_views": {
+          "raw": 0.94,
+          "weighted": 0.132,
+          "reason": "47m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.627,
+          "weighted": 0.063,
+          "reason": "564m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$263,010/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "21% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 126,
+        "yt_rooms": 100,
+        "pad_units": 26,
+        "storeys": 6,
+        "footprint_m2": 972,
+        "gia_m2": 5832,
+        "gia_per_key": 46.3,
+        "nia_m2": 2579,
+        "nia_gia_pct": 44.2,
+        "building_height_m": 20.5,
+        "coverage_pct": 27.0,
+        "far": 1.62,
+        "west_facade_m": 47.0,
+        "total_facade_m": 144,
+        "total_facade_m2": 2952,
+        "outdoor_ground_m2": 564,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 564,
+        "accessible_count": 12,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 18.0,
+        "yt_per_floor": 30,
+        "pad_per_floor": 26,
+        "bounding_L": 43,
+        "bounding_W": 47.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 43,
+            "w": 18.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 25.0,
+            "y": 0,
+            "l": 29,
+            "w": 18.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 33139238,
+        "per_key_usd": 263010,
+        "construction_usd": 18370800,
+        "facade_usd": 1918800,
+        "ffe_tech_usd": 3421000,
+        "outdoor_usd": 253800,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1917152,
+        "contingency_usd": 1557686,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 263010,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (30 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 18
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (30 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 18
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (30 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 18
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (10 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 6
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (26 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 17
+            },
+            {
+              "type": "OneBed",
+              "count": 5
+            },
+            {
+              "type": "TwoBed",
+              "count": 2
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-A9",
+      "rank": 9,
+      "score": 82.6,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 14000mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "128 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "42.0 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.9,
+          "weighted": 0.126,
+          "reason": "45m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.6,
+          "weighted": 0.06,
+          "reason": "540m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$247,984/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "22% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 128,
+        "yt_rooms": 100,
+        "pad_units": 28,
+        "storeys": 6,
+        "footprint_m2": 896,
+        "gia_m2": 5376,
+        "gia_per_key": 42.0,
+        "nia_m2": 2619,
+        "nia_gia_pct": 48.7,
+        "building_height_m": 20.5,
+        "coverage_pct": 24.9,
+        "far": 1.49,
+        "west_facade_m": 45.0,
+        "total_facade_m": 156,
+        "total_facade_m2": 3198,
+        "outdoor_ground_m2": 540,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 540,
+        "accessible_count": 11,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 32,
+        "pad_per_floor": 28,
+        "bounding_L": 47,
+        "bounding_W": 45.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 47,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 33.0,
+            "y": 0,
+            "l": 31,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 31741994,
+        "per_key_usd": 247984,
+        "construction_usd": 16934400,
+        "facade_usd": 2078700,
+        "ffe_tech_usd": 3488000,
+        "outdoor_usd": 243000,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1819528,
+        "contingency_usd": 1478366,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 247984,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (32 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 19
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (32 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 19
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (32 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 19
+            },
+            {
+              "type": "Twin",
+              "count": 6
+            },
+            {
+              "type": "FirstClass",
+              "count": 4
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (4 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 2
+            },
+            {
+              "type": "Twin",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (28 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 19
+            },
+            {
+              "type": "OneBed",
+              "count": 6
+            },
+            {
+              "type": "TwoBed",
+              "count": 2
+            },
+            {
+              "type": "AccStudio",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B1",
+      "rank": 10,
+      "score": 82.2,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 14000mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "120 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "29.4 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.84,
+          "weighted": 0.118,
+          "reason": "42m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.56,
+          "weighted": 0.056,
+          "reason": "504m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$207,172/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "C-shape with courtyard daylight"
+        },
+        "pad_mix": {
+          "raw": 0.7,
+          "weighted": 0.042,
+          "reason": "17% PAD \u2014 acceptable"
+        },
+        "form_simplicity": {
+          "raw": 0.6,
+          "weighted": 0.048,
+          "reason": "C \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "C",
+        "total_keys": 120,
+        "yt_rooms": 100,
+        "pad_units": 20,
+        "storeys": 6,
+        "footprint_m2": 588,
+        "gia_m2": 3528,
+        "gia_per_key": 29.4,
+        "nia_m2": 2382,
+        "nia_gia_pct": 67.5,
+        "building_height_m": 20.5,
+        "coverage_pct": 16.3,
+        "far": 0.98,
+        "west_facade_m": 42.0,
+        "total_facade_m": 140.0,
+        "total_facade_m2": 2870,
+        "outdoor_ground_m2": 504,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 504,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 26,
+        "pad_per_floor": 20,
+        "bounding_L": 14,
+        "bounding_W": 42.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 14,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "South Wing"
+          },
+          {
+            "x": 0,
+            "y": 28.0,
+            "l": 14,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "North Wing"
+          },
+          {
+            "x": 0,
+            "y": 0,
+            "l": 42.0,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "West Connector"
+          }
+        ],
+        "total_usd": 24860659,
+        "per_key_usd": 207172,
+        "construction_usd": 11421900,
+        "facade_usd": 1865500,
+        "ffe_tech_usd": 3220000,
+        "outdoor_usd": 226800,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1338736,
+        "contingency_usd": 1087723,
+        "form_multiplier": 1.11,
+        "cost_per_key_usd": 207172,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (26 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 16
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (20 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 13
+            },
+            {
+              "type": "OneBed",
+              "count": 4
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B2",
+      "rank": 11,
+      "score": 81.8,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 1.0,
+          "weighted": 0.18,
+          "reason": "124 keys \u2014 in target range"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "40.4 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.862,
+          "weighted": 0.121,
+          "reason": "43m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.574,
+          "weighted": 0.057,
+          "reason": "517m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$241,663/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "19% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 124,
+        "yt_rooms": 100,
+        "pad_units": 24,
+        "storeys": 6,
+        "footprint_m2": 836,
+        "gia_m2": 5014,
+        "gia_per_key": 40.4,
+        "nia_m2": 2490,
+        "nia_gia_pct": 49.7,
+        "building_height_m": 20.5,
+        "coverage_pct": 23.2,
+        "far": 1.39,
+        "west_facade_m": 43.1,
+        "total_facade_m": 136,
+        "total_facade_m2": 2788,
+        "outdoor_ground_m2": 517,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 517,
+        "accessible_count": 12,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 16.1,
+        "yt_per_floor": 28,
+        "pad_per_floor": 24,
+        "bounding_L": 41,
+        "bounding_W": 43.1,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 41,
+            "w": 16.1,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 24.9,
+            "y": 0,
+            "l": 27,
+            "w": 16.1,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 29966216,
+        "per_key_usd": 241663,
+        "construction_usd": 15794352,
+        "facade_usd": 1812200,
+        "ffe_tech_usd": 3354000,
+        "outdoor_usd": 232650,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1695456,
+        "contingency_usd": 1377558,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 241663,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (28 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 17
+            },
+            {
+              "type": "Twin",
+              "count": 5
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (16 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 10
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (24 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 16
+            },
+            {
+              "type": "OneBed",
+              "count": 5
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B3",
+      "rank": 12,
+      "score": 81.3,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 14000mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.88,
+          "weighted": 0.158,
+          "reason": "118 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.1 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 0.6,
+          "weighted": 0.06,
+          "reason": "23.7m \u2014 needs 7+ storey approval"
+        },
+        "outdoor_amenity": {
+          "raw": 0.799,
+          "weighted": 0.08,
+          "reason": "719m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$220,593/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.7,
+          "weighted": 0.042,
+          "reason": "15% PAD \u2014 acceptable"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 118,
+        "yt_rooms": 100,
+        "pad_units": 18,
+        "storeys": 7,
+        "footprint_m2": 574,
+        "gia_m2": 4018,
+        "gia_per_key": 34.1,
+        "nia_m2": 2362,
+        "nia_gia_pct": 58.8,
+        "building_height_m": 23.7,
+        "coverage_pct": 15.9,
+        "far": 1.12,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 2607,
+        "outdoor_ground_m2": 432,
+        "outdoor_roof_m2": 287,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 719,
+        "accessible_count": 11,
+        "corridor_type": "double",
+        "outdoor_pos": "BOTH",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 26030020,
+        "per_key_usd": 220593,
+        "construction_usd": 12584376,
+        "facade_usd": 1694550,
+        "ffe_tech_usd": 3153000,
+        "outdoor_usd": 323550,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1420438,
+        "contingency_usd": 1154106,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 220593,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (12 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 7
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 6,
+          "type": "yotelpad",
+          "label": "Floor 6 \u2014 YOTELPAD (18 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 12
+            },
+            {
+              "type": "OneBed",
+              "count": 4
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B4",
+      "rank": 13,
+      "score": 78.7,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 14000mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.754,
+          "weighted": 0.136,
+          "reason": "98 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "35.1 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.48,
+          "weighted": 0.048,
+          "reason": "432m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$235,191/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 1.0,
+          "weighted": 0.06,
+          "reason": "18% PAD \u2014 revenue-optimal"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 98,
+        "yt_rooms": 80,
+        "pad_units": 18,
+        "storeys": 6,
+        "footprint_m2": 574,
+        "gia_m2": 3444,
+        "gia_per_key": 35.1,
+        "nia_m2": 1979,
+        "nia_gia_pct": 57.5,
+        "building_height_m": 20.5,
+        "coverage_pct": 15.9,
+        "far": 0.96,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 2255,
+        "outdoor_ground_m2": 432,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 432,
+        "accessible_count": 8,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 23048754,
+        "per_key_usd": 235191,
+        "construction_usd": 10848600,
+        "facade_usd": 1465750,
+        "ffe_tech_usd": 2643000,
+        "outdoor_usd": 194400,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1212140,
+        "contingency_usd": 984864,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 235191,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (14 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 8
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotelpad",
+          "label": "Floor 5 \u2014 YOTELPAD (18 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 12
+            },
+            {
+              "type": "OneBed",
+              "count": 4
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B5",
+      "rank": 14,
+      "score": 78.1,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 14000mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.88,
+          "weighted": 0.158,
+          "reason": "118 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.1 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 0.6,
+          "weighted": 0.06,
+          "reason": "23.7m \u2014 needs 7+ storey approval"
+        },
+        "outdoor_amenity": {
+          "raw": 0.48,
+          "weighted": 0.048,
+          "reason": "432m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$219,340/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.7,
+          "weighted": 0.042,
+          "reason": "15% PAD \u2014 acceptable"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 118,
+        "yt_rooms": 100,
+        "pad_units": 18,
+        "storeys": 7,
+        "footprint_m2": 574,
+        "gia_m2": 4018,
+        "gia_per_key": 34.1,
+        "nia_m2": 2362,
+        "nia_gia_pct": 58.8,
+        "building_height_m": 23.7,
+        "coverage_pct": 15.9,
+        "far": 1.12,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 2607,
+        "outdoor_ground_m2": 432,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 432,
+        "accessible_count": 11,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 25882143,
+        "per_key_usd": 219340,
+        "construction_usd": 12584376,
+        "facade_usd": 1694550,
+        "ffe_tech_usd": 3153000,
+        "outdoor_usd": 194400,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1410106,
+        "contingency_usd": 1145711,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 219340,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (12 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 7
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 6,
+          "type": "yotelpad",
+          "label": "Floor 6 \u2014 YOTELPAD (18 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 12
+            },
+            {
+              "type": "OneBed",
+              "count": 4
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B6",
+      "rank": 15,
+      "score": 77.3,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.7,
+          "weighted": 0.126,
+          "reason": "100 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.4 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.799,
+          "weighted": 0.08,
+          "reason": "719m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$230,901/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 100,
+        "yt_rooms": 100,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 574,
+        "gia_m2": 3444,
+        "gia_per_key": 34.4,
+        "nia_m2": 1895,
+        "nia_gia_pct": 55.0,
+        "building_height_m": 20.5,
+        "coverage_pct": 15.9,
+        "far": 0.96,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 2255,
+        "outdoor_ground_m2": 432,
+        "outdoor_roof_m2": 287,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 719,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "BOTH",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 23090146,
+        "per_key_usd": 230901,
+        "construction_usd": 10848600,
+        "facade_usd": 1465750,
+        "ffe_tech_usd": 2550000,
+        "outdoor_usd": 323550,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1215032,
+        "contingency_usd": 987214,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 230901,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (12 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 7
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B7",
+      "rank": 16,
+      "score": 77.1,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.7,
+          "weighted": 0.126,
+          "reason": "100 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.4 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.48,
+          "weighted": 0.048,
+          "reason": "432m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$229,423/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 100,
+        "yt_rooms": 100,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 574,
+        "gia_m2": 3444,
+        "gia_per_key": 34.4,
+        "nia_m2": 1895,
+        "nia_gia_pct": 55.0,
+        "building_height_m": 20.5,
+        "coverage_pct": 15.9,
+        "far": 0.96,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 2255,
+        "outdoor_ground_m2": 432,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 432,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 22942269,
+        "per_key_usd": 229423,
+        "construction_usd": 10848600,
+        "facade_usd": 1465750,
+        "ffe_tech_usd": 2550000,
+        "outdoor_usd": 194400,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1204700,
+        "contingency_usd": 978819,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 229423,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (12 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 7
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B8",
+      "rank": 17,
+      "score": 76.5,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [
+        "PAD dual-aspect needs 16100mm; building is 14000mm"
+      ],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.88,
+          "weighted": 0.158,
+          "reason": "118 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.1 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 0.6,
+          "weighted": 0.06,
+          "reason": "23.7m \u2014 needs 7+ storey approval"
+        },
+        "outdoor_amenity": {
+          "raw": 0.319,
+          "weighted": 0.032,
+          "reason": "287m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$218,707/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.7,
+          "weighted": 0.042,
+          "reason": "15% PAD \u2014 acceptable"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 118,
+        "yt_rooms": 100,
+        "pad_units": 18,
+        "storeys": 7,
+        "footprint_m2": 574,
+        "gia_m2": 4018,
+        "gia_per_key": 34.1,
+        "nia_m2": 2362,
+        "nia_gia_pct": 58.8,
+        "building_height_m": 23.7,
+        "coverage_pct": 15.9,
+        "far": 1.12,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 2607,
+        "outdoor_ground_m2": 0,
+        "outdoor_roof_m2": 287,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 287,
+        "accessible_count": 11,
+        "corridor_type": "double",
+        "outdoor_pos": "ROOFTOP",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 25807432,
+        "per_key_usd": 218707,
+        "construction_usd": 12584376,
+        "facade_usd": 1694550,
+        "ffe_tech_usd": 3153000,
+        "outdoor_usd": 129150,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1404886,
+        "contingency_usd": 1141470,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 218707,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (12 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 7
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 6,
+          "type": "yotelpad",
+          "label": "Floor 6 \u2014 YOTELPAD (18 units)",
+          "rooms": [
+            {
+              "type": "Studio",
+              "count": 12
+            },
+            {
+              "type": "OneBed",
+              "count": 4
+            },
+            {
+              "type": "TwoBed",
+              "count": 1
+            },
+            {
+              "type": "AccStudio",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-B9",
+      "rank": 18,
+      "score": 75.5,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.7,
+          "weighted": 0.126,
+          "reason": "100 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.4 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.319,
+          "weighted": 0.032,
+          "reason": "287m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$228,676/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 100,
+        "yt_rooms": 100,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 574,
+        "gia_m2": 3444,
+        "gia_per_key": 34.4,
+        "nia_m2": 1895,
+        "nia_gia_pct": 55.0,
+        "building_height_m": 20.5,
+        "coverage_pct": 15.9,
+        "far": 0.96,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 2255,
+        "outdoor_ground_m2": 0,
+        "outdoor_roof_m2": 287,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 287,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "ROOFTOP",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 22867558,
+        "per_key_usd": 228676,
+        "construction_usd": 10848600,
+        "facade_usd": 1465750,
+        "ffe_tech_usd": 2550000,
+        "outdoor_usd": 129150,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1199480,
+        "contingency_usd": 974578,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 228676,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (12 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 7
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C1",
+      "rank": 19,
+      "score": 74.7,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.8,
+          "weighted": 0.144,
+          "reason": "110 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "31.3 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.48,
+          "weighted": 0.048,
+          "reason": "432m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 1.0,
+          "weighted": 0.12,
+          "reason": "$211,220/key \u2014 excellent"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 110,
+        "yt_rooms": 110,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 574,
+        "gia_m2": 3444,
+        "gia_per_key": 31.3,
+        "nia_m2": 2082,
+        "nia_gia_pct": 60.5,
+        "building_height_m": 20.5,
+        "coverage_pct": 15.9,
+        "far": 0.96,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 2255,
+        "outdoor_ground_m2": 432,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 432,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 23234244,
+        "per_key_usd": 211220,
+        "construction_usd": 10848600,
+        "facade_usd": 1465750,
+        "ffe_tech_usd": 2805000,
+        "outdoor_usd": 194400,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1225100,
+        "contingency_usd": 995394,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 211220,
+        "required_foh_lifts": 3,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C2",
+      "rank": 20,
+      "score": 74.3,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.7,
+          "weighted": 0.126,
+          "reason": "100 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "35.4 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.732,
+          "weighted": 0.102,
+          "reason": "37m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.488,
+          "weighted": 0.049,
+          "reason": "439m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$233,566/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 100,
+        "yt_rooms": 100,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 590,
+        "gia_m2": 3541,
+        "gia_per_key": 35.4,
+        "nia_m2": 1895,
+        "nia_gia_pct": 53.5,
+        "building_height_m": 20.5,
+        "coverage_pct": 16.4,
+        "far": 0.98,
+        "west_facade_m": 36.6,
+        "total_facade_m": 114,
+        "total_facade_m2": 2337,
+        "outdoor_ground_m2": 439,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 439,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 13.6,
+        "yt_per_floor": 22,
+        "pad_per_floor": 20,
+        "bounding_L": 34,
+        "bounding_W": 36.6,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 34,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 20.4,
+            "y": 0,
+            "l": 23,
+            "w": 13.6,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 23356614,
+        "per_key_usd": 233566,
+        "construction_usd": 11154024,
+        "facade_usd": 1519050,
+        "ffe_tech_usd": 2550000,
+        "outdoor_usd": 197550,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1233650,
+        "contingency_usd": 1002341,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 233566,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (12 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 7
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C3",
+      "rank": 21,
+      "score": 73.8,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.508,
+          "weighted": 0.091,
+          "reason": "66 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.8 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "14.1m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.799,
+          "weighted": 0.08,
+          "reason": "719m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$266,645/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 66,
+        "yt_rooms": 66,
+        "pad_units": 0,
+        "storeys": 4,
+        "footprint_m2": 574,
+        "gia_m2": 2296,
+        "gia_per_key": 34.8,
+        "nia_m2": 1249,
+        "nia_gia_pct": 54.4,
+        "building_height_m": 14.1,
+        "coverage_pct": 15.9,
+        "far": 0.64,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 1551,
+        "outdoor_ground_m2": 432,
+        "outdoor_roof_m2": 287,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 719,
+        "accessible_count": 6,
+        "corridor_type": "double",
+        "outdoor_pos": "BOTH",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 17598551,
+        "per_key_usd": 266645,
+        "construction_usd": 7377048,
+        "facade_usd": 1008150,
+        "ffe_tech_usd": 1683000,
+        "outdoor_usd": 323550,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 831340,
+        "contingency_usd": 675464,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 266645,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C4",
+      "rank": 22,
+      "score": 73.6,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.692,
+          "weighted": 0.125,
+          "reason": "90 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.2 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.702,
+          "weighted": 0.098,
+          "reason": "35m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.468,
+          "weighted": 0.047,
+          "reason": "421m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$234,730/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 90,
+        "yt_rooms": 90,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 514,
+        "gia_m2": 3082,
+        "gia_per_key": 34.2,
+        "nia_m2": 1699,
+        "nia_gia_pct": 55.1,
+        "building_height_m": 20.5,
+        "coverage_pct": 14.3,
+        "far": 0.86,
+        "west_facade_m": 35.1,
+        "total_facade_m": 96,
+        "total_facade_m2": 1968,
+        "outdoor_ground_m2": 421,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 421,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 16.1,
+        "yt_per_floor": 18,
+        "pad_per_floor": 16,
+        "bounding_L": 29,
+        "bounding_W": 35.1,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 29,
+            "w": 16.1,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 12.899999999999999,
+            "y": 0,
+            "l": 19,
+            "w": 16.1,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 21125671,
+        "per_key_usd": 234730,
+        "construction_usd": 9708552,
+        "facade_usd": 1279200,
+        "ffe_tech_usd": 2295000,
+        "outdoor_usd": 189450,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1077776,
+        "contingency_usd": 875693,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 234730,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C5",
+      "rank": 23,
+      "score": 73.4,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.692,
+          "weighted": 0.125,
+          "reason": "90 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "40.1 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.86,
+          "weighted": 0.12,
+          "reason": "43m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.573,
+          "weighted": 0.057,
+          "reason": "516m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$248,839/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.5,
+          "weighted": 0.04,
+          "reason": "Double-loaded bar \u2014 standard corridors"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 1.0,
+          "weighted": 0.08,
+          "reason": "BAR_NS \u2014 simplest"
+        }
+      },
+      "metrics": {
+        "form": "BAR_NS",
+        "total_keys": 90,
+        "yt_rooms": 90,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 602,
+        "gia_m2": 3612,
+        "gia_per_key": 40.1,
+        "nia_m2": 1699,
+        "nia_gia_pct": 47.0,
+        "building_height_m": 20.5,
+        "coverage_pct": 16.7,
+        "far": 1.0,
+        "west_facade_m": 43,
+        "total_facade_m": 114.0,
+        "total_facade_m2": 2337,
+        "outdoor_ground_m2": 516,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 516,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 18,
+        "pad_per_floor": 16,
+        "bounding_L": 14.0,
+        "bounding_W": 43,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 43,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Main Bar (N-S)"
+          }
+        ],
+        "total_usd": 22395531,
+        "per_key_usd": 248839,
+        "construction_usd": 10535000,
+        "facade_usd": 1519050,
+        "ffe_tech_usd": 2295000,
+        "outdoor_usd": 232200,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1166500,
+        "contingency_usd": 947781,
+        "form_multiplier": 1.0,
+        "cost_per_key_usd": 248839,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C6",
+      "rank": 24,
+      "score": 73.4,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.692,
+          "weighted": 0.125,
+          "reason": "90 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 0.699,
+          "weighted": 0.098,
+          "reason": "46.2 m\u00b2/key \u2014 review layout"
+        },
+        "sea_views": {
+          "raw": 0.86,
+          "weighted": 0.12,
+          "reason": "43m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.573,
+          "weighted": 0.057,
+          "reason": "516m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$269,659/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.5,
+          "weighted": 0.04,
+          "reason": "Double-loaded bar \u2014 standard corridors"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 1.0,
+          "weighted": 0.08,
+          "reason": "BAR_NS \u2014 simplest"
+        }
+      },
+      "metrics": {
+        "form": "BAR_NS",
+        "total_keys": 90,
+        "yt_rooms": 90,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 692,
+        "gia_m2": 4154,
+        "gia_per_key": 46.2,
+        "nia_m2": 1699,
+        "nia_gia_pct": 40.9,
+        "building_height_m": 20.5,
+        "coverage_pct": 19.2,
+        "far": 1.15,
+        "west_facade_m": 43,
+        "total_facade_m": 118.2,
+        "total_facade_m2": 2423,
+        "outdoor_ground_m2": 516,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 516,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 16.1,
+        "yt_per_floor": 18,
+        "pad_per_floor": 16,
+        "bounding_L": 16.1,
+        "bounding_W": 43,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 43,
+            "w": 16.1,
+            "dir": "NS",
+            "label": "Main Bar (N-S)"
+          }
+        ],
+        "total_usd": 24269324,
+        "per_key_usd": 269659,
+        "construction_usd": 12115600,
+        "facade_usd": 1574950,
+        "ffe_tech_usd": 2295000,
+        "outdoor_usd": 232200,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1297420,
+        "contingency_usd": 1054154,
+        "form_multiplier": 1.0,
+        "cost_per_key_usd": 269659,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C7",
+      "rank": 25,
+      "score": 73.4,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.692,
+          "weighted": 0.125,
+          "reason": "90 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "34.8 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.692,
+          "weighted": 0.097,
+          "reason": "35m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.461,
+          "weighted": 0.046,
+          "reason": "415m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$238,091/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 90,
+        "yt_rooms": 90,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 522,
+        "gia_m2": 3133,
+        "gia_per_key": 34.8,
+        "nia_m2": 1699,
+        "nia_gia_pct": 54.2,
+        "building_height_m": 20.5,
+        "coverage_pct": 14.5,
+        "far": 0.87,
+        "west_facade_m": 34.6,
+        "total_facade_m": 104,
+        "total_facade_m2": 2132,
+        "outdoor_ground_m2": 415,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 415,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 13.6,
+        "yt_per_floor": 18,
+        "pad_per_floor": 16,
+        "bounding_L": 31,
+        "bounding_W": 34.6,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 31,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 17.4,
+            "y": 0,
+            "l": 21,
+            "w": 13.6,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 21428148,
+        "per_key_usd": 238091,
+        "construction_usd": 9868824,
+        "facade_usd": 1385800,
+        "ffe_tech_usd": 2295000,
+        "outdoor_usd": 186750,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1098910,
+        "contingency_usd": 892864,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 238091,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C8",
+      "rank": 26,
+      "score": 73.1,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.692,
+          "weighted": 0.125,
+          "reason": "90 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 1.0,
+          "weighted": 0.14,
+          "reason": "33.6 m\u00b2/key \u2014 optimal"
+        },
+        "sea_views": {
+          "raw": 0.68,
+          "weighted": 0.095,
+          "reason": "34m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.453,
+          "weighted": 0.045,
+          "reason": "408m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$233,006/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 90,
+        "yt_rooms": 90,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 504,
+        "gia_m2": 3024,
+        "gia_per_key": 33.6,
+        "nia_m2": 1699,
+        "nia_gia_pct": 56.2,
+        "building_height_m": 20.5,
+        "coverage_pct": 14.0,
+        "far": 0.84,
+        "west_facade_m": 34.0,
+        "total_facade_m": 100,
+        "total_facade_m2": 2050,
+        "outdoor_ground_m2": 408,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 408,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 18,
+        "pad_per_floor": 16,
+        "bounding_L": 30,
+        "bounding_W": 34.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 30,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 16.0,
+            "y": 0,
+            "l": 20,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 20970522,
+        "per_key_usd": 233006,
+        "construction_usd": 9525600,
+        "facade_usd": 1332500,
+        "ffe_tech_usd": 2295000,
+        "outdoor_usd": 183600,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1066936,
+        "contingency_usd": 866886,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 233006,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-C9",
+      "rank": 27,
+      "score": 72.7,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.677,
+          "weighted": 0.122,
+          "reason": "88 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "32.6 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.72,
+          "weighted": 0.101,
+          "reason": "36m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "17.3m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.799,
+          "weighted": 0.08,
+          "reason": "719m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$232,845/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 88,
+        "yt_rooms": 88,
+        "pad_units": 0,
+        "storeys": 5,
+        "footprint_m2": 574,
+        "gia_m2": 2870,
+        "gia_per_key": 32.6,
+        "nia_m2": 1666,
+        "nia_gia_pct": 58.0,
+        "building_height_m": 17.3,
+        "coverage_pct": 15.9,
+        "far": 0.8,
+        "west_facade_m": 36.0,
+        "total_facade_m": 110,
+        "total_facade_m2": 1903,
+        "outdoor_ground_m2": 432,
+        "outdoor_roof_m2": 287,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 719,
+        "accessible_count": 8,
+        "corridor_type": "double",
+        "outdoor_pos": "BOTH",
+        "wing_width_m": 14.0,
+        "yt_per_floor": 22,
+        "pad_per_floor": 18,
+        "bounding_L": 33,
+        "bounding_W": 36.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 33,
+            "w": 14.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 19.0,
+            "y": 0,
+            "l": 22,
+            "w": 14.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 20490336,
+        "per_key_usd": 232845,
+        "construction_usd": 9112824,
+        "facade_usd": 1236950,
+        "ffe_tech_usd": 2244000,
+        "outdoor_usd": 323550,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1033386,
+        "contingency_usd": 839626,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 232845,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-D1",
+      "rank": 28,
+      "score": 71.5,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.7,
+          "weighted": 0.126,
+          "reason": "100 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "41.4 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.802,
+          "weighted": 0.112,
+          "reason": "40m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.534,
+          "weighted": 0.053,
+          "reason": "481m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$256,146/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 100,
+        "yt_rooms": 100,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 691,
+        "gia_m2": 4144,
+        "gia_per_key": 41.4,
+        "nia_m2": 1895,
+        "nia_gia_pct": 45.7,
+        "building_height_m": 20.5,
+        "coverage_pct": 19.2,
+        "far": 1.15,
+        "west_facade_m": 40.1,
+        "total_facade_m": 118,
+        "total_facade_m2": 2419,
+        "outdoor_ground_m2": 481,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 481,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 16.1,
+        "yt_per_floor": 22,
+        "pad_per_floor": 20,
+        "bounding_L": 35,
+        "bounding_W": 40.1,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 35,
+            "w": 16.1,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 18.9,
+            "y": 0,
+            "l": 24,
+            "w": 16.1,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 25614587,
+        "per_key_usd": 256146,
+        "construction_usd": 13053852,
+        "facade_usd": 1572350,
+        "ffe_tech_usd": 2550000,
+        "outdoor_usd": 216450,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1391412,
+        "contingency_usd": 1130522,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 256146,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (22 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 13
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (12 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 7
+            },
+            {
+              "type": "Twin",
+              "count": 2
+            },
+            {
+              "type": "FirstClass",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-D2",
+      "rank": 29,
+      "score": 71.0,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.692,
+          "weighted": 0.125,
+          "reason": "90 keys \u2014 below minimum viable"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "42.0 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.78,
+          "weighted": 0.109,
+          "reason": "39m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.52,
+          "weighted": 0.052,
+          "reason": "468m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$264,663/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 90,
+        "yt_rooms": 90,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 630,
+        "gia_m2": 3780,
+        "gia_per_key": 42.0,
+        "nia_m2": 1699,
+        "nia_gia_pct": 44.9,
+        "building_height_m": 20.5,
+        "coverage_pct": 17.5,
+        "far": 1.05,
+        "west_facade_m": 39.0,
+        "total_facade_m": 106,
+        "total_facade_m2": 2173,
+        "outdoor_ground_m2": 468,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 468,
+        "accessible_count": 10,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 18.0,
+        "yt_per_floor": 18,
+        "pad_per_floor": 18,
+        "bounding_L": 32,
+        "bounding_W": 39.0,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 32,
+            "w": 18.0,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 14.0,
+            "y": 0,
+            "l": 21,
+            "w": 18.0,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 23819682,
+        "per_key_usd": 264663,
+        "construction_usd": 11907000,
+        "facade_usd": 1412450,
+        "ffe_tech_usd": 2295000,
+        "outdoor_usd": 210600,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1266004,
+        "contingency_usd": 1028628,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 264663,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (18 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 11
+            },
+            {
+              "type": "Twin",
+              "count": 3
+            },
+            {
+              "type": "FirstClass",
+              "count": 2
+            },
+            {
+              "type": "Accessible",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPT-D3",
+      "rank": 30,
+      "score": 70.9,
+      "is_valid": true,
+      "violations": [],
+      "warnings": [],
+      "score_breakdown": {
+        "room_count": {
+          "raw": 0.7,
+          "weighted": 0.126,
+          "reason": "100 keys \u2014 slightly below target"
+        },
+        "gia_efficiency": {
+          "raw": 0.7,
+          "weighted": 0.098,
+          "reason": "40.3 m\u00b2/key \u2014 acceptable"
+        },
+        "sea_views": {
+          "raw": 0.772,
+          "weighted": 0.108,
+          "reason": "39m west facade"
+        },
+        "building_height": {
+          "raw": 1.0,
+          "weighted": 0.1,
+          "reason": "20.5m \u2014 within 6-storey envelope"
+        },
+        "outdoor_amenity": {
+          "raw": 0.514,
+          "weighted": 0.051,
+          "reason": "463m\u00b2 total outdoor"
+        },
+        "cost_per_key": {
+          "raw": 0.75,
+          "weighted": 0.09,
+          "reason": "$253,197/key \u2014 on budget"
+        },
+        "daylight_quality": {
+          "raw": 0.65,
+          "weighted": 0.052,
+          "reason": "L-shape \u2014 some corner daylight"
+        },
+        "pad_mix": {
+          "raw": 0.4,
+          "weighted": 0.024,
+          "reason": "0% PAD \u2014 outside ideal range"
+        },
+        "form_simplicity": {
+          "raw": 0.75,
+          "weighted": 0.06,
+          "reason": "L \u2014 moderate"
+        }
+      },
+      "metrics": {
+        "form": "L",
+        "total_keys": 100,
+        "yt_rooms": 100,
+        "pad_units": 0,
+        "storeys": 6,
+        "footprint_m2": 672,
+        "gia_m2": 4031,
+        "gia_per_key": 40.3,
+        "nia_m2": 1915,
+        "nia_gia_pct": 47.5,
+        "building_height_m": 20.5,
+        "coverage_pct": 18.7,
+        "far": 1.12,
+        "west_facade_m": 38.6,
+        "total_facade_m": 126,
+        "total_facade_m2": 2583,
+        "outdoor_ground_m2": 463,
+        "outdoor_roof_m2": 0,
+        "outdoor_courtyard_m2": 0,
+        "outdoor_total_m2": 463,
+        "accessible_count": 13,
+        "corridor_type": "double",
+        "outdoor_pos": "WEST",
+        "wing_width_m": 13.6,
+        "yt_per_floor": 24,
+        "pad_per_floor": 22,
+        "bounding_L": 38,
+        "bounding_W": 38.6,
+        "wings": [
+          {
+            "x": 0,
+            "y": 0,
+            "l": 38,
+            "w": 13.6,
+            "dir": "EW",
+            "label": "Wing A (E-W)"
+          },
+          {
+            "x": 24.4,
+            "y": 0,
+            "l": 25,
+            "w": 13.6,
+            "dir": "NS",
+            "label": "Wing B (N-S)"
+          }
+        ],
+        "total_usd": 25319662,
+        "per_key_usd": 253197,
+        "construction_usd": 12697776,
+        "facade_usd": 1678950,
+        "ffe_tech_usd": 2550000,
+        "outdoor_usd": 208350,
+        "land_site_usd": 5700000,
+        "soft_costs_usd": 1370806,
+        "contingency_usd": 1113780,
+        "form_multiplier": 1.08,
+        "cost_per_key_usd": 253197,
+        "required_foh_lifts": 2,
+        "required_boh_lifts": 1
+      },
+      "floors": [
+        {
+          "level": 0,
+          "type": "ground",
+          "label": "Ground Floor \u2014 FOH + BOH",
+          "rooms": []
+        },
+        {
+          "level": 1,
+          "type": "yotel",
+          "label": "Floor 1 \u2014 YOTEL (24 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 14
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "type": "yotel",
+          "label": "Floor 2 \u2014 YOTEL (24 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 14
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 3,
+          "type": "yotel",
+          "label": "Floor 3 \u2014 YOTEL (24 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 14
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 4,
+          "type": "yotel",
+          "label": "Floor 4 \u2014 YOTEL (24 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 14
+            },
+            {
+              "type": "Twin",
+              "count": 4
+            },
+            {
+              "type": "FirstClass",
+              "count": 3
+            },
+            {
+              "type": "Accessible",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "level": 5,
+          "type": "yotel",
+          "label": "Floor 5 \u2014 YOTEL (4 rooms)",
+          "rooms": [
+            {
+              "type": "Premium",
+              "count": 2
+            },
+            {
+              "type": "Twin",
+              "count": 1
+            },
+            {
+              "type": "Accessible",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

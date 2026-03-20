@@ -1,0 +1,12 @@
+{
+  "generated_at_utc": "2026-03-19T18:05:09.016455+00:00",
+  "engine_pipeline": {
+    "options_json": "C:\\Users\\carol\\Desktop\\Barbados\\Barbados_App\\exports\\engine_pipeline\\options\\options.json",
+    "options_csv": "C:\\Users\\carol\\Desktop\\Barbados\\Barbados_App\\exports\\engine_pipeline\\options\\options.csv",
+    "legacy_options_json": "C:\\Users\\carol\\Desktop\\Barbados\\Barbados_App\\exports\\options.json",
+    "legacy_options_csv": "C:\\Users\\carol\\Desktop\\Barbados\\Barbados_App\\exports\\options.csv",
+    "frontend_options_json": "C:\\Users\\carol\\Desktop\\Barbados\\Barbados_App\\frontend\\src\\data\\options.json",
+    "osm_context_json": "C:\\Users\\carol\\Desktop\\Barbados\\Barbados_App\\exports\\engine_pipeline\\context\\osm_context.json",
+    "boundary_control_json": "C:\\Users\\carol\\Desktop\\Barbados\\Barbados_App\\exports\\engine_pipeline\\context\\boundary_control.json"
+  }
+}

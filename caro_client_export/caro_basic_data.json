@@ -1,0 +1,53 @@
+{
+  "app_name": "Caro Basic Viewer",
+  "toolbar": {
+    "default_view": "3D",
+    "default_style": "Real",
+    "views": ["3D", "West", "Plan"],
+    "styles": ["Real", "Wire"]
+  },
+  "layers": [
+    {
+      "key": "terrain",
+      "label": "Terrain",
+      "group": "Site",
+      "color": "#B0B8A4",
+      "enabled": true
+    },
+    {
+      "key": "roads",
+      "label": "Roads",
+      "group": "Site",
+      "color": "#BBBEC4",
+      "enabled": false
+    },
+    {
+      "key": "vegetation",
+      "label": "Vegetation",
+      "group": "Site",
+      "color": "#3A6830",
+      "enabled": false
+    },
+    {
+      "key": "building",
+      "label": "Building",
+      "group": "Model",
+      "color": "#2E8A76",
+      "enabled": true
+    },
+    {
+      "key": "outdoor",
+      "label": "Outdoor",
+      "group": "Model",
+      "color": "#4E8E3E",
+      "enabled": true
+    },
+    {
+      "key": "context",
+      "label": "Context Buildings",
+      "group": "Context",
+      "color": "#9CA4AE",
+      "enabled": false
+    }
+  ]
+}

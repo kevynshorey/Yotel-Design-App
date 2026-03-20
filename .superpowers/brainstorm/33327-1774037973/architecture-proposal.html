@@ -1,0 +1,449 @@
+<h2>YOTEL Development Studio — Architecture Proposal</h2>
+<p class="subtitle">Command Center layout, Next.js + TypeScript, magic link auth. Review each section.</p>
+
+<div class="section">
+  <h3>System Architecture</h3>
+  <div class="mockup">
+    <div class="mockup-header">Architecture Overview</div>
+    <div class="mockup-body" style="background:#0a0a0a;padding:24px;font-family:monospace;font-size:11px;color:#a0a0a0;">
+
+      <div style="text-align:center;margin-bottom:16px;color:#7c8aff;font-size:13px;font-weight:bold;">YOTEL DEVELOPMENT STUDIO</div>
+
+      <!-- Browser Layer -->
+      <div style="border:1px solid #2a2a4e;border-radius:8px;padding:12px;margin-bottom:12px;">
+        <div style="color:#7c8aff;font-size:10px;margin-bottom:8px;">BROWSER (Client Components)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="background:#1a1a2e;padding:6px 10px;border-radius:4px;color:#8890ff;">Three.js 3D Viewer</div>
+          <div style="background:#1a1a2e;padding:6px 10px;border-radius:4px;color:#8890ff;">Massing Engine (TS)</div>
+          <div style="background:#1a1a2e;padding:6px 10px;border-radius:4px;color:#8890ff;">shadcn/ui Components</div>
+          <div style="background:#1a1a2e;padding:6px 10px;border-radius:4px;color:#8890ff;">Charts (Recharts)</div>
+        </div>
+      </div>
+
+      <!-- Next.js Layer -->
+      <div style="border:1px solid #1a3a2e;border-radius:8px;padding:12px;margin-bottom:12px;">
+        <div style="color:#2E8A76;font-size:10px;margin-bottom:8px;">NEXT.JS APP ROUTER (Server Components + API Routes)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="background:#0d1f1a;padding:6px 10px;border-radius:4px;color:#4aba9a;">Layout Shell</div>
+          <div style="background:#0d1f1a;padding:6px 10px;border-radius:4px;color:#4aba9a;">Auth (Magic Link)</div>
+          <div style="background:#0d1f1a;padding:6px 10px;border-radius:4px;color:#4aba9a;">Share Links API</div>
+          <div style="background:#0d1f1a;padding:6px 10px;border-radius:4px;color:#4aba9a;">Project Data API</div>
+        </div>
+      </div>
+
+      <!-- Data Layer -->
+      <div style="border:1px solid #3a2a1e;border-radius:8px;padding:12px;">
+        <div style="color:#B8456A;font-size:10px;margin-bottom:8px;">DATA LAYER</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="background:#1f0d1a;padding:6px 10px;border-radius:4px;color:#d06a8a;">SQLite (local dev)</div>
+          <div style="background:#1f0d1a;padding:6px 10px;border-radius:4px;color:#d06a8a;">Neon Postgres (prod)</div>
+          <div style="background:#1f0d1a;padding:6px 10px;border-radius:4px;color:#d06a8a;">Vercel Blob (files)</div>
+          <div style="background:#1f0d1a;padding:6px 10px;border-radius:4px;color:#d06a8a;">Project Config (TS)</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:12px;color:#555;font-size:10px;">
+        Deploy: Vercel &nbsp;|&nbsp; DB: Neon Postgres &nbsp;|&nbsp; Storage: Vercel Blob &nbsp;|&nbsp; UI: shadcn/ui + Tailwind
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Module Breakdown</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+    <div class="mockup">
+      <div class="mockup-header">Module 1: 3D Massing Tool (Priority 1)</div>
+      <div class="mockup-body" style="font-size:12px;">
+        <p><strong>TypeScript rewrite of Python engine</strong></p>
+        <ul style="margin:8px 0;padding-left:16px;line-height:1.8;">
+          <li>Parametric form generator (BAR, L, U, C forms)</li>
+          <li>Room layout calculator with brand rules</li>
+          <li>Multi-criteria scoring (9 weights)</li>
+          <li>Planning + brand validation engine</li>
+          <li>Three.js 3D viewer with basemap tiles</li>
+          <li>Runs CLIENT-SIDE for instant feedback</li>
+          <li>Option comparison + export</li>
+        </ul>
+        <p style="color:#7c8aff;">v2 financials baked in: $350/sf, 51% GOP, $40M TDC</p>
+      </div>
+    </div>
+
+    <div class="mockup">
+      <div class="mockup-header">Module 2: Planning Compliance (Priority 2)</div>
+      <div class="mockup-body" style="font-size:12px;">
+        <p><strong>Interactive regulatory tracker</strong></p>
+        <ul style="margin:8px 0;padding-left:16px;line-height:1.8;">
+          <li>5 approval tracks (A-E) with step status</li>
+          <li>Document checklist per track</li>
+          <li>Design controls dashboard</li>
+          <li>Setback visualizer (road class → setback)</li>
+          <li>Compliance score per design option</li>
+          <li>Timeline / critical path view</li>
+        </ul>
+        <p style="color:#2E8A76;">Pulls from PLANNING_COMPLIANCE.md data</p>
+      </div>
+    </div>
+
+    <div class="mockup">
+      <div class="mockup-header">Module 3: Financial Dashboard (Priority 3)</div>
+      <div class="mockup-body" style="font-size:12px;">
+        <p><strong>Live proforma & sensitivity</strong></p>
+        <ul style="margin:8px 0;padding-left:16px;line-height:1.8;">
+          <li>10-year proforma with v2 parameters</li>
+          <li>Capital stack waterfall visualization</li>
+          <li>Sensitivity sliders (ADR, occ, cap rate, GOP)</li>
+          <li>DSCR / IRR / LP multiple real-time calc</li>
+          <li>TDC build-up breakdown chart</li>
+          <li>Revenue ramp visualization</li>
+        </ul>
+        <p style="color:#B8456A;">Connected to massing tool — design changes update financials</p>
+      </div>
+    </div>
+
+    <div class="mockup">
+      <div class="mockup-header">Module 4: Project Dataroom (Priority 4)</div>
+      <div class="mockup-body" style="font-size:12px;">
+        <p><strong>Interactive document management</strong></p>
+        <ul style="margin:8px 0;padding-left:16px;line-height:1.8;">
+          <li>Document register with tier classification</li>
+          <li>Risk register with severity tracking</li>
+          <li>Open items board (Kanban-style)</li>
+          <li>Upload / categorize new documents</li>
+          <li>Audit trail for resolutions</li>
+        </ul>
+        <p style="color:#f0a030;">Pulls from MD files we created</p>
+      </div>
+    </div>
+
+    <div class="mockup" style="grid-column:1/3;">
+      <div class="mockup-header">Module 5: Investor Portal (Priority 5)</div>
+      <div class="mockup-body" style="font-size:12px;">
+        <p><strong>Shareable project summary for LPs, DFIs, lenders</strong></p>
+        <ul style="margin:8px 0;padding-left:16px;line-height:1.8;display:flex;gap:24px;">
+          <ul style="padding-left:16px;">
+            <li>One-page project overview with key metrics</li>
+            <li>Interactive 3D model (read-only, best option)</li>
+            <li>Financial summary with return projections</li>
+          </ul>
+          <ul style="padding-left:16px;">
+            <li>Planning progress timeline</li>
+            <li>Time-limited signed share links</li>
+            <li>View tracking (who looked, when)</li>
+          </ul>
+        </ul>
+        <p style="color:#7c8aff;">The "pitch in a URL" — send a link, investor sees the full story</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Command Center Layout Detail</h3>
+  <div class="mockup">
+    <div class="mockup-header">Main Application Shell</div>
+    <div class="mockup-body" style="background:#0a0a0a;padding:16px;font-family:monospace;font-size:10px;color:#a0a0a0;">
+      <div style="display:flex;height:300px;">
+        <!-- Icon Rail -->
+        <div style="width:56px;background:#0d0d1a;border-right:1px solid #1a1a2e;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <div style="color:#7c8aff;font-size:8px;margin-bottom:4px;font-weight:bold;">YOTEL</div>
+          <div style="width:40px;height:40px;background:#1a1a2e;border:1px solid #7c8aff;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#7c8aff;font-size:8px;flex-direction:column;gap:2px;">
+            <span style="font-size:14px;">◆</span>
+            <span>Design</span>
+          </div>
+          <div style="width:40px;height:40px;background:#111;border:1px solid #222;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#555;font-size:8px;flex-direction:column;gap:2px;">
+            <span style="font-size:14px;">§</span>
+            <span>Plan</span>
+          </div>
+          <div style="width:40px;height:40px;background:#111;border:1px solid #222;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#555;font-size:8px;flex-direction:column;gap:2px;">
+            <span style="font-size:14px;">$</span>
+            <span>Finance</span>
+          </div>
+          <div style="width:40px;height:40px;background:#111;border:1px solid #222;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#555;font-size:8px;flex-direction:column;gap:2px;">
+            <span style="font-size:14px;">◫</span>
+            <span>Docs</span>
+          </div>
+          <div style="width:40px;height:40px;background:#111;border:1px solid #222;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#555;font-size:8px;flex-direction:column;gap:2px;">
+            <span style="font-size:14px;">↗</span>
+            <span>Invest</span>
+          </div>
+          <div style="flex:1;"></div>
+          <div style="width:32px;height:32px;background:#111;border:1px solid #222;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px;">K</div>
+        </div>
+
+        <!-- Main Content -->
+        <div style="flex:1;display:flex;flex-direction:column;padding:8px;">
+          <!-- Top Bar -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 4px;">
+            <div>
+              <span style="color:#7c8aff;font-weight:bold;">3D Massing Tool</span>
+              <span style="color:#333;margin:0 8px;">|</span>
+              <span style="color:#555;">YOTEL + YOTELPAD Carlisle Bay</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <div style="background:#111;padding:3px 8px;border-radius:4px;border:1px solid #222;color:#555;font-size:9px;">Generate Options</div>
+              <div style="background:#1a1a2e;padding:3px 8px;border-radius:4px;border:1px solid #2a2a4e;color:#7c8aff;font-size:9px;">Export</div>
+            </div>
+          </div>
+
+          <!-- Content Area -->
+          <div style="flex:1;display:flex;gap:8px;">
+            <!-- Left: Options List -->
+            <div style="width:200px;background:#080808;border:1px solid #1a1a1a;border-radius:6px;padding:8px;overflow:hidden;">
+              <div style="color:#444;font-size:9px;margin-bottom:6px;display:flex;justify-content:space-between;">
+                <span>OPTIONS (27)</span>
+                <span>Sort: Score ▼</span>
+              </div>
+              <div style="background:#0d0d0d;border:1px solid #2a2a4e;border-left:3px solid #7c8aff;border-radius:4px;padding:6px;margin-bottom:4px;">
+                <div style="display:flex;justify-content:space-between;"><span style="color:#7c8aff;">OPT-001</span><span style="color:#2E8A76;">★ 87.3</span></div>
+                <div style="color:#666;font-size:9px;">BAR | 130 keys | 6F | $308K/key</div>
+              </div>
+              <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:4px;padding:6px;margin-bottom:4px;">
+                <div style="display:flex;justify-content:space-between;"><span style="color:#888;">OPT-002</span><span style="color:#888;">★ 82.1</span></div>
+                <div style="color:#555;font-size:9px;">L-FORM | 125 keys | 7F | $320K/key</div>
+              </div>
+              <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:4px;padding:6px;margin-bottom:4px;">
+                <div style="display:flex;justify-content:space-between;"><span style="color:#888;">OPT-003</span><span style="color:#888;">★ 79.5</span></div>
+                <div style="color:#555;font-size:9px;">U-FORM | 135 keys | 5F | $296K/key</div>
+              </div>
+              <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:4px;padding:6px;margin-bottom:4px;">
+                <div style="display:flex;justify-content:space-between;"><span style="color:#888;">OPT-004</span><span style="color:#888;">★ 76.8</span></div>
+                <div style="color:#555;font-size:9px;">BAR | 140 keys | 8F | $286K/key</div>
+              </div>
+              <div style="color:#333;text-align:center;font-size:9px;margin-top:4px;">+ 23 more</div>
+            </div>
+
+            <!-- Center: 3D Viewer -->
+            <div style="flex:1;background:#050810;border:1px solid #1a1a1a;border-radius:6px;padding:8px;display:flex;flex-direction:column;">
+              <div style="flex:1;background:linear-gradient(180deg,#0a1628 0%,#0d2137 40%,#0f2a42 100%);border-radius:4px;display:flex;align-items:center;justify-content:center;position:relative;">
+                <!-- Building mock -->
+                <div style="position:relative;">
+                  <div style="width:120px;height:12px;background:#2E8A76;border-radius:2px;opacity:0.8;transform:skewX(-15deg);margin-bottom:1px;"></div>
+                  <div style="width:120px;height:12px;background:#2E8A76;border-radius:2px;opacity:0.7;transform:skewX(-15deg);margin-bottom:1px;"></div>
+                  <div style="width:120px;height:12px;background:#2E8A76;border-radius:2px;opacity:0.6;transform:skewX(-15deg);margin-bottom:1px;"></div>
+                  <div style="width:120px;height:14px;background:#B8456A;border-radius:2px;opacity:0.7;transform:skewX(-15deg);margin-bottom:1px;"></div>
+                  <div style="width:120px;height:14px;background:#B8456A;border-radius:2px;opacity:0.6;transform:skewX(-15deg);margin-bottom:1px;"></div>
+                  <div style="width:120px;height:16px;background:#7A9A70;border-radius:2px;opacity:0.5;transform:skewX(-15deg);"></div>
+                  <div style="position:absolute;bottom:-20px;left:-20px;width:160px;height:8px;background:#4E8E3E;border-radius:2px;opacity:0.3;transform:skewX(-15deg);"></div>
+                </div>
+                <!-- Labels -->
+                <div style="position:absolute;bottom:8px;left:8px;display:flex;gap:8px;">
+                  <div style="background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:3px;color:#2E8A76;font-size:8px;">YOTEL</div>
+                  <div style="background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:3px;color:#B8456A;font-size:8px;">YOTELPAD</div>
+                  <div style="background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:3px;color:#7A9A70;font-size:8px;">GROUND</div>
+                </div>
+                <div style="position:absolute;top:8px;right:8px;color:#333;font-size:8px;">3D | SE Iso | West | Site Plan</div>
+              </div>
+              <!-- Viewer controls -->
+              <div style="display:flex;gap:4px;margin-top:6px;justify-content:center;">
+                <div style="background:#111;padding:2px 8px;border-radius:3px;border:1px solid #2a2a4e;color:#7c8aff;font-size:8px;">3D</div>
+                <div style="background:#0a0a0a;padding:2px 8px;border-radius:3px;border:1px solid #1a1a1a;color:#555;font-size:8px;">SE Iso</div>
+                <div style="background:#0a0a0a;padding:2px 8px;border-radius:3px;border:1px solid #1a1a1a;color:#555;font-size:8px;">West</div>
+                <div style="background:#0a0a0a;padding:2px 8px;border-radius:3px;border:1px solid #1a1a1a;color:#555;font-size:8px;">Site Plan</div>
+                <div style="color:#222;margin:0 4px;">|</div>
+                <div style="background:#0a0a0a;padding:2px 8px;border-radius:3px;border:1px solid #1a1a1a;color:#555;font-size:8px;">Satellite</div>
+                <div style="background:#0a0a0a;padding:2px 8px;border-radius:3px;border:1px solid #1a1a1a;color:#555;font-size:8px;">Realistic</div>
+              </div>
+            </div>
+
+            <!-- Right: Summary Cards -->
+            <div style="width:220px;display:flex;flex-direction:column;gap:6px;">
+              <!-- Metrics Card -->
+              <div style="background:#080808;border:1px solid #1a1a1a;border-radius:6px;padding:8px;flex:1;">
+                <div style="color:#444;font-size:9px;margin-bottom:6px;">DESIGN METRICS</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                  <div><div style="color:#555;font-size:8px;">Keys</div><div style="color:#7c8aff;font-size:13px;font-weight:bold;">130</div></div>
+                  <div><div style="color:#555;font-size:8px;">Storeys</div><div style="color:#ccc;font-size:13px;">6</div></div>
+                  <div><div style="color:#555;font-size:8px;">GFA</div><div style="color:#ccc;font-size:13px;">75K sf</div></div>
+                  <div><div style="color:#555;font-size:8px;">Coverage</div><div style="color:#2E8A76;font-size:13px;">21.4%</div></div>
+                </div>
+              </div>
+
+              <!-- Compliance Card -->
+              <div style="background:#080808;border:1px solid #1a1a1a;border-radius:6px;padding:8px;flex:1;">
+                <div style="color:#444;font-size:9px;margin-bottom:6px;">COMPLIANCE</div>
+                <div style="margin-bottom:3px;display:flex;justify-content:space-between;"><span style="color:#666;font-size:9px;">Planning</span><span style="color:#2E8A76;font-size:9px;">✓ Pass</span></div>
+                <div style="margin-bottom:3px;display:flex;justify-content:space-between;"><span style="color:#666;font-size:9px;">Brand</span><span style="color:#2E8A76;font-size:9px;">✓ Pass</span></div>
+                <div style="margin-bottom:3px;display:flex;justify-content:space-between;"><span style="color:#666;font-size:9px;">Fire</span><span style="color:#f0a030;font-size:9px;">⚠ 1 warn</span></div>
+                <div style="display:flex;justify-content:space-between;"><span style="color:#666;font-size:9px;">Accessible</span><span style="color:#2E8A76;font-size:9px;">✓ 5.4%</span></div>
+              </div>
+
+              <!-- Financial Card -->
+              <div style="background:#080808;border:1px solid #1a1a1a;border-radius:6px;padding:8px;flex:1;">
+                <div style="color:#444;font-size:9px;margin-bottom:6px;">FINANCIALS</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                  <div><div style="color:#555;font-size:8px;">TDC</div><div style="color:#ccc;font-size:13px;">$40M</div></div>
+                  <div><div style="color:#555;font-size:8px;">$/Key</div><div style="color:#ccc;font-size:13px;">$308K</div></div>
+                  <div><div style="color:#555;font-size:8px;">NOI</div><div style="color:#2E8A76;font-size:13px;">$3.96M</div></div>
+                  <div><div style="color:#555;font-size:8px;">DSCR</div><div style="color:#2E8A76;font-size:13px;">2.54x</div></div>
+                </div>
+              </div>
+
+              <!-- Score Card -->
+              <div style="background:#080808;border:1px solid #1a1a1a;border-radius:6px;padding:8px;">
+                <div style="color:#444;font-size:9px;margin-bottom:4px;">OPTION SCORE</div>
+                <div style="display:flex;align-items:baseline;gap:6px;">
+                  <span style="color:#7c8aff;font-size:22px;font-weight:bold;">87.3</span>
+                  <span style="color:#555;font-size:10px;">/ 100</span>
+                </div>
+                <div style="background:#111;border-radius:4px;height:4px;margin-top:4px;"><div style="background:#7c8aff;border-radius:4px;height:4px;width:87%;"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Tech Stack</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+    <div class="mockup">
+      <div class="mockup-header">Frontend</div>
+      <div class="mockup-body" style="font-size:12px;line-height:1.8;">
+        <strong>Next.js 16</strong> (App Router)<br>
+        <strong>TypeScript</strong> (strict)<br>
+        <strong>shadcn/ui</strong> + Tailwind CSS<br>
+        <strong>Three.js</strong> (3D viewer)<br>
+        <strong>Recharts</strong> (financial charts)<br>
+        <strong>Geist</strong> font family<br>
+        Dark mode default
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header">Backend</div>
+      <div class="mockup-body" style="font-size:12px;line-height:1.8;">
+        <strong>Next.js API Routes</strong><br>
+        <strong>Drizzle ORM</strong> + Neon Postgres<br>
+        <strong>Vercel Blob</strong> (file uploads)<br>
+        <strong>JWT</strong> (magic link auth)<br>
+        <strong>Signed URLs</strong> (share links)<br>
+        Rate limiting on all endpoints
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header">Engine (TypeScript)</div>
+      <div class="mockup-body" style="font-size:12px;line-height:1.8;">
+        <strong>Form generator</strong> (BAR/L/U/C)<br>
+        <strong>Room allocator</strong> (brand rules)<br>
+        <strong>Validator</strong> (planning + brand)<br>
+        <strong>Scorer</strong> (9 criteria)<br>
+        <strong>Cost model</strong> ($350/sf, v2)<br>
+        Runs client-side (instant)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Data Model (Key Entities)</h3>
+  <div class="mockup">
+    <div class="mockup-header">Database Schema Overview</div>
+    <div class="mockup-body" style="background:#0a0a0a;padding:16px;font-family:monospace;font-size:11px;color:#a0a0a0;">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <div style="border:1px solid #2a2a4e;border-radius:6px;padding:10px;min-width:160px;">
+          <div style="color:#7c8aff;margin-bottom:6px;">projects</div>
+          <div>id, name, site_config</div>
+          <div>financial_params</div>
+          <div>planning_status</div>
+          <div>created_at</div>
+        </div>
+        <div style="border:1px solid #2a2a4e;border-radius:6px;padding:10px;min-width:160px;">
+          <div style="color:#7c8aff;margin-bottom:6px;">design_options</div>
+          <div>id, project_id</div>
+          <div>form, params, metrics</div>
+          <div>score, floors, wings</div>
+          <div>is_starred</div>
+        </div>
+        <div style="border:1px solid #2a2a4e;border-radius:6px;padding:10px;min-width:160px;">
+          <div style="color:#7c8aff;margin-bottom:6px;">documents</div>
+          <div>id, project_id</div>
+          <div>name, tier, category</div>
+          <div>blob_url, status</div>
+        </div>
+        <div style="border:1px solid #2a2a4e;border-radius:6px;padding:10px;min-width:160px;">
+          <div style="color:#7c8aff;margin-bottom:6px;">share_links</div>
+          <div>id, project_id, token</div>
+          <div>expires_at, scopes</div>
+          <div>view_count</div>
+        </div>
+        <div style="border:1px solid #2a2a4e;border-radius:6px;padding:10px;min-width:160px;">
+          <div style="color:#7c8aff;margin-bottom:6px;">risk_items</div>
+          <div>id, project_id</div>
+          <div>type (risk|open_item)</div>
+          <div>severity, status</div>
+          <div>resolution</div>
+        </div>
+        <div style="border:1px solid #2a2a4e;border-radius:6px;padding:10px;min-width:160px;">
+          <div style="color:#7c8aff;margin-bottom:6px;">users</div>
+          <div>id, email</div>
+          <div>magic_link_token</div>
+          <div>token_expires_at</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Build Order</h3>
+  <div class="mockup">
+    <div class="mockup-header">Implementation Phases</div>
+    <div class="mockup-body" style="font-size:12px;">
+      <div style="display:flex;gap:16px;">
+        <div style="flex:1;">
+          <p><strong style="color:#7c8aff;">Phase 1: Foundation + Massing</strong></p>
+          <ul style="padding-left:16px;line-height:1.8;">
+            <li>Next.js project scaffold (dark mode, shadcn/ui)</li>
+            <li>Command center shell (icon rail + panels)</li>
+            <li>TypeScript massing engine (port from Python)</li>
+            <li>Three.js 3D viewer (port + upgrade)</li>
+            <li>Option generation, validation, scoring</li>
+            <li>Magic link auth (basic)</li>
+          </ul>
+        </div>
+        <div style="flex:1;">
+          <p><strong style="color:#2E8A76;">Phase 2: Planning + Finance</strong></p>
+          <ul style="padding-left:16px;line-height:1.8;">
+            <li>Planning compliance dashboard</li>
+            <li>Financial proforma calculator</li>
+            <li>Sensitivity analysis sliders</li>
+            <li>Capital stack visualization</li>
+            <li>Design ↔ financial live connection</li>
+            <li>Database + Neon integration</li>
+          </ul>
+        </div>
+        <div style="flex:1;">
+          <p><strong style="color:#B8456A;">Phase 3: Dataroom + Investor</strong></p>
+          <ul style="padding-left:16px;line-height:1.8;">
+            <li>Document management UI</li>
+            <li>Risk register + open items board</li>
+            <li>Investor portal (read-only view)</li>
+            <li>Share link generation + tracking</li>
+            <li>Export to PDF/presentation</li>
+            <li>Multi-project support (SaaS prep)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>Approve — let's build this</h3>
+      <p>Design looks good, proceed to detailed implementation plan</p>
+    </div>
+  </div>
+  <div class="option" data-choice="revise" onclick="toggleSelect(this)">
+    <div class="letter">↻</div>
+    <div class="content">
+      <h3>Revise — I have changes</h3>
+      <p>Tell me what to change in the terminal</p>
+    </div>
+  </div>
+</div>
