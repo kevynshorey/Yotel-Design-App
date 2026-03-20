@@ -1,0 +1,3 @@
+/* Re-exported from src/app/globals.css — shadcn/ui manages the canonical CSS there.
+   This file exists so tasks referencing @/styles/globals.css resolve correctly. */
+@import "../app/globals.css";
