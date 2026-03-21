@@ -4,18 +4,33 @@ import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { createRenderer, createCamera, createLights } from './scene-setup'
-import { loadBasemapTiles } from './basemap'
+import { loadBasemapTiles, clearBasemapTiles } from './basemap'
 import { addSiteOverlays } from './site-overlays'
-import type { DesignOption } from '@/engine/types'
+import type { DesignOption, BasemapType } from '@/engine/types'
 
 interface Viewer3DProps {
   selectedOption?: DesignOption | null
   className?: string
+  onCameraChange?: (preset: string) => void
+  activePreset?: string
+  activeBasemap?: string
+  showBoundaries?: boolean
+  showAmenities?: boolean
+  explodedView?: boolean
 }
 
 /** Building placement offset used across building + amenity groups. */
 const BUILD_X = 65
 const BUILD_Z = 9
+
+/** Camera preset positions / targets */
+const PRESET_CAMERAS: Record<string, { position: [number, number, number]; target: [number, number, number] }> = {
+  '3D':       { position: [120, 80, 100],  target: [75, 0, 33] },
+  'Plan':     { position: [75, 150, 33],   target: [75, 0, 33] },
+  'South':    { position: [75, 30, -50],   target: [75, 15, 33] },
+  'West':     { position: [-50, 30, 33],   target: [75, 15, 33] },
+  'Overview': { position: [200, 120, 150], target: [60, 0, 30] },
+}
 
 /** Create amenity meshes (pool, rooftop, restaurant, palms) relative to building placement. */
 function buildAmenities(buildingTopY: number): THREE.Group {
@@ -145,11 +160,23 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   return group
 }
 
-export function Viewer3D({ selectedOption, className }: Viewer3DProps) {
+export function Viewer3D({
+  selectedOption,
+  className,
+  activePreset = '3D',
+  activeBasemap = 'Google',
+  showBoundaries = true,
+  showAmenities = true,
+  explodedView = false,
+}: Viewer3DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sceneRef = useRef<THREE.Scene | null>(null)
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
+  const controlsRef = useRef<OrbitControls | null>(null)
   const buildingGroupRef = useRef<THREE.Group | null>(null)
   const amenityGroupRef = useRef<THREE.Group | null>(null)
+  /** Store original (non-exploded) Y positions for building meshes */
+  const floorOriginalYRef = useRef<Map<THREE.Object3D, number>>(new Map())
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -161,6 +188,7 @@ export function Viewer3D({ selectedOption, className }: Viewer3DProps) {
 
     const renderer = createRenderer(canvas)
     const camera = createCamera(canvas.clientWidth / canvas.clientHeight)
+    cameraRef.current = camera
     createLights(scene)
     loadBasemapTiles(scene, 'Google')
     addSiteOverlays(scene)
@@ -178,6 +206,7 @@ export function Viewer3D({ selectedOption, className }: Viewer3DProps) {
     controls.enableDamping = true
     controls.dampingFactor = 0.1
     controls.maxPolarAngle = Math.PI / 2.1
+    controlsRef.current = controls
 
     const resizeObserver = new ResizeObserver(() => {
       const w = canvas.clientWidth
@@ -205,6 +234,70 @@ export function Viewer3D({ selectedOption, className }: Viewer3DProps) {
     }
   }, [])
 
+  // ── Camera preset changes ──
+  useEffect(() => {
+    const camera = cameraRef.current
+    const controls = controlsRef.current
+    if (!camera || !controls) return
+
+    const preset = PRESET_CAMERAS[activePreset]
+    if (!preset) return
+
+    camera.position.set(...preset.position)
+    controls.target.set(...preset.target)
+    controls.update()
+  }, [activePreset])
+
+  // ── Basemap changes ──
+  useEffect(() => {
+    const scene = sceneRef.current
+    if (!scene) return
+
+    clearBasemapTiles(scene)
+    if (activeBasemap !== 'None') {
+      loadBasemapTiles(scene, activeBasemap as BasemapType)
+    }
+  }, [activeBasemap])
+
+  // ── Boundary visibility ──
+  useEffect(() => {
+    const scene = sceneRef.current
+    if (!scene) return
+
+    for (const child of scene.children) {
+      if (child instanceof THREE.Line) {
+        child.visible = showBoundaries
+      }
+    }
+  }, [showBoundaries])
+
+  // ── Amenity visibility ──
+  useEffect(() => {
+    const group = amenityGroupRef.current
+    if (!group) return
+    group.visible = showAmenities
+  }, [showAmenities])
+
+  // ── Exploded view ──
+  useEffect(() => {
+    const group = buildingGroupRef.current
+    if (!group) return
+
+    const originals = floorOriginalYRef.current
+
+    for (const child of group.children) {
+      const origY = originals.get(child)
+      if (origY === undefined) continue
+
+      if (explodedView) {
+        child.position.y = origY * 1.5
+      } else {
+        child.position.y = origY
+      }
+    }
+  }, [explodedView])
+
+  // ── Rebuild building geometry when selectedOption changes ──
   useEffect(() => {
     const group = buildingGroupRef.current
     const amenityGroup = amenityGroupRef.current
@@ -212,6 +305,7 @@ export function Viewer3D({ selectedOption, className }: Viewer3DProps) {
 
     while (group.children.length) group.remove(group.children[0])
     while (amenityGroup.children.length) amenityGroup.remove(amenityGroup.children[0])
+    floorOriginalYRef.current.clear()
 
     if (!selectedOption) return
 
@@ -246,20 +340,23 @@ export function Viewer3D({ selectedOption, className }: Viewer3DProps) {
           opacity: 0.85,
         })
         const mesh = new THREE.Mesh(geometry, material)
+        const yPos = currentY + h / 2
         mesh.position.set(
           wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2) + BUILD_X,
-          currentY + h / 2,
+          yPos,
           wing.y + (wing.direction === 'EW' ? wing.width / 2 : wing.length / 2) + BUILD_Z,
         )
         mesh.castShadow = true
         mesh.receiveShadow = true
         group.add(mesh)
+        floorOriginalYRef.current.set(mesh, yPos)
 
         const edges = new THREE.EdgesGeometry(geometry)
         const lineMat = new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.3 })
         const wireframe = new THREE.LineSegments(edges, lineMat)
         wireframe.position.copy(mesh.position)
         group.add(wireframe)
+        floorOriginalYRef.current.set(wireframe, yPos)
 
         currentY += h
       }
@@ -269,7 +366,10 @@ export function Viewer3D({ selectedOption, className }: Viewer3DProps) {
     // Add amenities positioned relative to the building height
     const amenities = buildAmenities(maxBuildingY)
     amenityGroup.add(amenities)
-  }, [selectedOption])
+
+    // Re-apply amenity visibility
+    amenityGroup.visible = showAmenities
+  }, [selectedOption, showAmenities])
 
   return (
     <canvas
