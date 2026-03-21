@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { HeroSection } from '@/components/invest/hero-section'
 import { HighlightsGrid } from '@/components/invest/highlights-grid'
 import { MetricsGrid } from '@/components/invest/metrics-grid'
@@ -8,19 +8,21 @@ import { RevenueChart } from '@/components/invest/revenue-chart'
 import { Timeline } from '@/components/invest/timeline'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
-import type { OptionMetrics } from '@/engine/types'
+import { useDesign } from '@/context/design-context'
+import { getSelectedOption } from '@/store/design-store'
+import type { DesignOption, OptionMetrics } from '@/engine/types'
 
-const YT_ROOMS = 100
-const PAD_UNITS = 30
+const DEFAULT_YT_ROOMS = 100
+const DEFAULT_PAD_UNITS = 30
 
 /** Build a minimal OptionMetrics for the default 100 YT + 30 PAD configuration. */
 function buildDefaultMetrics(): OptionMetrics {
-  const totalKeys = YT_ROOMS + PAD_UNITS
+  const totalKeys = DEFAULT_YT_ROOMS + DEFAULT_PAD_UNITS
   const gia = totalKeys * 35
   return {
     totalKeys,
-    yotelKeys: YT_ROOMS,
-    padUnits: PAD_UNITS,
+    yotelKeys: DEFAULT_YT_ROOMS,
+    padUnits: DEFAULT_PAD_UNITS,
     gia,
     giaPerKey: gia / totalKeys,
     footprint: gia / 6,
@@ -37,11 +39,39 @@ function buildDefaultMetrics(): OptionMetrics {
 }
 
 export default function InvestPage() {
-  const metrics = useMemo(() => buildDefaultMetrics(), [])
-  const cost = useMemo(() => estimateCost(metrics), [metrics])
-  const projection = useMemo(() => projectRevenue(YT_ROOMS, PAD_UNITS, 5), [])
+  const { selectedOption: contextOption } = useDesign()
 
-  const totalKeys = YT_ROOMS + PAD_UNITS
+  // Persisted option from localStorage (for when context is empty on page load)
+  const [storedOption, setStoredOption] = useState<DesignOption | null>(null)
+
+  const loadStored = useCallback(() => {
+    setStoredOption(getSelectedOption())
+  }, [])
+
+  useEffect(() => {
+    loadStored()
+    const handler = () => loadStored()
+    window.addEventListener('design-option-changed', handler)
+    return () => window.removeEventListener('design-option-changed', handler)
+  }, [loadStored])
+
+  // Prefer context (live from Design page) over localStorage
+  const selectedOption = contextOption ?? storedOption
+
+  const ytRooms = selectedOption?.metrics.yotelKeys ?? DEFAULT_YT_ROOMS
+  const padUnits = selectedOption?.metrics.padUnits ?? DEFAULT_PAD_UNITS
+
+  const metrics = useMemo(
+    () => (selectedOption ? selectedOption.metrics : buildDefaultMetrics()),
+    [selectedOption],
+  )
+  const cost = useMemo(() => estimateCost(metrics), [metrics])
+  const projection = useMemo(
+    () => projectRevenue(ytRooms, padUnits, 5),
+    [ytRooms, padUnits],
+  )
+
+  const totalKeys = ytRooms + padUnits
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-slate-950 text-slate-100">
@@ -54,6 +84,29 @@ export default function InvestPage() {
           Confidential
         </span>
       </div>
+
+      {/* Linked-option banner */}
+      {selectedOption ? (
+        <div className="flex items-center gap-3 border-b border-indigo-800/60 bg-indigo-950/60 px-5 py-2">
+          <span className="text-xs text-indigo-300">
+            Sourced from design option{' '}
+            <span className="font-semibold text-indigo-100">{selectedOption.id}</span>
+            {' '}—{' '}
+            <span className="font-semibold text-indigo-100">{selectedOption.form}</span>
+            {' '}
+            <span className="font-semibold text-indigo-100">
+              {selectedOption.metrics.yotelKeys + selectedOption.metrics.padUnits}
+            </span>{' '}
+            keys
+          </span>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3 border-b border-amber-800/40 bg-amber-950/30 px-5 py-2">
+          <span className="text-xs text-amber-400">
+            No design option selected — showing default assumptions. Select an option in the Massing Tool for live data.
+          </span>
+        </div>
+      )}
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">

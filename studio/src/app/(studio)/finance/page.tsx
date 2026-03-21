@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { FinanceControls } from '@/components/finance/finance-controls'
 import { RevenueTable } from '@/components/finance/revenue-table'
 import { CostBreakdown } from '@/components/finance/cost-breakdown'
@@ -8,7 +8,8 @@ import { InvestmentMetrics } from '@/components/finance/investment-metrics'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
 import { useDesign } from '@/context/design-context'
-import type { OptionMetrics } from '@/engine/types'
+import { getSelectedOption } from '@/store/design-store'
+import type { DesignOption, OptionMetrics } from '@/engine/types'
 
 /** Build a minimal OptionMetrics from room counts for standalone finance use. */
 function buildMetrics(ytRooms: number, padUnits: number): OptionMetrics {
@@ -34,7 +35,24 @@ function buildMetrics(ytRooms: number, padUnits: number): OptionMetrics {
 }
 
 export default function FinancePage() {
-  const { selectedOption, selectOption } = useDesign()
+  const { selectedOption: contextOption, selectOption } = useDesign()
+
+  // Persisted option from localStorage (for when context is empty on page load)
+  const [storedOption, setStoredOption] = useState<DesignOption | null>(null)
+
+  const loadStored = useCallback(() => {
+    setStoredOption(getSelectedOption())
+  }, [])
+
+  useEffect(() => {
+    loadStored()
+    const handler = () => loadStored()
+    window.addEventListener('design-option-changed', handler)
+    return () => window.removeEventListener('design-option-changed', handler)
+  }, [loadStored])
+
+  // Prefer context (live from Design page) over localStorage
+  const selectedOption = contextOption ?? storedOption
 
   const [ytRooms, setYtRooms] = useState(100)
   const [padUnits, setPadUnits] = useState(30)
@@ -72,7 +90,7 @@ export default function FinancePage() {
       </div>
 
       {/* Linked-option banner */}
-      {selectedOption && (
+      {selectedOption ? (
         <div className="flex items-center gap-3 border-b border-indigo-800/60 bg-indigo-950/60 px-5 py-2">
           <span className="text-xs text-indigo-300">
             Linked to design option{' '}
@@ -91,6 +109,12 @@ export default function FinancePage() {
           >
             Unlink
           </button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3 border-b border-amber-800/40 bg-amber-950/30 px-5 py-2">
+          <span className="text-xs text-amber-400">
+            No design option selected — using manual inputs. Select an option in the Massing Tool for live financials.
+          </span>
         </div>
       )}
 

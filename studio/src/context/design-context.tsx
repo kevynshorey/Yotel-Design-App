@@ -1,7 +1,8 @@
 'use client'
 
-import { createContext, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useState } from 'react'
 import type { DesignOption } from '@/engine/types'
+import { setSelectedOption as persistOption, clearSelectedOption } from '@/store/design-store'
 
 interface DesignContextValue {
   options: DesignOption[]
@@ -18,13 +19,26 @@ export function DesignProvider({ children }: { children: React.ReactNode }) {
 
   const selectedOption = options.find(o => o.id === selectedId) ?? null
 
+  const selectOption = useCallback(
+    (id: string | null) => {
+      setSelectedId(id)
+      if (id) {
+        const opt = options.find(o => o.id === id)
+        if (opt) persistOption(opt)
+      } else {
+        clearSelectedOption()
+      }
+    },
+    [options],
+  )
+
   return (
     <DesignContext.Provider
       value={{
         options,
         selectedOption,
         setOptions,
-        selectOption: setSelectedId,
+        selectOption,
       }}
     >
       {children}
