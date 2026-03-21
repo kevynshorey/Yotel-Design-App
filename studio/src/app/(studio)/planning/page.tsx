@@ -1,7 +1,8 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useDesign } from '@/context/design-context'
+import { getSelectedOption } from '@/store/design-store'
 import { validate } from '@/engine/validator'
 import { RULES } from '@/config/rules'
 import { SITE, PLANNING_REGS } from '@/config/site'
@@ -321,7 +322,18 @@ function RegulationCard({ check }: { check: RegulationCheck }) {
 // ── Main Page ───────────────────────────────────────────────────────────
 
 export default function PlanningPage() {
-  const { selectedOption } = useDesign()
+  const { selectedOption: contextOption } = useDesign()
+  const [storedOption, setStoredOption] = useState<DesignOption | null>(null)
+
+  // Hydrate from localStorage on mount + listen for cross-page changes
+  useEffect(() => {
+    setStoredOption(getSelectedOption())
+    const handler = () => setStoredOption(getSelectedOption())
+    window.addEventListener('design-option-changed', handler)
+    return () => window.removeEventListener('design-option-changed', handler)
+  }, [])
+
+  const selectedOption = contextOption ?? storedOption
 
   const checks = useMemo(() => {
     if (!selectedOption) return []
