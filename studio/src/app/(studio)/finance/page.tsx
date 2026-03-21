@@ -6,6 +6,7 @@ import { RevenueTable } from '@/components/finance/revenue-table'
 import { CostBreakdown } from '@/components/finance/cost-breakdown'
 import { InvestmentMetrics } from '@/components/finance/investment-metrics'
 import { SensitivityAnalysis } from '@/components/finance/sensitivity-analysis'
+import { CostWaterfall } from '@/components/finance/cost-waterfall'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
 import { useDesign } from '@/context/design-context'
@@ -198,6 +199,11 @@ export default function FinancePage() {
           <div className="w-full shrink-0 lg:w-72">
             <CostBreakdown cost={cost} />
           </div>
+        </div>
+
+        {/* Cost Waterfall Chart */}
+        <div className="border-t border-slate-800/60 p-5">
+          <CostWaterfall cost={cost} />
         </div>
 
         {/* Sensitivity Analysis */}
