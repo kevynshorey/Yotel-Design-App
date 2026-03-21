@@ -8,6 +8,7 @@ import { validate } from './validator'
 import { scoreOption } from './scorer'
 import { estimateCost } from './cost'
 import { projectRevenue } from './revenue'
+import { calculateAmenities } from './amenities'
 import { SITE } from '@/config/site'
 import { YOTEL_ROOMS, YOTELPAD_UNITS } from '@/config/programme'
 import { DEFAULT_WEIGHTS } from '@/config/scoring-weights'
@@ -90,6 +91,7 @@ export function buildOption(params: GenerationParams): DesignOption {
     tdc: 0,
     corridorType: params.corridorType,
     form: params.form,
+    amenityScore: 0,
   }
 
   // Cost
@@ -100,6 +102,17 @@ export function buildOption(params: GenerationParams): DesignOption {
   // Revenue
   const revenue = projectRevenue(actualYtRooms, actualPadUnits, 5)
 
+  // Amenities
+  const amenities = calculateAmenities(
+    metrics.totalKeys,
+    metrics.footprint,
+    metrics.buildingHeight,
+    80, // rooftop base from programme
+    metrics.westFacade,
+    params.form,
+  )
+  metrics.amenityScore = amenities.amenityScore
+
   // Validate
   const validation = validate(metrics, wings)
 
@@ -108,7 +121,7 @@ export function buildOption(params: GenerationParams): DesignOption {
 
   return {
     id, form: params.form, params, wings, floors, metrics,
-    cost, revenue, score, scoringBreakdown, validation,
+    amenities, cost, revenue, score, scoringBreakdown, validation,
   }
 }
 

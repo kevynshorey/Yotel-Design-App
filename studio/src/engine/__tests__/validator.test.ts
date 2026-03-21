@@ -21,6 +21,7 @@ describe('validate', () => {
     westFacade: 14, outdoorTotal: 660,
     costPerKey: 307692, tdc: 40_000_000,
     corridorType: 'double_loaded', form: 'BAR',
+    amenityScore: 0,
   }
 
   it('passes a valid option', () => {

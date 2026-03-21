@@ -1,9 +1,11 @@
+import type { AmenityProgramme } from './amenities'
+
 // Form types
 export type FormType = 'BAR' | 'BAR_NS' | 'L' | 'U' | 'C'
 export type CorridorType = 'single_loaded' | 'double_loaded'
 export type OutdoorPosition = 'WEST' | 'ROOFTOP' | 'BOTH'
 export type VisualStyle = 'Realistic' | 'Shaded' | 'Wireframe' | 'Consistent'
-export type BasemapType = 'Satellite' | 'Street' | 'Topo' | 'None'
+export type BasemapType = 'Google' | 'Satellite' | 'Street' | 'Topo' | 'None'
 
 // Geometry
 export interface Point2D {
@@ -92,6 +94,7 @@ export interface ScoringWeights {
   daylight_quality: number
   pad_mix: number
   form_simplicity: number
+  amenity_quality: number
 }
 
 // Cost
@@ -147,6 +150,7 @@ export interface OptionMetrics {
   tdc: number
   corridorType: CorridorType
   form: FormType
+  amenityScore: number
 }
 
 // Complete design option
@@ -159,6 +163,7 @@ export interface DesignOption {
   metrics: OptionMetrics
   cost: CostEstimate
   revenue: RevenueProjection
+  amenities?: AmenityProgramme
   score: number
   scoringBreakdown: Record<string, ScoreBreakdown>
   validation: ValidationResult

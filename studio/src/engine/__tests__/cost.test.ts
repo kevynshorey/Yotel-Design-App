@@ -10,6 +10,7 @@ describe('estimateCost', () => {
     westFacade: 14, outdoorTotal: 660,
     costPerKey: 0, tdc: 0,
     corridorType: 'double_loaded', form: 'BAR',
+    amenityScore: 0,
   }
 
   it('estimates total cost near $40M for 130-key BAR', () => {

@@ -11,6 +11,7 @@ describe('scoreOption', () => {
     westFacade: 40, outdoorTotal: 660,
     costPerKey: 307692, tdc: 40_000_000,
     corridorType: 'double_loaded', form: 'BAR',
+    amenityScore: 0,
   }
 
   it('scores a baseline 130-key BAR between 50 and 85', () => {
@@ -19,9 +20,9 @@ describe('scoreOption', () => {
     expect(score).toBeLessThan(90)
   })
 
-  it('returns breakdown for all 9 criteria', () => {
+  it('returns breakdown for all 10 criteria', () => {
     const [, breakdown] = scoreOption(baseMetrics, DEFAULT_WEIGHTS)
-    expect(Object.keys(breakdown)).toHaveLength(9)
+    expect(Object.keys(breakdown)).toHaveLength(10)
     for (const key of Object.keys(DEFAULT_WEIGHTS)) {
       expect(breakdown[key]).toBeDefined()
       expect(breakdown[key].raw).toBeGreaterThanOrEqual(0)

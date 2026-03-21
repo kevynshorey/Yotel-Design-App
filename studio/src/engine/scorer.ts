@@ -71,6 +71,14 @@ export function scoreOption(
   r = `${form} — ${s >= 0.9 ? 'simplest' : s >= 0.6 ? 'moderate' : 'complex'}`
   bd.form_simplicity = { raw: round(s), weighted: round(s * weights.form_simplicity), reason: r }
 
+  // 10. Amenity quality
+  const aq = metrics.amenityScore
+  s = Math.min(1.0, aq / 0.85) // 0.85+ is excellent for Caribbean resort
+  r = aq >= 0.8 ? `${aq} — excellent amenity programme` :
+      aq >= 0.6 ? `${aq} — good amenity programme` :
+      `${aq} — amenities below benchmark`
+  bd.amenity_quality = { raw: round(s), weighted: round(s * weights.amenity_quality), reason: r }
+
   const total = Object.values(bd).reduce((sum, v) => sum + v.weighted, 0)
   return [Math.round(total * 1000) / 10, bd]
 }
