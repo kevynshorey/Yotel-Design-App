@@ -288,7 +288,7 @@ export default function ReportPage() {
             <ul className="mt-1 list-inside list-disc space-y-0.5">
               <li>YOTEL Stabilised ADR: ${FINANCIALS.yotelAdr} &middot; YOTELPAD Stabilised ADR: ${FINANCIALS.yotelpadAdr}</li>
               <li>GOP Margin: {(FINANCIALS.gopMargin * 100).toFixed(0)}% &middot; Brand Fees: {(FINANCIALS.yotelFees * 100).toFixed(1)}% of revenue</li>
-              <li>F&B revenue per occupied room: ${FINANCIALS.fnbPerOccupiedRoom} &middot; Other ancillary: ${FINANCIALS.otherPerOccupiedRoom}</li>
+              <li>F&B revenue: YOTEL ${FINANCIALS.fnb.yotelPerNight}/night, PAD ${FINANCIALS.fnb.padPerNight}/night &middot; Other ancillary: ${FINANCIALS.otherPerOccupiedRoom}</li>
               <li>3-year ramp to stabilisation</li>
             </ul>
           </div>

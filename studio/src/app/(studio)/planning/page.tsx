@@ -22,6 +22,8 @@ import {
   LayoutGrid,
   Maximize,
   Users,
+  Zap,
+  Droplets,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -212,6 +214,30 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
       detail: eiaRequired
         ? 'Environmental Impact Assessment is mandatory and must be submitted with planning application.'
         : undefined,
+    },
+    {
+      name: 'Electrical Load (BL&P)',
+      statute: 'BL&P grid capacity assessment',
+      icon: Zap,
+      status: (() => {
+        const peakElectricalKw = totalKeys * 6.8
+        return peakElectricalKw > 900 ? 'warning' : 'pass'
+      })() as CheckStatus,
+      currentValue: `${Math.round(totalKeys * 6.8)} kW`,
+      limit: '900 kW (substation typical)',
+      ratio: (totalKeys * 6.8) / 900,
+    },
+    {
+      name: 'Water Demand (BWA)',
+      statute: 'BWA daily allocation assessment',
+      icon: Droplets,
+      status: (() => {
+        const dailyWaterM3 = (totalKeys * 450) / 1000
+        return dailyWaterM3 > 65 ? 'warning' : 'pass'
+      })() as CheckStatus,
+      currentValue: `${((totalKeys * 450) / 1000).toFixed(0)} m\u00B3/day`,
+      limit: '65 m\u00B3/day (typical allocation)',
+      ratio: ((totalKeys * 450) / 1000) / 65,
     },
     {
       name: 'Heritage Zone',

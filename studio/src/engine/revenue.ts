@@ -40,7 +40,7 @@ export function projectRevenue(
 
     // Revenue
     const roomRevenue = ytRoomNights * ytAdr + padRoomNights * padAdr
-    const fnbRevenue = totalNights * FINANCIALS.fnbPerOccupiedRoom
+    const fnbRevenue = ytRoomNights * FINANCIALS.fnb.yotelPerNight + padRoomNights * FINANCIALS.fnb.padPerNight
     const otherRevenue = totalNights * FINANCIALS.otherPerOccupiedRoom
     const totalRevenue = roomRevenue + fnbRevenue + otherRevenue
 

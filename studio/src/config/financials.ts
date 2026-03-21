@@ -34,6 +34,11 @@ export const FINANCIALS = {
   yotelpadAdrRamp: [220, 248, 270, 281, 292],
 
   // Ancillary
-  fnbPerOccupiedRoom: 45,
+  /** F&B revenue — Caribbean resort benchmarks */
+  fnb: {
+    yotelPerNight: 78,       // transient business/leisure
+    padPerNight: 45,         // longer-stay, lower F&B penetration
+    // Weighted average for mixed portfolio ≈ $70/occupied room
+  },
   otherPerOccupiedRoom: 12,
 } as const
