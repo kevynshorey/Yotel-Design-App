@@ -29,6 +29,7 @@ function buildMetrics(ytRooms: number, padUnits: number): OptionMetrics {
     tdc: 0,
     corridorType: 'double_loaded',
     form: 'BAR',
+    amenityScore: 0,
   }
 }
 

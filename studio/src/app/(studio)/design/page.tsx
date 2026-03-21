@@ -6,6 +6,7 @@ import { OptionsSidebar } from '@/components/design/options-sidebar'
 import { GeneratorControls } from '@/components/design/generator-controls'
 import { MetricsPanel } from '@/components/design/metrics-panel'
 import { ScoringPanel } from '@/components/design/scoring-panel'
+import { AmenityPanel } from '@/components/design/amenity-panel'
 import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
 
@@ -40,6 +41,7 @@ export default function DesignPage() {
         <MetricsPanel option={selectedOption} />
         <ScoringPanel option={selectedOption} />
         <GeneratorControls onGenerate={handleGenerate} isGenerating={isPending} />
+        <AmenityPanel amenities={selectedOption?.amenities} />
       </div>
 
       {/* Right sidebar */}

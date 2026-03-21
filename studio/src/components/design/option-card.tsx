@@ -1,5 +1,6 @@
 import type { DesignOption } from '@/engine/types'
 import { ComplianceBadge } from './compliance-badge'
+import { Droplets, Sun, Wine } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface OptionCardProps {
@@ -38,6 +39,22 @@ export function OptionCard({ option, isSelected, onSelect }: OptionCardProps) {
         <Metric label="Coverage" value={`${(metrics.coverage * 100).toFixed(0)}%`} />
         <Metric label="Views" value={`${metrics.westFacade.toFixed(0)}m`} />
       </div>
+      {option.amenities && (
+        <div className="mt-1.5 flex items-center gap-3 text-[10px] text-slate-400">
+          <span className="flex items-center gap-0.5" title="Pool water area">
+            <Droplets className="h-3 w-3 text-sky-400" />
+            {option.amenities.pool.waterArea}m²
+          </span>
+          <span className="flex items-center gap-0.5" title="Lounger capacity">
+            <Sun className="h-3 w-3 text-amber-400" />
+            {option.amenities.loungerCapacity}
+          </span>
+          <span className="flex items-center gap-0.5" title="Rooftop deck area">
+            <Wine className="h-3 w-3 text-amber-400" />
+            {option.amenities.rooftopDeck.totalArea}m²
+          </span>
+        </div>
+      )}
       <div className="mt-2">
         <ComplianceBadge
           isValid={validation.isValid}

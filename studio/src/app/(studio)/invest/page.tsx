@@ -32,6 +32,7 @@ function buildDefaultMetrics(): OptionMetrics {
     tdc: 0,
     corridorType: 'double_loaded',
     form: 'BAR',
+    amenityScore: 0,
   }
 }
 
