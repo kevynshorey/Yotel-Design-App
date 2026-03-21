@@ -7,6 +7,8 @@ const SITE_LON = -59.608805
 
 /** Tile URL generators for each basemap type. */
 const TILE_URL: Record<string, (z: number, y: number, x: number) => string> = {
+  Google: (z, y, x) =>
+    `https://mt1.google.com/vt/lyrs=s&x=${x}&y=${y}&z=${z}`,
   Satellite: (z, y, x) =>
     `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
   Street: (z, y, x) =>
@@ -27,12 +29,12 @@ function getTileInfo(lat: number, lon: number, zoom: number) {
   return { tileX, tileY, fracX, fracY, tileM }
 }
 
-/** Load a 5x5 grid of map tiles as ground-plane meshes.
+/** Load a 7x7 grid of map tiles as ground-plane meshes.
  *  Ported from Viewer3D.jsx loadTiles(). */
 export function loadBasemapTiles(
   scene: THREE.Scene,
-  basemap: BasemapType = 'Satellite',
-  zoom: number = 17,
+  basemap: BasemapType = 'Google',
+  zoom: number = 18,
 ): void {
   if (basemap === 'None' || !TILE_URL[basemap]) return
 
@@ -44,11 +46,11 @@ export function loadBasemapTiles(
   const cx = (0.5 - fracX) * tileM
   const cz = (fracY - 0.5) * tileM
 
-  for (let dx = -2; dx <= 2; dx++) {
-    for (let dy = -2; dy <= 2; dy++) {
+  for (let dx = -3; dx <= 3; dx++) {
+    for (let dy = -3; dy <= 3; dy++) {
       const url = urlFn(zoom, tileY + dy, tileX + dx)
       const px = cx + dx * tileM
-      const pz = cz - dy * tileM
+      const pz = cz + dy * tileM
 
       loader.load(url, (tex) => {
         tex.minFilter = THREE.LinearFilter
@@ -57,7 +59,7 @@ export function loadBasemapTiles(
           new THREE.PlaneGeometry(tileM, tileM),
           new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }),
         )
-        mesh.rotation.x = Math.PI / 2
+        mesh.rotation.x = -Math.PI / 2
         mesh.position.set(px, -0.02, pz)
         mesh.receiveShadow = true
         mesh.name = 'basemap-tile'
