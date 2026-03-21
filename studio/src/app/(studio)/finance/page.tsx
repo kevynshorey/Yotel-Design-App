@@ -7,6 +7,7 @@ import { CostBreakdown } from '@/components/finance/cost-breakdown'
 import { InvestmentMetrics } from '@/components/finance/investment-metrics'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
+import { useDesign } from '@/context/design-context'
 import type { OptionMetrics } from '@/engine/types'
 
 /** Build a minimal OptionMetrics from room counts for standalone finance use. */
@@ -32,21 +33,33 @@ function buildMetrics(ytRooms: number, padUnits: number): OptionMetrics {
 }
 
 export default function FinancePage() {
+  const { selectedOption, selectOption } = useDesign()
+
   const [ytRooms, setYtRooms] = useState(100)
   const [padUnits, setPadUnits] = useState(30)
   const [years, setYears] = useState(5)
 
-  const cost = useMemo(
-    () => estimateCost(buildMetrics(ytRooms, padUnits)),
-    [ytRooms, padUnits],
+  // When a design option is linked, pull yotelKeys and padUnits from it;
+  // sliders remain as manual overrides in standalone mode.
+  const linkedYtRooms = selectedOption?.metrics.yotelKeys ?? ytRooms
+  const linkedPadUnits = selectedOption?.metrics.padUnits ?? padUnits
+
+  const metrics: OptionMetrics = useMemo(
+    () =>
+      selectedOption
+        ? selectedOption.metrics
+        : buildMetrics(ytRooms, padUnits),
+    [selectedOption, ytRooms, padUnits],
   )
+
+  const cost = useMemo(() => estimateCost(metrics), [metrics])
 
   const projection = useMemo(
-    () => projectRevenue(ytRooms, padUnits, years),
-    [ytRooms, padUnits, years],
+    () => projectRevenue(linkedYtRooms, linkedPadUnits, years),
+    [linkedYtRooms, linkedPadUnits, years],
   )
 
-  const totalKeys = ytRooms + padUnits
+  const totalKeys = linkedYtRooms + linkedPadUnits
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-slate-950 text-slate-100">
@@ -56,6 +69,29 @@ export default function FinancePage() {
         <span className="text-xs text-slate-500">—</span>
         <span className="text-xs text-slate-400">YOTEL Barbados Pro Forma</span>
       </div>
+
+      {/* Linked-option banner */}
+      {selectedOption && (
+        <div className="flex items-center gap-3 border-b border-indigo-800/60 bg-indigo-950/60 px-5 py-2">
+          <span className="text-xs text-indigo-300">
+            Linked to design option{' '}
+            <span className="font-semibold text-indigo-100">{selectedOption.id}</span>
+            {' '}—{' '}
+            <span className="font-semibold text-indigo-100">{selectedOption.form}</span>
+            {' '}
+            <span className="font-semibold text-indigo-100">
+              {selectedOption.metrics.yotelKeys + selectedOption.metrics.padUnits}
+            </span>{' '}
+            keys
+          </span>
+          <button
+            onClick={() => selectOption(null)}
+            className="ml-auto rounded px-2 py-0.5 text-xs text-indigo-400 hover:bg-indigo-900 hover:text-indigo-200"
+          >
+            Unlink
+          </button>
+        </div>
+      )}
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
@@ -67,11 +103,11 @@ export default function FinancePage() {
         {/* Controls row */}
         <div className="border-b border-slate-800/60 px-5 py-4">
           <FinanceControls
-            ytRooms={ytRooms}
-            padUnits={padUnits}
+            ytRooms={selectedOption ? linkedYtRooms : ytRooms}
+            padUnits={selectedOption ? linkedPadUnits : padUnits}
             years={years}
-            onYtRoomsChange={setYtRooms}
-            onPadUnitsChange={setPadUnits}
+            onYtRoomsChange={selectedOption ? () => {} : setYtRooms}
+            onPadUnitsChange={selectedOption ? () => {} : setPadUnits}
             onYearsChange={setYears}
           />
         </div>
