@@ -15,7 +15,7 @@ export function MetricsPanel({ option }: MetricsPanelProps) {
         <Metric label="Keys" value={metrics.totalKeys} />
         <Metric label="YOTEL" value={metrics.yotelKeys} />
         <Metric label="YOTELPAD" value={metrics.padUnits} />
-        <Metric label="GFA" value={`${metrics.gia.toLocaleString()} m²`} />
+        <Metric label="GFA" value={`${Math.round(metrics.gia).toLocaleString()} m²`} />
         <Metric label="Coverage" value={`${(metrics.coverage * 100).toFixed(1)}%`} />
         <Metric label="Height" value={`${metrics.buildingHeight.toFixed(1)}m`} />
       </div>

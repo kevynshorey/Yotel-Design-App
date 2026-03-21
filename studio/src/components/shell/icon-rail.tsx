@@ -30,18 +30,21 @@ export function IconRail() {
           return (
             <Tooltip key={mod.href}>
               <TooltipTrigger
-                render={<Link
-                  href={mod.href}
-                  className={cn(
-                    'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
-                    isActive
-                      ? 'bg-sky-400/20 text-sky-400'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
-                  )}
-                />}
-              >
-                <mod.icon className="h-5 w-5" />
-              </TooltipTrigger>
+                render={(props) => (
+                  <Link
+                    {...props}
+                    href={mod.href}
+                    className={cn(
+                      'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
+                      isActive
+                        ? 'bg-sky-400/20 text-sky-400'
+                        : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
+                    )}
+                  >
+                    <mod.icon className="h-5 w-5" />
+                  </Link>
+                )}
+              />
               <TooltipContent side="right" className="text-xs">
                 {mod.label} <kbd className="ml-1 text-[10px] text-muted-foreground">{mod.shortcut}</kbd>
               </TooltipContent>

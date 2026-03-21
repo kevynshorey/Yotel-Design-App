@@ -26,7 +26,7 @@ export function OptionCard({ option, isSelected, onSelect }: OptionCardProps) {
       </div>
       <div className="mt-2 grid grid-cols-3 gap-x-3 gap-y-1 text-xs">
         <Metric label="Keys" value={metrics.totalKeys} />
-        <Metric label="GFA" value={`${metrics.gia}m²`} />
+        <Metric label="GFA" value={`${metrics.gia.toFixed(0)}m²`} />
         <Metric label="Storeys" value={Math.round(metrics.buildingHeight / 3.2 + 1)} />
         <Metric label="$/key" value={`${(metrics.costPerKey / 1000).toFixed(0)}k`} />
         <Metric label="Coverage" value={`${(metrics.coverage * 100).toFixed(0)}%`} />
