@@ -18,7 +18,7 @@ export function IconRail() {
   const pathname = usePathname()
 
   return (
-    <TooltipProvider delayDuration={300}>
+    <TooltipProvider delay={300}>
       <nav className="flex h-full w-14 flex-col items-center gap-1 bg-[--rail-bg] py-3">
         {/* Logo */}
         <div className="mb-4 flex h-8 w-8 items-center justify-center rounded-md bg-sky-400/20 text-xs font-bold text-sky-400">
@@ -29,8 +29,8 @@ export function IconRail() {
           const isActive = pathname.startsWith(mod.href)
           return (
             <Tooltip key={mod.href}>
-              <TooltipTrigger asChild>
-                <Link
+              <TooltipTrigger
+                render={<Link
                   href={mod.href}
                   className={cn(
                     'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
@@ -38,9 +38,9 @@ export function IconRail() {
                       ? 'bg-sky-400/20 text-sky-400'
                       : 'text-slate-400 hover:bg-white/5 hover:text-slate-200',
                   )}
-                >
-                  <mod.icon className="h-5 w-5" />
-                </Link>
+                />}
+              >
+                <mod.icon className="h-5 w-5" />
               </TooltipTrigger>
               <TooltipContent side="right" className="text-xs">
                 {mod.label} <kbd className="ml-1 text-[10px] text-muted-foreground">{mod.shortcut}</kbd>
