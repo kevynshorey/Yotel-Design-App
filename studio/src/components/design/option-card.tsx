@@ -21,7 +21,13 @@ export function OptionCard({ option, isSelected, onSelect }: OptionCardProps) {
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="font-mono text-xs text-slate-500">{form}</span>
+        <span className={cn(
+          'rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold',
+          form === 'BAR' || form === 'BAR_NS' ? 'bg-blue-100 text-blue-700' :
+          form === 'L' ? 'bg-emerald-100 text-emerald-700' :
+          form === 'U' ? 'bg-violet-100 text-violet-700' :
+          'bg-amber-100 text-amber-700',
+        )}>{form}</span>
         <span className="font-mono text-lg font-semibold text-slate-900">{score.toFixed(1)}</span>
       </div>
       <div className="mt-2 grid grid-cols-3 gap-x-3 gap-y-1 text-xs">

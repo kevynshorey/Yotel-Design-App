@@ -140,9 +140,49 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
     }
   }
 
-  // Sort by score descending, take top N
-  options.sort((a, b) => b.score - a.score)
-  return options.slice(0, maxOptions)
+  // Deduplicate by output signature (form + keys + yt/pad split + storeys)
+  const seen = new Set<string>()
+  const unique = options.filter(o => {
+    const sig = `${o.form}-${o.metrics.totalKeys}-${o.metrics.yotelKeys}-${o.metrics.padUnits}-${Math.round(o.metrics.buildingHeight)}`
+    if (seen.has(sig)) return false
+    seen.add(sig)
+    return true
+  })
+
+  // Sort by score descending
+  unique.sort((a, b) => b.score - a.score)
+
+  // Round-robin across form types to ensure diversity
+  const byForm = new Map<string, DesignOption[]>()
+  for (const o of unique) {
+    const arr = byForm.get(o.form) ?? []
+    arr.push(o)
+    byForm.set(o.form, arr)
+  }
+
+  const result: DesignOption[] = []
+  const formIndices = new Map<string, number>()
+  for (const form of DESIGN_SPACE.forms) formIndices.set(form, 0)
+
+  // Round-robin: pick one from each form, repeat until full
+  let added = true
+  while (result.length < maxOptions && added) {
+    added = false
+    for (const form of DESIGN_SPACE.forms) {
+      if (result.length >= maxOptions) break
+      const idx = formIndices.get(form)!
+      const formOpts = byForm.get(form) ?? []
+      if (idx < formOpts.length) {
+        result.push(formOpts[idx])
+        formIndices.set(form, idx + 1)
+        added = true
+      }
+    }
+  }
+
+  // Final sort by score
+  result.sort((a, b) => b.score - a.score)
+  return result
 }
 
 export function groupOptions(options: DesignOption[]): OptionGroups {

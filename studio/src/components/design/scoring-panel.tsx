@@ -10,7 +10,7 @@ export function ScoringPanel({ option }: ScoringPanelProps) {
   if (!option) return null
 
   return (
-    <FloatingPanel position="bottom-right" className="w-64">
+    <FloatingPanel position="top-right" className="w-64">
       <h3 className="text-xs font-semibold text-slate-900">
         Score: <span className="font-mono text-base">{option.score.toFixed(1)}</span>
       </h3>
