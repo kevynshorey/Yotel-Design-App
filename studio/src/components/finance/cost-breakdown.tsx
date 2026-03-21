@@ -21,11 +21,17 @@ const BREAKDOWN_LABELS: Record<keyof CostEstimate['breakdown'], string> = {
   facade: 'Facade / Cladding',
   ffe: 'FF&E',
   technology: 'Technology',
+  mep: 'MEP Systems',
+  renewable: 'Renewables / PV',
+  foundation: 'Foundation',
   outdoor: 'Outdoor / Amenity',
   siteWorks: 'Site Works',
   land: 'Land',
-  softCosts: 'Soft Costs',
+  softCosts: 'Soft Costs (13.8%)',
   contingency: 'Contingency',
+  hurricaneUplift: 'Hurricane Resilience',
+  islandFactors: 'Island Import / Freight',
+  eiaAndPermits: 'EIA & Permits',
 }
 
 const BREAKDOWN_ORDER: Array<keyof CostEstimate['breakdown']> = [
@@ -33,11 +39,17 @@ const BREAKDOWN_ORDER: Array<keyof CostEstimate['breakdown']> = [
   'facade',
   'ffe',
   'technology',
+  'mep',
+  'renewable',
+  'foundation',
   'outdoor',
   'siteWorks',
   'land',
   'softCosts',
   'contingency',
+  'hurricaneUplift',
+  'islandFactors',
+  'eiaAndPermits',
 ]
 
 export function CostBreakdown({ cost }: CostBreakdownProps) {

@@ -19,15 +19,21 @@ const SEGMENTS: Array<{
   color: string
   bgColor: string
 }> = [
-  { key: 'land',         label: 'Land',          color: 'bg-amber-500',   bgColor: 'bg-amber-500/20' },
-  { key: 'construction', label: 'Construction',   color: 'bg-sky-500',     bgColor: 'bg-sky-500/20' },
-  { key: 'facade',       label: 'Façade',         color: 'bg-sky-400',     bgColor: 'bg-sky-400/20' },
-  { key: 'ffe',          label: 'FF&E',           color: 'bg-teal-500',    bgColor: 'bg-teal-500/20' },
-  { key: 'technology',   label: 'Technology',     color: 'bg-violet-500',  bgColor: 'bg-violet-500/20' },
-  { key: 'outdoor',      label: 'Outdoor',        color: 'bg-emerald-500', bgColor: 'bg-emerald-500/20' },
-  { key: 'siteWorks',    label: 'Site Works',     color: 'bg-orange-500',  bgColor: 'bg-orange-500/20' },
-  { key: 'softCosts',    label: 'Soft Costs',     color: 'bg-slate-400',   bgColor: 'bg-slate-400/20' },
-  { key: 'contingency',  label: 'Contingency',    color: 'bg-rose-500',    bgColor: 'bg-rose-500/20' },
+  { key: 'land',            label: 'Land',          color: 'bg-amber-500',   bgColor: 'bg-amber-500/20' },
+  { key: 'construction',    label: 'Construction',   color: 'bg-sky-500',     bgColor: 'bg-sky-500/20' },
+  { key: 'facade',          label: 'Facade',         color: 'bg-sky-400',     bgColor: 'bg-sky-400/20' },
+  { key: 'ffe',             label: 'FF&E',           color: 'bg-teal-500',    bgColor: 'bg-teal-500/20' },
+  { key: 'technology',      label: 'Technology',     color: 'bg-violet-500',  bgColor: 'bg-violet-500/20' },
+  { key: 'mep',             label: 'MEP',            color: 'bg-cyan-500',    bgColor: 'bg-cyan-500/20' },
+  { key: 'renewable',       label: 'Renewables',     color: 'bg-lime-500',    bgColor: 'bg-lime-500/20' },
+  { key: 'foundation',      label: 'Foundation',     color: 'bg-stone-500',   bgColor: 'bg-stone-500/20' },
+  { key: 'outdoor',         label: 'Outdoor',        color: 'bg-emerald-500', bgColor: 'bg-emerald-500/20' },
+  { key: 'siteWorks',       label: 'Site Works',     color: 'bg-orange-500',  bgColor: 'bg-orange-500/20' },
+  { key: 'softCosts',       label: 'Soft Costs',     color: 'bg-slate-400',   bgColor: 'bg-slate-400/20' },
+  { key: 'contingency',     label: 'Contingency',    color: 'bg-rose-500',    bgColor: 'bg-rose-500/20' },
+  { key: 'hurricaneUplift', label: 'Hurricane',      color: 'bg-red-500',     bgColor: 'bg-red-500/20' },
+  { key: 'islandFactors',   label: 'Island Costs',   color: 'bg-yellow-500',  bgColor: 'bg-yellow-500/20' },
+  { key: 'eiaAndPermits',   label: 'EIA/Permits',    color: 'bg-indigo-500',  bgColor: 'bg-indigo-500/20' },
 ]
 
 export function CostWaterfall({ cost }: CostWaterfallProps) {

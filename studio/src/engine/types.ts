@@ -106,11 +106,17 @@ export interface CostEstimate {
     facade: number
     ffe: number
     technology: number
+    mep: number
+    renewable: number
+    foundation: number
     outdoor: number
-    land: number
     siteWorks: number
+    land: number
     softCosts: number
     contingency: number
+    hurricaneUplift: number
+    islandFactors: number
+    eiaAndPermits: number
   }
 }
 
