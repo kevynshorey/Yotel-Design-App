@@ -7,20 +7,44 @@ interface OptionCardProps {
   option: DesignOption
   isSelected: boolean
   onSelect: (id: string) => void
+  isCompareTarget?: boolean
+  compareMode?: boolean
 }
 
-export function OptionCard({ option, isSelected, onSelect }: OptionCardProps) {
+export function OptionCard({ option, isSelected, onSelect, isCompareTarget, compareMode }: OptionCardProps) {
   const { metrics, score, validation, form } = option
+  const showCompareHint = compareMode && !isSelected && !isCompareTarget
+
   return (
     <button
       onClick={() => onSelect(option.id)}
       className={cn(
-        'w-full rounded-lg border p-3 text-left transition-all',
+        'group relative w-full rounded-lg border p-3 text-left transition-all',
         isSelected
           ? 'border-sky-400 bg-sky-50 shadow-sm'
-          : 'border-slate-200 bg-white hover:border-slate-300',
+          : isCompareTarget
+            ? 'border-amber-400 bg-amber-50 shadow-sm'
+            : 'border-slate-200 bg-white hover:border-slate-300',
       )}
     >
+      {/* Compare badges */}
+      {isSelected && compareMode && (
+        <span className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-sky-400 text-[10px] font-bold text-white shadow">
+          A
+        </span>
+      )}
+      {isCompareTarget && (
+        <span className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 text-[10px] font-bold text-white shadow">
+          B
+        </span>
+      )}
+      {/* Hover hint for compare mode */}
+      {showCompareHint && (
+        <span className="absolute -right-1 -top-1 z-10 hidden items-center rounded bg-slate-600 px-1.5 py-0.5 text-[9px] font-medium text-white shadow group-hover:flex">
+          Compare
+        </span>
+      )}
+
       <div className="flex items-center justify-between">
         <span className={cn(
           'rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold',

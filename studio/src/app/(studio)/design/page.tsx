@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileDown } from 'lucide-react'
+import { FileDown, GitCompareArrows } from 'lucide-react'
 import { Viewer3D } from '@/components/viewer/viewer-3d'
 import { ViewerControls } from '@/components/viewer/viewer-controls'
 import { OptionsSidebar } from '@/components/design/options-sidebar'
@@ -10,8 +10,10 @@ import { GeneratorControls } from '@/components/design/generator-controls'
 import { MetricsPanel } from '@/components/design/metrics-panel'
 import { ScoringPanel } from '@/components/design/scoring-panel'
 import { AmenityPanel } from '@/components/design/amenity-panel'
+import { ComparisonPanel } from '@/components/design/comparison-panel'
 import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
+import type { DesignOption } from '@/engine/types'
 
 const MODULE_ROUTES = ['/design', '/planning', '/finance', '/dataroom', '/invest'] as const
 
@@ -40,11 +42,18 @@ export default function DesignPage() {
   const [showAmenities, setShowAmenities] = useState(true)
   const [explodedView, setExplodedView] = useState(false)
 
+  // Comparison state
+  const [compareMode, setCompareMode] = useState(false)
+  const [compareOption, setCompareOption] = useState<DesignOption | null>(null)
+
   const handleGenerate = useCallback(() => {
     startTransition(() => {
       const generated = generateAll(40)
       setOptions(generated)
       if (generated.length > 0) selectOption(generated[0].id)
+      // Reset compare state on new generation
+      setCompareMode(false)
+      setCompareOption(null)
     })
   }, [setOptions, selectOption])
 
@@ -53,6 +62,33 @@ export default function DesignPage() {
     localStorage.setItem('yotel-selected-option', JSON.stringify(selectedOption))
     window.open('/report', '_blank')
   }, [selectedOption])
+
+  const handleToggleCompareMode = useCallback(() => {
+    setCompareMode((prev) => {
+      if (prev) {
+        // Turning off — clear compare option
+        setCompareOption(null)
+      }
+      return !prev
+    })
+  }, [])
+
+  // Handle option selection — in compare mode, second click sets compare target
+  const handleOptionSelect = useCallback(
+    (id: string) => {
+      if (compareMode && selectedOption && id !== selectedOption.id) {
+        // In compare mode, clicking a different option sets it as compare target
+        const target = options.find((o) => o.id === id)
+        if (target) setCompareOption(target)
+      } else {
+        // Normal selection
+        selectOption(id)
+        // Clear compare target if we change the primary selection
+        setCompareOption(null)
+      }
+    },
+    [compareMode, selectedOption, options, selectOption],
+  )
 
   // Auto-generate on first mount if no options exist
   useEffect(() => {
@@ -82,9 +118,20 @@ export default function DesignPage() {
         return
       }
 
-      // Escape: Deselect
+      // C: Toggle compare mode
+      if (e.key === 'c' || e.key === 'C') {
+        handleToggleCompareMode()
+        return
+      }
+
+      // Escape: Deselect or exit compare mode
       if (e.key === 'Escape') {
-        selectOption(null)
+        if (compareMode) {
+          setCompareMode(false)
+          setCompareOption(null)
+        } else {
+          selectOption(null)
+        }
         return
       }
 
@@ -102,12 +149,14 @@ export default function DesignPage() {
           nextIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1
         }
         selectOption(options[nextIndex].id)
+        // Clear compare target when navigating with arrows
+        setCompareOption(null)
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [router, isPending, handleGenerate, selectOption, options, selectedOption])
+  }, [router, isPending, handleGenerate, selectOption, options, selectedOption, compareMode, handleToggleCompareMode])
 
   return (
     <div className="flex h-full">
@@ -146,16 +195,44 @@ export default function DesignPage() {
         <GeneratorControls onGenerate={handleGenerate} isGenerating={isPending} />
         <AmenityPanel amenities={selectedOption?.amenities} />
 
-        {/* Export Report button */}
-        {selectedOption && (
-          <button
-            onClick={handleExportReport}
-            title="Export Feasibility Report (PDF)"
-            className="absolute bottom-4 right-4 z-20 flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
-          >
-            <FileDown size={14} />
-            Export Report
-          </button>
+        {/* Action buttons */}
+        <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
+          {/* Compare button */}
+          {selectedOption && (
+            <button
+              onClick={handleToggleCompareMode}
+              title={compareMode ? 'Exit compare mode (C)' : 'Compare options (C)'}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+                compareMode
+                  ? 'bg-sky-600 text-white hover:bg-sky-700'
+                  : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+              }`}
+            >
+              <GitCompareArrows size={14} />
+              {compareMode ? 'Exit Compare' : 'Compare'}
+            </button>
+          )}
+
+          {/* Export Report button */}
+          {selectedOption && (
+            <button
+              onClick={handleExportReport}
+              title="Export Feasibility Report (PDF)"
+              className="flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+            >
+              <FileDown size={14} />
+              Export Report
+            </button>
+          )}
+        </div>
+
+        {/* Comparison panel */}
+        {compareMode && selectedOption && compareOption && (
+          <ComparisonPanel
+            optionA={selectedOption}
+            optionB={compareOption}
+            onClose={handleToggleCompareMode}
+          />
         )}
       </div>
 
@@ -163,7 +240,9 @@ export default function DesignPage() {
       <OptionsSidebar
         options={options}
         selectedId={selectedOption?.id ?? null}
-        onSelect={selectOption}
+        onSelect={handleOptionSelect}
+        compareMode={compareMode}
+        compareTargetId={compareOption?.id ?? null}
       />
     </div>
   )

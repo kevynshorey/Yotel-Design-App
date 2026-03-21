@@ -12,9 +12,11 @@ interface OptionsSidebarProps {
   options: DesignOption[]
   selectedId: string | null
   onSelect: (id: string) => void
+  compareMode?: boolean
+  compareTargetId?: string | null
 }
 
-export function OptionsSidebar({ options, selectedId, onSelect }: OptionsSidebarProps) {
+export function OptionsSidebar({ options, selectedId, onSelect, compareMode, compareTargetId }: OptionsSidebarProps) {
   const [isOpen, setIsOpen] = useState(true)
 
   return (
@@ -30,7 +32,14 @@ export function OptionsSidebar({ options, selectedId, onSelect }: OptionsSidebar
       {isOpen && (
         <>
           <div className="border-b px-3 py-2">
-            <h3 className="text-xs font-semibold text-slate-900">{options.length} Options</h3>
+            <h3 className="text-xs font-semibold text-slate-900">
+              {options.length} Options
+              {compareMode && (
+                <span className="ml-2 rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-600">
+                  Compare Mode
+                </span>
+              )}
+            </h3>
           </div>
           <ScrollArea className="flex-1 px-2 py-2">
             <div className="flex flex-col gap-2">
@@ -40,6 +49,8 @@ export function OptionsSidebar({ options, selectedId, onSelect }: OptionsSidebar
                   option={opt}
                   isSelected={opt.id === selectedId}
                   onSelect={onSelect}
+                  compareMode={compareMode}
+                  isCompareTarget={opt.id === compareTargetId}
                 />
               ))}
             </div>
