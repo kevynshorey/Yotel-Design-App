@@ -26,6 +26,7 @@ import {
   Droplets,
   type LucideIcon,
 } from 'lucide-react'
+import SustainabilitySection from '@/components/planning/sustainability-section'
 
 // ── Regulation check definition ─────────────────────────────────────────
 
@@ -485,6 +486,9 @@ export default function PlanningPage() {
               <RegulationCard key={check.name} check={check} />
             ))}
           </div>
+
+          {/* Sustainability & EDGE Certification */}
+          <SustainabilitySection option={selectedOption} />
         </div>
       </div>
     </div>
