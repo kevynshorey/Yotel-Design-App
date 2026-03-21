@@ -1,7 +1,7 @@
 import type { ScoringWeights } from '@/engine/types'
 
 export const DEFAULT_WEIGHTS: ScoringWeights = {
-  room_count: 0.18,
+  room_count: 0.16,
   gia_efficiency: 0.14,
   sea_views: 0.14,
   building_height: 0.10,
@@ -9,7 +9,8 @@ export const DEFAULT_WEIGHTS: ScoringWeights = {
   cost_per_key: 0.12,
   daylight_quality: 0.08,
   pad_mix: 0.06,
-  form_simplicity: 0.08,
+  form_simplicity: 0.06,
+  amenity_quality: 0.04,
 }
 
 export const WEIGHT_DESCRIPTIONS: Record<keyof ScoringWeights, string> = {
@@ -22,4 +23,5 @@ export const WEIGHT_DESCRIPTIONS: Record<keyof ScoringWeights, string> = {
   daylight_quality: 'Natural light in corridors and rooms.',
   pad_mix: 'YOTELPAD ratio. 18-28% is revenue-optimal.',
   form_simplicity: 'Simpler forms = lower cost, faster build.',
+  amenity_quality: 'Resort amenity programming quality — pool size, lounger capacity, rooftop deck, F&B coverage.',
 }

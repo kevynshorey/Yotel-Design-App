@@ -52,3 +52,29 @@ export const SITE = {
   centroidX: 75.52,
   centroidY: 32.75,
 } as const
+
+/** Barbados planning regulations for Carlisle Bay */
+export const PLANNING_REGS = {
+  coastalSetback: 30,           // metres from High Water Mark (CZMU requirement)
+  maxCoverage: 0.50,            // 50% for commercial/tourism use
+  maxHeight: 25.0,              // metres — discretionary, but conservative for heritage zone proximity
+  heightPrecedent: { hilton: 8, hyatt: 15 }, // existing approvals in area (storeys)
+  roadSetbackClassI: 15.24,     // 50 ft from road centre
+  roadSetbackClassII: 9.75,     // 32 ft from road centre
+  roadSetbackClassIII: 5.79,    // 19 ft from road centre
+  sideSetback: 1.83,            // 6 ft from boundary
+  rearSetback: 1.83,            // 6 ft from boundary
+  eiaRequired: true,            // mandatory for 130-key hotel
+  heritageZoneProximity: true,  // UNESCO buffer zone adjacent
+  parkingRatioMin: 0.5,         // spaces per key (urban setting)
+  parkingRatioMax: 1.0,         // spaces per key (resort setting)
+} as const
+
+/** Tourism Development Act 2002 incentives */
+export const TAX_INCENTIVES = {
+  dutyFreeImports: true,        // construction materials, FFE
+  vatExempt: true,              // construction materials
+  capitalWriteOff: 15,          // years
+  interestDeduction: 1.5,       // 150% deduction on loan interest
+  equipmentTaxCredit: 0.30,     // 30% on plant/equipment > BDS$100k
+} as const
