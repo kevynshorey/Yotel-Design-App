@@ -7,7 +7,16 @@ interface ScoringPanelProps {
 }
 
 export function ScoringPanel({ option }: ScoringPanelProps) {
-  if (!option) return null
+  if (!option) {
+    return (
+      <FloatingPanel position="top-right" className="w-64">
+        <div className="flex h-24 flex-col items-center justify-center rounded-lg border border-dashed border-slate-200">
+          <p className="text-xs text-slate-400">Select an option</p>
+          <p className="text-[10px] text-slate-300">to view scoring</p>
+        </div>
+      </FloatingPanel>
+    )
+  }
 
   return (
     <FloatingPanel position="top-right" className="w-64">

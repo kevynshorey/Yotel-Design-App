@@ -8,7 +8,16 @@ interface AmenityPanelProps {
 }
 
 export function AmenityPanel({ amenities }: AmenityPanelProps) {
-  if (!amenities) return null
+  if (!amenities) {
+    return (
+      <div className="absolute bottom-20 left-3 w-72 rounded-xl border border-dashed border-white/10 bg-slate-900/40 px-3 py-2.5 backdrop-blur-md">
+        <div className="flex h-16 flex-col items-center justify-center">
+          <p className="text-xs text-slate-500">Select an option</p>
+          <p className="text-[10px] text-slate-600">to view amenity programme</p>
+        </div>
+      </div>
+    )
+  }
 
   const scorePct = Math.round(amenities.amenityScore * 100)
 

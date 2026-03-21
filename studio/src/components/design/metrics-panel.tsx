@@ -6,7 +6,16 @@ interface MetricsPanelProps {
 }
 
 export function MetricsPanel({ option }: MetricsPanelProps) {
-  if (!option) return null
+  if (!option) {
+    return (
+      <FloatingPanel position="top-left">
+        <div className="flex h-24 w-48 flex-col items-center justify-center rounded-lg border border-dashed border-slate-200">
+          <p className="text-xs text-slate-400">Select an option</p>
+          <p className="text-[10px] text-slate-300">to view metrics</p>
+        </div>
+      </FloatingPanel>
+    )
+  }
 
   const { metrics, amenities } = option
   return (
