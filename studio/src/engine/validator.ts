@@ -45,11 +45,24 @@ export function validate(metrics: OptionMetrics, wings: Wing[]): ValidationResul
     })
   }
 
-  // Offset boundary containment — wing coordinates are in building-local space
-  // (origin at BUILDING_PLACEMENT, +X east, +Y north). The buildable zone in
-  // local space spans [0, buildableEW] × [0, buildableNS].  We check each
-  // corner of each wing's footprint; any corner outside this AABB is flagged.
+  // ── BOUNDARY SETBACK ENFORCEMENT ──────────────────────────────────────
+  // Barbados Planning & Development Act + General Development Order:
+  // - Minimum 6 ft (1.83m) from ANY property boundary to building edge
+  // - Minimum 12 ft (3.66m) between buildings on the same land
+  // - 30m coastal setback from High Water Mark (CZMU, handled by offset boundary)
+  //
+  // Wing coordinates are in building-local space (origin at BUILDING_PLACEMENT).
+  // The buildable zone spans [0, buildableEW] × [0, buildableNS].
+  // We enforce the 1.83m boundary setback WITHIN this zone — no building edge
+  // may be closer than 1.83m to the offset boundary edge.
+  const SETBACK = RULES.planning.boundarySetback // 1.83m (6 ft)
+  const minX = SETBACK
+  const minY = SETBACK
+  const maxX = SITE.buildableEW - SETBACK
+  const maxY = SITE.buildableNS - SETBACK
+
   let outsideCorners = 0
+  let tooCloseToEdge = 0
   for (const wing of wings) {
     const rectLx = wing.direction === 'NS' ? wing.width : wing.length
     const rectWy = wing.direction === 'NS' ? wing.length : wing.width
@@ -60,18 +73,56 @@ export function validate(metrics: OptionMetrics, wings: Wing[]): ValidationResul
       [wing.x, wing.y + rectWy],
     ]
     for (const [cx, cy] of corners) {
+      // Hard fail: completely outside buildable zone
       if (cx < 0 || cy < 0 || cx > SITE.buildableEW || cy > SITE.buildableNS) {
         outsideCorners++
       }
+      // Setback violation: within 1.83m of boundary edge
+      else if (cx < minX || cy < minY || cx > maxX || cy > maxY) {
+        tooCloseToEdge++
+      }
     }
   }
+
   if (outsideCorners > 0) {
     violations.push({
-      rule: 'Building footprint exceeds offset boundary (buildable zone)',
-      actual: `${outsideCorners} corners outside`,
-      limit: '0',
+      rule: 'Building outside buildable zone',
+      actual: `${outsideCorners} corners outside boundary`,
+      limit: '0 — must be fully within offset boundary',
       severity: 'fatal',
     })
+  }
+
+  if (tooCloseToEdge > 0) {
+    violations.push({
+      rule: 'Boundary setback violation (6 ft / 1.83m minimum)',
+      actual: `${tooCloseToEdge} corners within ${SETBACK}m of boundary`,
+      limit: `${SETBACK}m from all property boundaries (Planning & Development Act)`,
+      severity: 'fatal',
+    })
+  }
+
+  // ── BUILDING SEPARATION ──────────────────────────────────────────────
+  // Minimum 12 ft (3.66m) between buildings on the same land.
+  // Check gap between wings for multi-wing forms (L, U, C).
+  if (wings.length >= 2) {
+    const SEPARATION = RULES.planning.buildingSeparation // 3.66m
+    for (let i = 0; i < wings.length; i++) {
+      for (let j = i + 1; j < wings.length; j++) {
+        const a = wings[i], b = wings[j]
+        // Simple gap check: if wings share an edge (e.g. L-form corner),
+        // the overlap is intentional (connected). Only flag if wings are
+        // detached but too close.
+        const aEndX = a.x + (a.direction === 'NS' ? a.width : a.length)
+        const bStartX = b.x
+        const gap = bStartX - aEndX
+        if (gap > 0 && gap < SEPARATION) {
+          warnings.push(
+            `Wings "${a.label}" and "${b.label}" are ${gap.toFixed(1)}m apart — minimum ${SEPARATION}m required between buildings (Planning Act)`
+          )
+        }
+      }
+    }
   }
 
   // Wing widths

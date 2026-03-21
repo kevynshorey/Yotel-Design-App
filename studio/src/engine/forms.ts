@@ -1,14 +1,20 @@
 import type { FormType, FormResult, Wing } from './types'
 import { SITE } from '@/config/site'
+import { RULES } from '@/config/rules'
 
 let wingCounter = 0
 function wingId(): string {
   return `w${++wingCounter}`
 }
 
-/** Clamp length to site buildable span. */
+/** Boundary setback (1.83m = 6 ft) enforced on all edges.
+ *  Building edges must be at least this far from the buildable zone edge. */
+const SETBACK = RULES.planning.boundarySetback
+
+/** Clamp length to site buildable span minus setbacks on both sides. */
 function clamp(len: number, maxL: number): number {
-  return Math.round(Math.min(len, maxL) * 10) / 10
+  const effectiveMax = maxL - 2 * SETBACK // subtract setback from both ends
+  return Math.round(Math.min(len, effectiveMax) * 10) / 10
 }
 
 export function generateForm(
@@ -24,11 +30,16 @@ export function generateForm(
   const maxW = SITE.buildableNS
   const W = wingWidth
 
+  // All wings start at (SETBACK, SETBACK) minimum to enforce 1.83m boundary setback
+  // on all edges per Barbados Planning & Development Act.
+  const ox = SETBACK // x-origin offset (east boundary setback)
+  const oy = SETBACK // y-origin offset (south boundary setback)
+
   switch (formType) {
     case 'BAR': {
       const length = clamp(targetFloorArea / W, maxL)
       wings.push({
-        id: wingId(), label: 'Main', x: 0, y: 0,
+        id: wingId(), label: 'Main', x: ox, y: oy,
         length, width: W, direction: 'EW', floors: 0,
       })
       break
@@ -36,25 +47,23 @@ export function generateForm(
     case 'BAR_NS': {
       const length = clamp(targetFloorArea / W, maxW)
       wings.push({
-        id: wingId(), label: 'Main', x: 0, y: 0,
+        id: wingId(), label: 'Main', x: ox, y: oy,
         length, width: W, direction: 'NS', floors: 0,
       })
       break
     }
     case 'L': {
-      // Solve for La, Lb such that La*W + Lb*W - W*W ≈ targetFloorArea
-      // Using 60/40 split of the net target area (after adding back the overlap W²)
       const netTarget = targetFloorArea + W * W
       const mainArea = netTarget * 0.6
       const branchArea = netTarget * 0.4
       const La = clamp(mainArea / W, maxL)
       const Lb = clamp(branchArea / W, maxW)
       wings.push({
-        id: wingId(), label: 'Main (E-W)', x: 0, y: 0,
+        id: wingId(), label: 'Main (E-W)', x: ox, y: oy,
         length: La, width: W, direction: 'EW', floors: 0,
       })
       wings.push({
-        id: wingId(), label: 'Branch (N-S)', x: La - W, y: 0,
+        id: wingId(), label: 'Branch (N-S)', x: ox + La - W, y: oy,
         length: Lb, width: W, direction: 'NS', floors: 0,
       })
       footprintOverlap = W * W
@@ -64,16 +73,16 @@ export function generateForm(
       const Lw = clamp(targetFloorArea / (3 * W), maxL)
       const gap = Math.max(8, Lw)
       wings.push({
-        id: wingId(), label: 'South', x: 0, y: 0,
+        id: wingId(), label: 'South', x: ox, y: oy,
         length: Lw, width: W, direction: 'EW', floors: 0,
       })
       wings.push({
-        id: wingId(), label: 'North', x: 0, y: gap + W,
+        id: wingId(), label: 'North', x: ox, y: oy + gap + W,
         length: Lw, width: W, direction: 'EW', floors: 0,
       })
       const connLen = gap + 2 * W
       wings.push({
-        id: wingId(), label: 'East Connector', x: Lw - W, y: 0,
+        id: wingId(), label: 'East Connector', x: ox + Lw - W, y: oy,
         length: connLen, width: W, direction: 'NS', floors: 0,
       })
       footprintOverlap = 2 * W * W
@@ -84,16 +93,16 @@ export function generateForm(
       const Lw = clamp(targetFloorArea / (3 * W), maxL)
       const gap = Math.max(8, Lw)
       wings.push({
-        id: wingId(), label: 'South', x: 0, y: 0,
+        id: wingId(), label: 'South', x: ox, y: oy,
         length: Lw, width: W, direction: 'EW', floors: 0,
       })
       wings.push({
-        id: wingId(), label: 'North', x: 0, y: gap + W,
+        id: wingId(), label: 'North', x: ox, y: oy + gap + W,
         length: Lw, width: W, direction: 'EW', floors: 0,
       })
       const connLen = gap + 2 * W
       wings.push({
-        id: wingId(), label: 'West Connector', x: 0, y: 0,
+        id: wingId(), label: 'West Connector', x: ox, y: oy,
         length: connLen, width: W, direction: 'NS', floors: 0,
       })
       footprintOverlap = 2 * W * W

@@ -41,16 +41,25 @@ describe('validate', () => {
     expect(result.isValid).toBe(false)
   })
 
-  it('fails when building extends outside offset boundary', () => {
+  it('fails when building extends outside buildable zone', () => {
     const wings = [{ id: 'test', label: 'Main', x: -50, y: -50, length: 55, width: 14, direction: 'EW' as const, floors: 6 }]
     const result = validate(validMetrics, wings)
     expect(result.isValid).toBe(false)
-    expect(result.violations.some(v => v.rule.includes('offset boundary'))).toBe(true)
+    expect(result.violations.some(v => v.rule.includes('outside buildable zone'))).toBe(true)
   })
 
-  it('passes when building is within offset boundary', () => {
+  it('fails when building violates 1.83m boundary setback', () => {
+    // Wing at x=0, y=0 — touching the boundary edge (0m setback, needs 1.83m)
     const wings = [{ id: 'test', label: 'Main', x: 0, y: 0, length: 55, width: 14, direction: 'EW' as const, floors: 6 }]
     const result = validate(validMetrics, wings)
-    expect(result.violations.some(v => v.rule.includes('offset boundary'))).toBe(false)
+    expect(result.violations.some(v => v.rule.includes('Boundary setback'))).toBe(true)
+  })
+
+  it('passes when building respects 1.83m boundary setback', () => {
+    // Wing at x=2, y=2 — well inside the 1.83m setback zone
+    const wings = [{ id: 'test', label: 'Main', x: 2, y: 2, length: 55, width: 14, direction: 'EW' as const, floors: 6 }]
+    const result = validate(validMetrics, wings)
+    expect(result.violations.some(v => v.rule.includes('Boundary setback'))).toBe(false)
+    expect(result.violations.some(v => v.rule.includes('outside buildable zone'))).toBe(false)
   })
 })
