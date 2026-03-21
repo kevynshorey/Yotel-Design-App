@@ -5,6 +5,7 @@ import { FinanceControls } from '@/components/finance/finance-controls'
 import { RevenueTable } from '@/components/finance/revenue-table'
 import { CostBreakdown } from '@/components/finance/cost-breakdown'
 import { InvestmentMetrics } from '@/components/finance/investment-metrics'
+import { SensitivityAnalysis } from '@/components/finance/sensitivity-analysis'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
 import { useDesign } from '@/context/design-context'
@@ -58,6 +59,11 @@ export default function FinancePage() {
   const [padUnits, setPadUnits] = useState(30)
   const [years, setYears] = useState(5)
 
+  // Sensitivity adjustments
+  const [adrAdjust, setAdrAdjust] = useState(0)
+  const [occAdjust, setOccAdjust] = useState(0)
+  const [costAdjust, setCostAdjust] = useState(0)
+
   // When a design option is linked, pull yotelKeys and padUnits from it;
   // sliders remain as manual overrides in standalone mode.
   const linkedYtRooms = selectedOption?.metrics.yotelKeys ?? ytRooms
@@ -71,14 +77,53 @@ export default function FinancePage() {
     [selectedOption, ytRooms, padUnits],
   )
 
-  const cost = useMemo(() => estimateCost(metrics), [metrics])
+  const baseCost = useMemo(() => estimateCost(metrics), [metrics])
 
-  const projection = useMemo(
+  const baseProjection = useMemo(
     () => projectRevenue(linkedYtRooms, linkedPadUnits, years),
     [linkedYtRooms, linkedPadUnits, years],
   )
 
+  // Apply sensitivity adjustments
+  const cost = useMemo(() => {
+    if (costAdjust === 0) return baseCost
+    const factor = 1 + costAdjust
+    const adjusted = { ...baseCost }
+    adjusted.total = Math.round(baseCost.total * factor)
+    adjusted.perKey = Math.round(baseCost.perKey * factor)
+    adjusted.breakdown = Object.fromEntries(
+      Object.entries(baseCost.breakdown).map(([k, v]) => [k, Math.round(v * factor)]),
+    ) as typeof baseCost.breakdown
+    return adjusted
+  }, [baseCost, costAdjust])
+
+  const projection = useMemo(() => {
+    if (adrAdjust === 0 && occAdjust === 0) return baseProjection
+    const revFactor = (1 + adrAdjust) * (1 + occAdjust)
+    return {
+      ...baseProjection,
+      stabilisedNoi: Math.round(baseProjection.stabilisedNoi * revFactor),
+      stabilisedNoiPerKey: Math.round(baseProjection.stabilisedNoiPerKey * revFactor),
+      revPar: Math.round(baseProjection.revPar * (1 + adrAdjust)),
+      years: baseProjection.years.map((yr) => ({
+        ...yr,
+        totalRevenue: Math.round(yr.totalRevenue * revFactor),
+        gop: Math.round(yr.gop * revFactor),
+        noi: Math.round(yr.noi * revFactor),
+      })),
+    }
+  }, [baseProjection, adrAdjust, occAdjust])
+
   const totalKeys = linkedYtRooms + linkedPadUnits
+
+  const baseYieldOnCost =
+    baseCost.total > 0 ? baseProjection.stabilisedNoi / baseCost.total : 0
+
+  const resetSensitivity = useCallback(() => {
+    setAdrAdjust(0)
+    setOccAdjust(0)
+    setCostAdjust(0)
+  }, [])
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-slate-950 text-slate-100">
@@ -153,6 +198,38 @@ export default function FinancePage() {
           <div className="w-full shrink-0 lg:w-72">
             <CostBreakdown cost={cost} />
           </div>
+        </div>
+
+        {/* Sensitivity Analysis */}
+        <div className="border-t border-slate-800/60 p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <div />
+            {(adrAdjust !== 0 || occAdjust !== 0 || costAdjust !== 0) && (
+              <button
+                onClick={resetSensitivity}
+                className="rounded border border-slate-700 px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-slate-400 transition-colors hover:border-sky-600 hover:text-sky-400"
+              >
+                Reset to Base Case
+              </button>
+            )}
+          </div>
+          <SensitivityAnalysis
+            baseNoi={baseProjection.stabilisedNoi}
+            baseTdc={baseCost.total}
+            baseYieldOnCost={baseYieldOnCost}
+            baseGopMargin={baseProjection.gopMargin}
+            baseRevPar={baseProjection.revPar}
+            baseCostPerKey={baseCost.perKey}
+            totalKeys={totalKeys}
+            ytRooms={linkedYtRooms}
+            padUnits={linkedPadUnits}
+            adrAdjust={adrAdjust}
+            occAdjust={occAdjust}
+            costAdjust={costAdjust}
+            onAdrAdjust={setAdrAdjust}
+            onOccAdjust={setOccAdjust}
+            onCostAdjust={setCostAdjust}
+          />
         </div>
       </div>
     </div>
