@@ -19,14 +19,16 @@ interface Viewer3DProps {
   explodedView?: boolean
 }
 
-/** Building placement offset used across building + amenity groups. */
-const BUILD_X = 65
-const BUILD_Z = 9
+/** Building placement offset — aligns local wing coords (0,0) to the
+ *  offset boundary origin (buildableMinX, buildableMinY) so buildings
+ *  render correctly within the boundary overlays. */
+const BUILD_X = 35.597  // SITE.buildableMinX from site.ts
+const BUILD_Z = 8.403   // SITE.buildableMinY from site.ts
 
 /** Camera preset positions / targets */
 const PRESET_CAMERAS: Record<string, { position: [number, number, number]; target: [number, number, number] }> = {
-  '3D':       { position: [120, 80, 100],  target: [75, 0, 33] },
-  'Plan':     { position: [75, 150, 33],   target: [75, 0, 33] },
+  '3D':       { position: [120, 80, 80],   target: [75, 0, 30] },
+  'Plan':     { position: [75, 150, 30],   target: [75, 0, 30] },
   'South':    { position: [75, 30, -50],   target: [75, 15, 33] },
   'West':     { position: [-50, 30, 33],   target: [75, 15, 33] },
   'Overview': { position: [200, 120, 150], target: [60, 0, 30] },
@@ -202,7 +204,7 @@ export function Viewer3D({
     amenityGroupRef.current = amenityGroup
 
     const controls = new OrbitControls(camera, canvas)
-    controls.target.set(75, 0, 33)
+    controls.target.set(75, 0, 30)
     controls.enableDamping = true
     controls.dampingFactor = 0.1
     controls.maxPolarAngle = Math.PI / 2.1

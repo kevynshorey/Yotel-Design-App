@@ -29,8 +29,9 @@ export const OFFSET_BOUNDARY: Point2D[] = [
   { x: 71.622, y: 8.656 },
 ]
 
-/** Building placement from existing Three.js viewer. */
-export const BUILDING_PLACEMENT = { x: 65, y: 9, rotDeg: 8 } as const
+/** Building placement — aligns local wing (0,0) to offset boundary origin.
+ *  x/y match buildableMinX/buildableMinY so wing coords map directly to world. */
+export const BUILDING_PLACEMENT = { x: 35.597, y: 8.403, rotDeg: 0 } as const
 
 /** Directional setbacks (metres). */
 export const OFFSETS = { W: 55, N: 8, E: 5, S: 5 } as const
