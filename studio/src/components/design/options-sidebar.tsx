@@ -1,6 +1,5 @@
 'use client'
 
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { useState } from 'react'
@@ -79,19 +78,19 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
   })
 
   return (
-    <div className={cn('relative flex h-full flex-col border-l border-slate-200 bg-white/80 backdrop-blur-sm transition-all', isOpen ? 'w-60' : 'w-0')}>
+    <div className={cn('relative flex h-full flex-col overflow-hidden border-l border-slate-700/50 bg-slate-900/90 backdrop-blur-sm transition-all', isOpen ? 'w-60' : 'w-0')}>
       <Button
         variant="ghost"
         size="icon"
-        className="absolute -left-8 top-3 z-10 h-6 w-6 rounded-full border bg-white shadow-sm"
+        className="absolute -left-8 top-3 z-10 h-6 w-6 rounded-full border border-slate-700 bg-slate-800 text-slate-300 shadow-sm hover:bg-slate-700"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
       </Button>
       {isOpen && (
         <>
-          <div className="border-b px-3 py-2">
-            <h3 className="text-xs font-semibold text-slate-900">
+          <div className="border-b border-slate-700/50 px-3 py-2">
+            <h3 className="text-xs font-semibold text-slate-100">
               {filtered.length} of {options.length} Options
               {compareMode && (
                 <span className="ml-2 rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-600">
@@ -134,7 +133,7 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
               ))}
             </div>
           </div>
-          <ScrollArea className="flex-1 px-2 py-2">
+          <div className="flex-1 overflow-y-auto px-2 py-2">
             <div className="flex flex-col gap-2">
               {curatedOptions.length > 0 && (
                 <>
@@ -142,7 +141,7 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
                     <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600">
                       Architect&apos;s Options
                     </span>
-                    <span className="flex-1 border-t border-sky-200" />
+                    <span className="flex-1 border-t border-sky-500/30" />
                   </div>
                   {curatedOptions.map((opt) => (
                     <OptionCard
@@ -162,7 +161,7 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       Parametric Sweep
                     </span>
-                    <span className="flex-1 border-t border-slate-200" />
+                    <span className="flex-1 border-t border-slate-700" />
                   </div>
                   {sweepOptions.map((opt) => (
                     <OptionCard
@@ -177,7 +176,7 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
                 </>
               )}
             </div>
-          </ScrollArea>
+          </div>
         </>
       )}
     </div>
