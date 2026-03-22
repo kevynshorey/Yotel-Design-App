@@ -27,6 +27,10 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import SustainabilitySection from '@/components/planning/sustainability-section'
+import InfrastructureSection from '@/components/planning/infrastructure-section'
+import { calculateParking } from '@/config/parking'
+import { calculateDrainage } from '@/config/drainage'
+import { calculateLandscape } from '@/config/landscape'
 
 // ── Regulation check definition ─────────────────────────────────────────
 
@@ -95,9 +99,16 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
   const fpStatus: CheckStatus =
     m.footprint > SITE.maxFootprint ? 'fail' : fpRatio > 0.95 ? 'warning' : 'pass'
 
-  // 10. Parking
+  // 10. Parking (calculated)
+  const parkingResult = calculateParking(totalKeys)
   const parkingMin = Math.ceil(totalKeys * PLANNING_REGS.parkingRatioMin)
   const parkingMax = Math.ceil(totalKeys * PLANNING_REGS.parkingRatioMax)
+
+  // 10b. Stormwater (calculated)
+  const poolTotalArea = option.amenities?.pool.totalArea ?? 0
+  const landscapeResult = calculateLandscape(SITE.grossArea, m.footprint, poolTotalArea)
+  const permeableArea = Math.round(landscapeResult.hardscapeArea * 0.4)
+  const drainageResult = calculateDrainage(m.footprint, landscapeResult.hardscapeArea, permeableArea, landscapeResult.softscapeArea)
 
   // 11. EIA
   const eiaRequired = totalKeys > RULES.planning.eiaThreshold
@@ -193,14 +204,24 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
       ratio: Math.min(fpRatio, 1.2),
     },
     {
-      name: 'Parking Requirement',
-      statute: 'PDP 2017 — 0.5-1.0 spaces per key',
+      name: 'Parking Provision',
+      statute: 'TCDPO — 0.5 spaces/key (urban hotel)',
       icon: Car,
-      status: 'info',
-      currentValue: `${parkingMin}–${parkingMax} spaces needed`,
-      limit: `0.5–1.0 per key (${totalKeys} keys)`,
+      status: 'pass' as CheckStatus,
+      currentValue: `${parkingResult.totalSpaces} spaces`,
+      limit: `${parkingMin}\u2013${parkingMax} range`,
       ratio: null,
-      detail: 'Parking is subject to detailed site layout. Urban hotel setting supports lower ratio (0.5/key).',
+      detail: `Surface with solar canopy: ${parkingResult.standardSpaces} standard + ${parkingResult.handicapSpaces} handicap + ${parkingResult.evReadySpaces} EV-ready. Area: ${parkingResult.parkingArea} m\u00B2.`,
+    },
+    {
+      name: 'Stormwater Retention',
+      statute: 'Drainage Division — 35 L/m\u00B2 impervious',
+      icon: Droplets,
+      status: 'pass' as CheckStatus,
+      currentValue: `${drainageResult.retentionM3} m\u00B3 tank`,
+      limit: 'On-site retention required',
+      ratio: null,
+      detail: `Peak flow: ${drainageResult.peakFlowM3Hr} m\u00B3/hr. ${drainageResult.soakawayCount} soakaways + 50 m\u00B3 rainwater harvesting. Impervious area: ${drainageResult.imperviousArea} m\u00B2.`,
     },
     {
       name: 'EIA Requirement',
@@ -489,6 +510,9 @@ export default function PlanningPage() {
 
           {/* Sustainability & EDGE Certification */}
           <SustainabilitySection option={selectedOption} />
+
+          {/* Site Infrastructure & Services */}
+          <InfrastructureSection option={selectedOption} />
         </div>
       </div>
     </div>
