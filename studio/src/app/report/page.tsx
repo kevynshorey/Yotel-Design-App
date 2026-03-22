@@ -204,8 +204,14 @@ export default function ReportPage() {
               <CostRow label="Facade Systems" amount={cost.breakdown.facade} total={cost.total} />
               <CostRow label="FF&E" amount={cost.breakdown.ffe} total={cost.total} />
               <CostRow label="Technology & Systems" amount={cost.breakdown.technology} total={cost.total} />
+              <CostRow label="MEP Systems" amount={cost.breakdown.mep} total={cost.total} />
+              <CostRow label="Renewable Energy" amount={cost.breakdown.renewable} total={cost.total} />
+              <CostRow label="Foundation Engineering" amount={cost.breakdown.foundation} total={cost.total} />
               <CostRow label="Outdoor / Amenities" amount={cost.breakdown.outdoor} total={cost.total} />
               <CostRow label="Site Works" amount={cost.breakdown.siteWorks} total={cost.total} />
+              <CostRow label="Hurricane & Seismic Uplift" amount={cost.breakdown.hurricaneUplift} total={cost.total} />
+              <CostRow label="Island Factors (Import & Freight)" amount={cost.breakdown.islandFactors} total={cost.total} />
+              <CostRow label="EIA & Permits" amount={cost.breakdown.eiaAndPermits} total={cost.total} />
               <CostRow label="Soft Costs" amount={cost.breakdown.softCosts} total={cost.total} />
               <CostRow label="Contingency" amount={cost.breakdown.contingency} total={cost.total} />
               <CostRow label="Land" amount={cost.breakdown.land} total={cost.total} />

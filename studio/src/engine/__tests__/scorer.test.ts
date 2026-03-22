@@ -35,9 +35,9 @@ describe('scoreOption', () => {
     expect(breakdown.room_count.raw).toBe(1)
   })
 
-  it('uses v2 recalibrated cost thresholds — $307k scores on-budget (0.75)', () => {
+  it('uses v3 recalibrated cost thresholds — $307k scores excellent (1.0)', () => {
     const [, breakdown] = scoreOption(baseMetrics, DEFAULT_WEIGHTS)
-    expect(breakdown.cost_per_key.raw).toBe(0.75)
+    expect(breakdown.cost_per_key.raw).toBe(1)
   })
 
   it('penalizes high buildings', () => {

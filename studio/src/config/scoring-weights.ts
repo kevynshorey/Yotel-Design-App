@@ -19,7 +19,7 @@ export const WEIGHT_DESCRIPTIONS: Record<keyof ScoringWeights, string> = {
   sea_views: 'West-facing facade length. More = more premium rooms.',
   building_height: 'Lower = easier planning approval.',
   outdoor_amenity: 'Total outdoor area (ground + roof + courtyard).',
-  cost_per_key: 'Lower cost/key = better investment return.',
+  cost_per_key: 'Lower cost/key = better investment return. Thresholds: ≤$370k excellent, ≤$410k on budget, ≤$460k above target, >$460k review.',
   daylight_quality: 'Natural light in corridors and rooms.',
   pad_mix: 'YOTELPAD ratio. 18-28% is revenue-optimal.',
   form_simplicity: 'Simpler forms = lower cost, faster build.',
