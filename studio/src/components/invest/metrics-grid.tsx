@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import type { CostEstimate, RevenueProjection } from '@/engine/types'
 
 interface MetricsGridProps {
@@ -13,6 +14,7 @@ interface MetricItem {
   value: string
   sub?: string
   accent?: boolean
+  href: string
 }
 
 function usd(n: number): string {
@@ -37,45 +39,53 @@ export function MetricsGrid({ cost, projection, totalKeys }: MetricsGridProps) {
       value: usdM(cost.total),
       sub: 'all-in TDC',
       accent: true,
+      href: '/finance',
     },
     {
       label: 'Cost per Key',
       value: usd(cost.perKey),
       sub: `${totalKeys} keys total`,
+      href: '/design',
     },
     {
       label: 'Stabilised NOI',
       value: usdM(projection.stabilisedNoi),
       sub: 'Year 3',
       accent: true,
+      href: '/finance',
     },
     {
       label: 'NOI per Key',
       value: usd(projection.stabilisedNoiPerKey),
       sub: 'Year 3 / key / yr',
+      href: '/finance',
     },
     {
       label: 'GOP Margin',
       value: pct(projection.gopMargin),
       sub: 'stabilised Year 3',
       accent: projection.gopMargin >= 0.50,
+      href: '/finance',
     },
     {
       label: 'Yield on Cost',
       value: pct(yieldOnCost),
       sub: 'NOI ÷ TDC',
       accent: yieldOnCost >= 0.10,
+      href: '/finance',
     },
     {
       label: 'RevPAR',
       value: usd(projection.revPar),
       sub: 'blended Yr 3 / night',
+      href: '/finance',
     },
     {
       label: 'Indicative Exit Value',
       value: exitValue > 0 ? usdM(Math.round(exitValue)) : '—',
       sub: '8.5% cap rate',
       accent: true,
+      href: '/finance',
     },
   ]
 
@@ -87,11 +97,12 @@ export function MetricsGrid({ cost, projection, totalKeys }: MetricsGridProps) {
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {metrics.map((m) => (
-            <div
+            <Link
               key={m.label}
-              className="flex flex-col gap-1 rounded-xl border border-slate-700/50 bg-slate-800/30 px-4 py-4"
+              href={m.href}
+              className="group flex flex-col gap-1 rounded-xl border border-slate-700/50 bg-slate-800/30 px-4 py-4 transition-colors hover:border-sky-500/40 hover:bg-slate-700/40 cursor-pointer"
             >
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 group-hover:text-sky-400 transition-colors">
                 {m.label}
               </span>
               <span
@@ -104,7 +115,7 @@ export function MetricsGrid({ cost, projection, totalKeys }: MetricsGridProps) {
               {m.sub && (
                 <span className="text-[10px] text-slate-600">{m.sub}</span>
               )}
-            </div>
+            </Link>
           ))}
         </div>
         <p className="mt-4 text-[10px] text-slate-600">

@@ -10,6 +10,7 @@ import {
   FolderOpen,
   Users,
   ArrowRight,
+  LayoutList,
 } from 'lucide-react'
 import { getSelectedOption } from '@/store/design-store'
 import { CONSTRUCTION_PROGRAMME } from '@/config/schedule'
@@ -268,6 +269,13 @@ export default function DashboardPage() {
             className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-400"
           >
             Generate Options
+          </Link>
+          <Link
+            href="/design?view=table"
+            className="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900/80 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-sky-500/30 hover:text-white"
+          >
+            <LayoutList className="h-4 w-4" />
+            View All Options
           </Link>
           <Link
             href="/report"

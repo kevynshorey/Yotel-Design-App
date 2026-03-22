@@ -94,12 +94,15 @@ export function DocumentList({ documents, query }: DocumentListProps) {
           {filtered.map((doc, i) => (
             <tr
               key={i}
-              className="border-b border-slate-800/60 last:border-0 hover:bg-slate-800/30 transition-colors"
+              className="border-b border-slate-800/60 last:border-0 cursor-pointer hover:bg-slate-800/60 transition-colors group"
+              onClick={() => {
+                // Visual feedback — future: open document preview modal
+              }}
             >
               <td className="px-3 py-2.5">
                 <div className="flex items-center gap-2">
                   <DocTypeIcon type={doc.type} />
-                  <span className="text-slate-200">{doc.name}</span>
+                  <span className="text-slate-200 group-hover:text-sky-300 transition-colors">{doc.name}</span>
                 </div>
               </td>
               <td className="px-3 py-2.5">

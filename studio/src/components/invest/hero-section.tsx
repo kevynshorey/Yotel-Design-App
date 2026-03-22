@@ -1,9 +1,12 @@
 'use client'
 
+import Link from 'next/link'
+
 interface HeroStat {
   label: string
   value: string
   sub?: string
+  href: string
 }
 
 interface HeroSectionProps {
@@ -26,21 +29,25 @@ export function HeroSection({ tdc, totalKeys, stabilisedNoi }: HeroSectionProps)
       label: 'Total Development Cost',
       value: usdM(tdc),
       sub: 'all-in TDC',
+      href: '/finance',
     },
     {
       label: 'Total Keys',
       value: String(totalKeys),
       sub: 'YOTEL + YOTELPAD',
+      href: '/design',
     },
     {
       label: 'Stabilised NOI',
       value: usdM(stabilisedNoi),
       sub: 'Year 3',
+      href: '/finance',
     },
     {
       label: 'Target IRR',
       value: '~18%',
       sub: 'levered equity',
+      href: '/finance',
     },
   ]
 
@@ -72,11 +79,12 @@ export function HeroSection({ tdc, totalKeys, stabilisedNoi }: HeroSectionProps)
         {/* Hero stats */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {stats.map((stat) => (
-            <div
+            <Link
               key={stat.label}
-              className="rounded-xl border border-slate-700/50 bg-slate-800/30 px-5 py-4 backdrop-blur-sm"
+              href={stat.href}
+              className="group rounded-xl border border-slate-700/50 bg-slate-800/30 px-5 py-4 backdrop-blur-sm transition-colors hover:border-sky-500/40 hover:bg-slate-700/40 cursor-pointer"
             >
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-sky-400 transition-colors">
                 {stat.label}
               </p>
               <p className="font-mono text-2xl font-bold text-sky-400">
@@ -85,7 +93,7 @@ export function HeroSection({ tdc, totalKeys, stabilisedNoi }: HeroSectionProps)
               {stat.sub && (
                 <p className="mt-0.5 text-[11px] text-slate-600">{stat.sub}</p>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       </div>

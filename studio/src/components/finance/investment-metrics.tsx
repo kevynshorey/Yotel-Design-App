@@ -96,7 +96,7 @@ function MetricTile({
   sub?: string
 }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-lg border border-slate-700/50 bg-slate-800/40 px-3 py-2.5">
+    <div className="flex flex-col gap-0.5 rounded-lg border border-slate-700/50 bg-slate-800/40 px-3 py-2.5 cursor-pointer hover:bg-slate-700/60 hover:border-sky-500/30 transition-colors">
       <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">
         {label}
       </span>
