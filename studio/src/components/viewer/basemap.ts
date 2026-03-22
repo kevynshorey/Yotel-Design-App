@@ -61,15 +61,16 @@ export function loadBasemapTiles(
   // Center offset: place the site coordinate at scene (0, 0, 0)
   // fracX = how far east within the center tile (0-1)
   // fracY = how far south within the center tile (0-1)
+  // Scene convention: +X = East, -Z = South (negated to match Revit +Y = North)
   const cx = (0.5 - fracX) * tileM
-  const cz = (0.5 - fracY) * tileM
+  const cz = -(0.5 - fracY) * tileM  // negated: south tiles go to -Z
 
   for (let dx = -3; dx <= 3; dx++) {
     for (let dy = -3; dy <= 3; dy++) {
       const url = urlFn(zoom, tileY + dy, tileX + dx)
-      // dx>0 = east tile → +X;  dy>0 = south tile → +Z
+      // dx>0 = east tile → +X;  dy>0 = south tile → -Z (negated)
       const px = cx + dx * tileM
-      const pz = cz + dy * tileM
+      const pz = cz - dy * tileM  // negated: tileY increases south → -Z
 
       loader.load(url, (tex) => {
         tex.minFilter = THREE.LinearFilter
@@ -89,15 +90,14 @@ export function loadBasemapTiles(
         ])
 
         // UVs: map tile image pixels to world vertex positions.
-        // Three.js TextureLoader uses flipY=true (default), which means:
-        //   V=0 → image TOP (= north edge of tile)
-        //   V=1 → image BOTTOM (= south edge of tile)
-        // So: NW vertex needs V=0 (north), SW vertex needs V=1 (south)
+        // Scene Z is negated (−Z = south), so vertex layout is:
+        //   vertex 0 (+Z half) = NORTH edge, vertex 2 (−Z half) = SOUTH edge
+        // Three.js flipY=true: V=0 = image top (north), V=1 = image bottom (south)
         const uvs = new Float32Array([
-          0, 1,   // vertex 0 (SW) → V=1 = image south edge ✓
-          1, 1,   // vertex 1 (SE) → V=1 = image south edge ✓
-          0, 0,   // vertex 2 (NW) → V=0 = image north edge ✓
-          1, 0,   // vertex 3 (NE) → V=0 = image north edge ✓
+          0, 0,   // vertex 0 (north edge, +Z) → V=0 = image north ✓
+          1, 0,   // vertex 1 (north edge, +Z) → V=0 = image north ✓
+          0, 1,   // vertex 2 (south edge, −Z) → V=1 = image south ✓
+          1, 1,   // vertex 3 (south edge, −Z) → V=1 = image south ✓
         ])
 
         const indices = new Uint16Array([0, 1, 2, 1, 3, 2])
