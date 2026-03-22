@@ -17,8 +17,10 @@ export function FloatingPanel({ children, className, position }: FloatingPanelPr
   return (
     <div
       className={cn(
-        'rounded-xl border border-[rgba(0,0,0,0.08)] bg-white/92 px-3 py-2 shadow-lg backdrop-blur-xl',
-        position && `absolute ${positionClasses[position]}`,
+        'rounded-xl border border-white/10 bg-slate-900/85 px-3 py-2 shadow-lg backdrop-blur-xl',
+        'max-h-[40vh] overflow-y-auto',
+        'pointer-events-auto',
+        position && `absolute ${positionClasses[position]} z-10`,
         className,
       )}
     >

@@ -9,7 +9,7 @@ export function MetricsPanel({ option }: MetricsPanelProps) {
   if (!option) {
     return (
       <FloatingPanel position="top-left">
-        <div className="flex h-24 w-48 flex-col items-center justify-center rounded-lg border border-dashed border-slate-200">
+        <div className="flex h-24 w-48 flex-col items-center justify-center rounded-lg border border-dashed border-slate-700">
           <p className="text-xs text-slate-400">Select an option</p>
           <p className="text-[10px] text-slate-300">to view metrics</p>
         </div>
@@ -46,7 +46,7 @@ function Metric({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex justify-between">
       <span className="text-slate-500">{label}</span>
-      <span className="font-mono font-medium text-slate-900">{value}</span>
+      <span className="font-mono font-medium text-slate-100">{value}</span>
     </div>
   )
 }
