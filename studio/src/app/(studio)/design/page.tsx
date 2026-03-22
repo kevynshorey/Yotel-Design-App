@@ -28,6 +28,7 @@ const InteractivePlanner = dynamic(
 import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
+import { ExportDxfButton } from '@/components/design/export-dxf-button'
 import type { DesignOption } from '@/engine/types'
 
 const MODULE_ROUTES = ['/design', '/planning', '/finance', '/dataroom', '/invest'] as const
@@ -521,6 +522,11 @@ function DesignPageInner() {
               <GitCompareArrows size={14} />
               <span className="hidden sm:inline">{compareMode ? 'Exit Compare' : 'Compare'}</span>
             </button>
+          )}
+
+          {/* DXF CAD Export button — hidden on mobile */}
+          {selectedOption && (
+            <ExportDxfButton option={selectedOption} />
           )}
 
           {/* Download Excel button — hidden on mobile */}
