@@ -24,9 +24,24 @@ describe('generateAll', () => {
     const options = generateAll(20)
     expect(options.length).toBeGreaterThan(5)
     expect(options.length).toBeLessThanOrEqual(20)
-    // Should be sorted by score descending
-    for (let i = 1; i < options.length; i++) {
-      expect(options[i - 1].score).toBeGreaterThanOrEqual(options[i].score)
+
+    // Curated options come first, then sweep options sorted by score descending
+    const curatedOptions = options.filter(o => !!o.curatedName)
+    const sweepOptions = options.filter(o => !o.curatedName)
+
+    // Should have curated options at the start
+    expect(curatedOptions.length).toBeGreaterThan(0)
+
+    // All curated options should appear before sweep options
+    const lastCuratedIdx = options.findLastIndex(o => !!o.curatedName)
+    const firstSweepIdx = options.findIndex(o => !o.curatedName)
+    if (sweepOptions.length > 0) {
+      expect(lastCuratedIdx).toBeLessThan(firstSweepIdx)
+    }
+
+    // Sweep options should be sorted by score descending
+    for (let i = 1; i < sweepOptions.length; i++) {
+      expect(sweepOptions[i - 1].score).toBeGreaterThanOrEqual(sweepOptions[i].score)
     }
   })
 })

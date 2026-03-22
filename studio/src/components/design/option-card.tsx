@@ -1,6 +1,6 @@
 import type { DesignOption } from '@/engine/types'
 import { ComplianceBadge } from './compliance-badge'
-import { Droplets, Sun, Wine } from 'lucide-react'
+import { Droplets, Sun, Wine, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface OptionCardProps {
@@ -14,6 +14,8 @@ interface OptionCardProps {
 export function OptionCard({ option, isSelected, onSelect, isCompareTarget, compareMode }: OptionCardProps) {
   const { metrics, score, validation, form } = option
   const showCompareHint = compareMode && !isSelected && !isCompareTarget
+  const isCurated = !!option.curatedName
+  const isRecommended = option.curatedId === 'beacon'
 
   const yocValue = option.cost.total > 0
     ? option.revenue.stabilisedNoi / option.cost.total * 100
@@ -30,7 +32,9 @@ export function OptionCard({ option, isSelected, onSelect, isCompareTarget, comp
           ? 'border-sky-400 bg-sky-50 shadow-sm'
           : isCompareTarget
             ? 'border-amber-400 bg-amber-50 shadow-sm'
-            : 'border-slate-200 bg-white hover:border-slate-300',
+            : isCurated
+              ? 'border-sky-500/30 bg-white hover:border-sky-400/50'
+              : 'border-slate-200 bg-white hover:border-slate-300',
       )}
     >
       {/* Compare badges */}
@@ -52,13 +56,27 @@ export function OptionCard({ option, isSelected, onSelect, isCompareTarget, comp
       )}
 
       <div className="flex items-center justify-between">
-        <span className={cn(
-          'rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold',
-          form === 'BAR' || form === 'BAR_NS' ? 'bg-blue-100 text-blue-700' :
-          form === 'L' ? 'bg-emerald-100 text-emerald-700' :
-          form === 'U' ? 'bg-violet-100 text-violet-700' :
-          'bg-amber-100 text-amber-700',
-        )}>{form}</span>
+        <div className="flex items-center gap-1.5">
+          {isCurated ? (
+            <span className="flex items-center gap-1 rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700">
+              <Star className="h-3 w-3 fill-sky-500 text-sky-500" />
+              {option.curatedName}
+            </span>
+          ) : (
+            <span className={cn(
+              'rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold',
+              form === 'BAR' || form === 'BAR_NS' ? 'bg-blue-100 text-blue-700' :
+              form === 'L' ? 'bg-emerald-100 text-emerald-700' :
+              form === 'U' ? 'bg-violet-100 text-violet-700' :
+              'bg-amber-100 text-amber-700',
+            )}>{form}</span>
+          )}
+          {isRecommended && (
+            <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-700">
+              Recommended
+            </span>
+          )}
+        </div>
         <span className="font-mono text-lg font-semibold text-slate-900">{score.toFixed(1)}</span>
       </div>
       <div className="mt-2 grid grid-cols-3 gap-x-3 gap-y-1 text-xs">

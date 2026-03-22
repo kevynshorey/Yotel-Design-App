@@ -42,18 +42,41 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
   // Filter + sort logic
   const filtered = options
     .filter(o => filterForm === 'all' || o.form === filterForm)
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'cost': return a.metrics.costPerKey - b.metrics.costPerKey
-        case 'keys': return b.metrics.totalKeys - a.metrics.totalKeys
-        case 'yield': {
-          const ya = a.cost.total > 0 ? a.revenue.stabilisedNoi / a.cost.total : 0
-          const yb = b.cost.total > 0 ? b.revenue.stabilisedNoi / b.cost.total : 0
-          return yb - ya
-        }
-        default: return b.score - a.score
+
+  // Separate curated from sweep, preserving curated order when filter is "All"
+  const curatedOptions = filtered.filter(o => !!o.curatedName)
+  const sweepOptions = filtered.filter(o => !o.curatedName)
+
+  // Sort sweep options by selected sort key
+  sweepOptions.sort((a, b) => {
+    switch (sortBy) {
+      case 'cost': return a.metrics.costPerKey - b.metrics.costPerKey
+      case 'keys': return b.metrics.totalKeys - a.metrics.totalKeys
+      case 'yield': {
+        const ya = a.cost.total > 0 ? a.revenue.stabilisedNoi / a.cost.total : 0
+        const yb = b.cost.total > 0 ? b.revenue.stabilisedNoi / b.cost.total : 0
+        return yb - ya
       }
-    })
+      default: return b.score - a.score
+    }
+  })
+
+  // Sort curated by sort key too (but recommended always first)
+  curatedOptions.sort((a, b) => {
+    const aRec = a.curatedId === 'beacon' ? 1 : 0
+    const bRec = b.curatedId === 'beacon' ? 1 : 0
+    if (aRec !== bRec) return bRec - aRec
+    switch (sortBy) {
+      case 'cost': return a.metrics.costPerKey - b.metrics.costPerKey
+      case 'keys': return b.metrics.totalKeys - a.metrics.totalKeys
+      case 'yield': {
+        const ya = a.cost.total > 0 ? a.revenue.stabilisedNoi / a.cost.total : 0
+        const yb = b.cost.total > 0 ? b.revenue.stabilisedNoi / b.cost.total : 0
+        return yb - ya
+      }
+      default: return b.score - a.score
+    }
+  })
 
   return (
     <div className={cn('relative flex h-full flex-col border-l border-slate-200 bg-white/80 backdrop-blur-sm transition-all', isOpen ? 'w-60' : 'w-0')}>
@@ -113,16 +136,46 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
           </div>
           <ScrollArea className="flex-1 px-2 py-2">
             <div className="flex flex-col gap-2">
-              {filtered.map((opt) => (
-                <OptionCard
-                  key={opt.id}
-                  option={opt}
-                  isSelected={opt.id === selectedId}
-                  onSelect={onSelect}
-                  compareMode={compareMode}
-                  isCompareTarget={opt.id === compareTargetId}
-                />
-              ))}
+              {curatedOptions.length > 0 && (
+                <>
+                  <div className="flex items-center gap-2 px-1 pt-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600">
+                      Architect&apos;s Options
+                    </span>
+                    <span className="flex-1 border-t border-sky-200" />
+                  </div>
+                  {curatedOptions.map((opt) => (
+                    <OptionCard
+                      key={opt.id}
+                      option={opt}
+                      isSelected={opt.id === selectedId}
+                      onSelect={onSelect}
+                      compareMode={compareMode}
+                      isCompareTarget={opt.id === compareTargetId}
+                    />
+                  ))}
+                </>
+              )}
+              {sweepOptions.length > 0 && (
+                <>
+                  <div className="flex items-center gap-2 px-1 pt-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Parametric Sweep
+                    </span>
+                    <span className="flex-1 border-t border-slate-200" />
+                  </div>
+                  {sweepOptions.map((opt) => (
+                    <OptionCard
+                      key={opt.id}
+                      option={opt}
+                      isSelected={opt.id === selectedId}
+                      onSelect={onSelect}
+                      compareMode={compareMode}
+                      isCompareTarget={opt.id === compareTargetId}
+                    />
+                  ))}
+                </>
+              )}
             </div>
           </ScrollArea>
         </>

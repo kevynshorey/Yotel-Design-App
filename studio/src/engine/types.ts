@@ -173,6 +173,9 @@ export interface DesignOption {
   score: number
   scoringBreakdown: Record<string, ScoreBreakdown>
   validation: ValidationResult
+  curatedId?: string
+  curatedName?: string
+  curatedConcept?: string
 }
 
 // Generation parameters (what the user controls)

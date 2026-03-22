@@ -12,6 +12,7 @@ import { calculateAmenities } from './amenities'
 import { SITE } from '@/config/site'
 import { YOTEL_ROOMS, YOTELPAD_UNITS } from '@/config/programme'
 import { DEFAULT_WEIGHTS } from '@/config/scoring-weights'
+import { CURATED_OPTIONS } from '@/config/curated-options'
 
 const GROUND_H = 4.5
 const FLOOR_H = 3.2
@@ -171,7 +172,35 @@ function optimizeUnitMix(
 
 export function generateAll(maxOptions: number = 50): DesignOption[] {
   optionCounter = 0
-  const options: DesignOption[] = []
+
+  // ── Phase 1: Generate 5 curated Architect's Options ─────────────────
+  const curated: DesignOption[] = []
+  for (const cfg of CURATED_OPTIONS) {
+    try {
+      const opt = buildOption(cfg.params)
+      opt.curatedId = cfg.id
+      opt.curatedName = cfg.name
+      opt.curatedConcept = cfg.concept
+      if (opt.validation.isValid) {
+        curated.push(opt)
+      }
+    } catch {
+      // Skip curated options that fail generation
+    }
+  }
+
+  // Sort curated: recommended first, then by score descending
+  curated.sort((a, b) => {
+    const aCfg = CURATED_OPTIONS.find(c => c.id === a.curatedId)
+    const bCfg = CURATED_OPTIONS.find(c => c.id === b.curatedId)
+    const aRec = aCfg?.recommended ? 1 : 0
+    const bRec = bCfg?.recommended ? 1 : 0
+    if (aRec !== bRec) return bRec - aRec
+    return b.score - a.score
+  })
+
+  // ── Phase 2: Parametric sweep ───────────────────────────────────────
+  const sweepOptions: DesignOption[] = []
 
   for (const form of DESIGN_SPACE.forms) {
     for (const area of DESIGN_SPACE.floorAreas) {
@@ -186,7 +215,7 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
               }
               try {
                 const opt = buildOption(params)
-                if (opt.validation.isValid) options.push(opt)
+                if (opt.validation.isValid) sweepOptions.push(opt)
               } catch {
                 // Skip invalid parameter combinations
               }
@@ -212,7 +241,7 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
                 outdoorPosition: 'WEST' as const,
               }
               const opt = buildOption(params)
-              if (opt.validation.isValid) options.push(opt)
+              if (opt.validation.isValid) sweepOptions.push(opt)
             } catch {
               // Skip invalid optimized combinations
             }
@@ -222,19 +251,22 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
     }
   }
 
-  // Deduplicate by output signature (form + keys + yt/pad split + storeys)
-  const seen = new Set<string>()
-  const unique = options.filter(o => {
+  // Deduplicate sweep by output signature (form + keys + yt/pad split + storeys)
+  const curatedSigs = new Set(curated.map(o =>
+    `${o.form}-${o.metrics.totalKeys}-${o.metrics.yotelKeys}-${o.metrics.padUnits}-${Math.round(o.metrics.buildingHeight)}`
+  ))
+  const seen = new Set<string>(curatedSigs)
+  const unique = sweepOptions.filter(o => {
     const sig = `${o.form}-${o.metrics.totalKeys}-${o.metrics.yotelKeys}-${o.metrics.padUnits}-${Math.round(o.metrics.buildingHeight)}`
     if (seen.has(sig)) return false
     seen.add(sig)
     return true
   })
 
-  // Sort by score descending
+  // Sort sweep by score descending
   unique.sort((a, b) => b.score - a.score)
 
-  // Round-robin across form types to ensure diversity
+  // Round-robin across form types to ensure diversity in sweep results
   const byForm = new Map<string, DesignOption[]>()
   for (const o of unique) {
     const arr = byForm.get(o.form) ?? []
@@ -242,29 +274,31 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
     byForm.set(o.form, arr)
   }
 
-  const result: DesignOption[] = []
+  const sweepResult: DesignOption[] = []
   const formIndices = new Map<string, number>()
   for (const form of DESIGN_SPACE.forms) formIndices.set(form, 0)
 
-  // Round-robin: pick one from each form, repeat until full
+  const sweepLimit = maxOptions - curated.length
   let added = true
-  while (result.length < maxOptions && added) {
+  while (sweepResult.length < sweepLimit && added) {
     added = false
     for (const form of DESIGN_SPACE.forms) {
-      if (result.length >= maxOptions) break
+      if (sweepResult.length >= sweepLimit) break
       const idx = formIndices.get(form)!
       const formOpts = byForm.get(form) ?? []
       if (idx < formOpts.length) {
-        result.push(formOpts[idx])
+        sweepResult.push(formOpts[idx])
         formIndices.set(form, idx + 1)
         added = true
       }
     }
   }
 
-  // Final sort by score
-  result.sort((a, b) => b.score - a.score)
-  return result
+  // Sort sweep by score
+  sweepResult.sort((a, b) => b.score - a.score)
+
+  // Return curated first, then sweep
+  return [...curated, ...sweepResult]
 }
 
 export function groupOptions(options: DesignOption[]): OptionGroups {
