@@ -54,11 +54,11 @@ const FOH_ZONES = [
 ]
 
 const BOH_ZONES = [
-  { label: 'Kitchen', area: BOH.kitchen, color: COLORS.boh },
+  { label: 'Kitchen', area: BOH.mainKitchen, color: COLORS.boh },
   { label: 'Housekeeping', area: BOH.housekeeping, color: COLORS.boh },
-  { label: 'Admin', area: BOH.administration, color: COLORS.boh },
-  { label: 'Plant', area: BOH.plant, color: COLORS.boh },
-  { label: 'Crew', area: BOH.crewRoom + BOH.crewFacilities, color: COLORS.boh },
+  { label: 'Admin', area: BOH.backOffice + BOH.generalManager, color: COLORS.boh },
+  { label: 'Plant', area: BOH.mainPlantRoom, color: COLORS.boh },
+  { label: 'Staff', area: BOH.staffBreakRoom + BOH.maleChanging + BOH.femaleChanging, color: COLORS.boh },
 ]
 
 function getFloorLabel(index: number, totalFloors: number): string {

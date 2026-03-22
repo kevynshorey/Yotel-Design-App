@@ -33,21 +33,89 @@ export const FOH = {
   gamingLounge: 25,
 } as const
 
+/** Back of House — comprehensive operational areas for 130-key resort.
+ *  Areas in m². Benchmarked against Caribbean hotel operations standards. */
 export const BOH = {
-  kitchen: 47,
-  coldStorage: 13,
-  dryStorage: 9,
-  barStorage: 9,
-  administration: 40,
-  crewRoom: 26,
-  crewFacilities: 38,
-  housekeeping: 42,
-  fixIt: 18,
-  plant: 60,
-  itServer: 8,
-  waste: 18,
-  generalStorage: 10,
+  // ── FOOD & BEVERAGE BOH ──
+  mainKitchen: 65,           // expanded from 47 for 3-venue programme
+  coldRoom: 18,              // walk-in refrigerator + freezer (was 13)
+  dryStorage: 14,            // non-perishable + beverage (was 9)
+  barStorage: 12,            // spirits, wine, glassware (was 9)
+  dishwash: 15,              // commercial dishwasher station
+  wasteHandling: 22,         // wet/dry separation, grease trap, recycling (was 18)
+  staffDining: 18,           // crew cafeteria / break area
+
+  // ── HOUSEKEEPING ──
+  housekeeping: 42,          // central linen store + trolley staging
+  laundry: 55,               // commercial washers, dryers, ironing, folding
+  linenStore: 28,            // clean linen staging per floor (total across building)
+  cleaningChemicals: 8,      // COSHH compliant store
+  uniformStore: 12,          // staff uniforms + PPE
+
+  // ── ENGINEERING & MAINTENANCE ──
+  mainPlantRoom: 75,         // HVAC chillers, AHU, BMS, fire pump (was 60)
+  electricalSwitchroom: 25,  // BL&P transformer, main distribution board
+  generatorRoom: 30,         // 500kW diesel generator + fuel tank
+  waterTreatment: 18,        // greywater recycling, rainwater filtration
+  fireRepump: 12,            // fire pump room (separate from main plant)
+  workshop: 22,              // maintenance workshop / fix-it (was 18)
+  paintStore: 6,             // hazardous materials store
+
+  // ── ADMINISTRATION ──
+  generalManager: 15,        // GM office
+  backOffice: 30,            // accounts, HR, purchasing (was admin 40)
+  securityOffice: 12,        // CCTV monitoring, key store
+  itServerRoom: 12,          // server rack, UPS, network switches (was 8)
+  receivingDock: 25,         // goods receiving, weighing, inspection
+  loadingBay: 35,            // covered loading area + turning circle
+
+  // ── STAFF FACILITIES ──
+  maleChanging: 22,          // lockers, showers, WC
+  femaleChanging: 22,        // lockers, showers, WC
+  staffBreakRoom: 28,        // crew room with kitchenette (was 26)
+  staffWC: 12,               // additional staff toilets (was part of crewFacilities 38)
+  trainingRoom: 18,          // staff training / meetings
+  firstAid: 8,               // first aid room with stretcher access
+
+  // ── GUEST SERVICES BOH ──
+  luggageStore: 22,          // bell services, luggage hold (was 19 in FOH)
+  lostAndFound: 6,           // secure store
+  poolEquipment: 15,         // pump room, chemical store, towel staging
+  landscapeStore: 12,        // gardening tools, irrigation controls
 } as const
+
+/** Calculate total BOH area */
+export function calculateBohArea(): { total: number; categories: Record<string, { area: number; items: string[] }> } {
+  const categories: Record<string, { area: number; items: string[] }> = {
+    'Food & Beverage': {
+      area: BOH.mainKitchen + BOH.coldRoom + BOH.dryStorage + BOH.barStorage + BOH.dishwash + BOH.wasteHandling + BOH.staffDining,
+      items: ['Main Kitchen', 'Cold Room', 'Dry Storage', 'Bar Storage', 'Dishwash', 'Waste Handling', 'Staff Dining'],
+    },
+    'Housekeeping': {
+      area: BOH.housekeeping + BOH.laundry + BOH.linenStore + BOH.cleaningChemicals + BOH.uniformStore,
+      items: ['Central Linen Store', 'Laundry', 'Linen Store', 'Cleaning Chemicals', 'Uniform Store'],
+    },
+    'Engineering & Plant': {
+      area: BOH.mainPlantRoom + BOH.electricalSwitchroom + BOH.generatorRoom + BOH.waterTreatment + BOH.fireRepump + BOH.workshop + BOH.paintStore,
+      items: ['Main Plant Room', 'Electrical Switchroom', 'Generator Room', 'Water Treatment', 'Fire Pump', 'Workshop', 'Paint Store'],
+    },
+    'Administration': {
+      area: BOH.generalManager + BOH.backOffice + BOH.securityOffice + BOH.itServerRoom + BOH.receivingDock + BOH.loadingBay,
+      items: ['GM Office', 'Back Office', 'Security', 'IT Server Room', 'Receiving Dock', 'Loading Bay'],
+    },
+    'Staff Facilities': {
+      area: BOH.maleChanging + BOH.femaleChanging + BOH.staffBreakRoom + BOH.staffWC + BOH.trainingRoom + BOH.firstAid,
+      items: ['Male Changing', 'Female Changing', 'Break Room', 'Staff WC', 'Training Room', 'First Aid'],
+    },
+    'Guest Services': {
+      area: BOH.luggageStore + BOH.lostAndFound + BOH.poolEquipment + BOH.landscapeStore,
+      items: ['Luggage Store', 'Lost & Found', 'Pool Equipment', 'Landscape Store'],
+    },
+  }
+
+  const total = Object.values(categories).reduce((sum, cat) => sum + cat.area, 0)
+  return { total, categories }
+}
 
 /** Hurricane resilience — CUBiC Category 4+ design loads */
 export const HURRICANE_DESIGN = {
