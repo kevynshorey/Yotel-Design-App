@@ -7,8 +7,10 @@ import { CostBreakdown } from '@/components/finance/cost-breakdown'
 import { InvestmentMetrics } from '@/components/finance/investment-metrics'
 import { SensitivityAnalysis } from '@/components/finance/sensitivity-analysis'
 import { CostWaterfall } from '@/components/finance/cost-waterfall'
+import { CapitalStackUI } from '@/components/finance/capital-stack'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
+import { buildCapitalStack } from '@/engine/capital-stack'
 import { useDesign } from '@/context/design-context'
 import { getSelectedOption } from '@/store/design-store'
 import type { DesignOption, OptionMetrics } from '@/engine/types'
@@ -114,6 +116,11 @@ export default function FinancePage() {
       })),
     }
   }, [baseProjection, adrAdjust, occAdjust])
+
+  const capitalStack = useMemo(
+    () => buildCapitalStack(cost.total, projection),
+    [cost.total, projection],
+  )
 
   const totalKeys = linkedYtRooms + linkedPadUnits
 
@@ -236,6 +243,11 @@ export default function FinancePage() {
             onOccAdjust={setOccAdjust}
             onCostAdjust={setCostAdjust}
           />
+        </div>
+
+        {/* Capital Structure & Returns */}
+        <div className="border-t border-slate-800/60 p-5">
+          <CapitalStackUI result={capitalStack} projection={projection} />
         </div>
       </div>
     </div>
