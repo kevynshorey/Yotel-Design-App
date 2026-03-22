@@ -29,8 +29,21 @@ function getTileInfo(lat: number, lon: number, zoom: number) {
   return { tileX, tileY, fracX, fracY, tileM }
 }
 
-/** Load a 7x7 grid of map tiles as ground-plane meshes.
- *  Ported from Viewer3D.jsx loadTiles(). */
+/** Load a 7×7 grid of map tiles as ground-plane meshes.
+ *
+ *  Coordinate system (Three.js world):
+ *    +X = East,  -X = West
+ *    +Z = South, -Z = North   (matching standard web map tile Y convention)
+ *    +Y = Up
+ *
+ *  Map tile convention:
+ *    tileX increases eastward  → maps to +X
+ *    tileY increases southward → maps to +Z
+ *
+ *  The PlaneGeometry is placed in the XZ plane using a custom UV-aware
+ *  approach: we create the plane already in XZ (no rotation needed) and
+ *  manually set UVs to match the tile image orientation.
+ */
 export function loadBasemapTiles(
   scene: THREE.Scene,
   basemap: BasemapType = 'Google',
@@ -43,23 +56,59 @@ export function loadBasemapTiles(
   const loader = new THREE.TextureLoader()
   loader.crossOrigin = 'anonymous'
 
+  // Center offset: place the site coordinate at scene (0, 0, 0)
+  // fracX = how far east within the center tile (0-1)
+  // fracY = how far south within the center tile (0-1)
   const cx = (0.5 - fracX) * tileM
-  const cz = (fracY - 0.5) * tileM
+  const cz = (0.5 - fracY) * tileM
 
   for (let dx = -3; dx <= 3; dx++) {
     for (let dy = -3; dy <= 3; dy++) {
       const url = urlFn(zoom, tileY + dy, tileX + dx)
+      // dx>0 = east tile → +X;  dy>0 = south tile → +Z
       const px = cx + dx * tileM
       const pz = cz + dy * tileM
 
       loader.load(url, (tex) => {
         tex.minFilter = THREE.LinearFilter
         tex.magFilter = THREE.LinearFilter
+
+        // Create plane directly in XZ plane (no rotation needed)
+        const half = tileM / 2
+        const geo = new THREE.BufferGeometry()
+
+        // Vertices in XZ plane (Y = ground level)
+        // Order: SW, SE, NW, NE  (looking down from above)
+        const vertices = new Float32Array([
+          -half, 0, half,   // SW  (0)
+           half, 0, half,   // SE  (1)
+          -half, 0, -half,  // NW  (2)
+           half, 0, -half,  // NE  (3)
+        ])
+
+        // UVs: map image pixels to world positions
+        // Image (0,0) = top-left = NW corner of tile
+        // Image (1,0) = top-right = NE corner
+        // Image (0,1) = bottom-left = SW corner
+        // Image (1,1) = bottom-right = SE corner
+        const uvs = new Float32Array([
+          0, 0,   // vertex 0 (SW) → image bottom-left (0,1) but WebGL flips Y → (0,0)
+          1, 0,   // vertex 1 (SE) → image bottom-right
+          0, 1,   // vertex 2 (NW) → image top-left
+          1, 1,   // vertex 3 (NE) → image top-right
+        ])
+
+        const indices = new Uint16Array([0, 1, 2, 1, 3, 2])
+
+        geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
+        geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2))
+        geo.setIndex(new THREE.BufferAttribute(indices, 1))
+        geo.computeVertexNormals()
+
         const mesh = new THREE.Mesh(
-          new THREE.PlaneGeometry(tileM, tileM),
+          geo,
           new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }),
         )
-        mesh.rotation.x = -Math.PI / 2
         mesh.position.set(px, -0.02, pz)
         mesh.receiveShadow = true
         mesh.name = 'basemap-tile'
