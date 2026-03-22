@@ -424,7 +424,11 @@ export function SitePlanner({ isOpen, onClose }: SitePlannerProps) {
     (e: React.PointerEvent, item: PlaceableItem) => {
       e.stopPropagation()
       e.preventDefault()
-      ;(e.target as Element).setPointerCapture(e.pointerId)
+      // Capture on the SVG element itself — SVG child elements
+      // don't reliably support pointer capture in all browsers
+      if (svgRef.current) {
+        svgRef.current.setPointerCapture(e.pointerId)
+      }
       const svgPt = screenToSvg(e.clientX, e.clientY)
       setSelectedId(item.id)
       setDragState({
