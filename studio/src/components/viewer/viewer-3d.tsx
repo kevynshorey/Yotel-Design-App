@@ -105,19 +105,22 @@ interface Viewer3DProps {
   onCinematicEnd?: () => void
 }
 
-/** Building placement offset — aligns local wing coords (0,0) to the
- *  offset boundary origin (buildableMinX, buildableMinY) so buildings
- *  render correctly within the boundary overlays. */
-const BUILD_X = 35.597  // SITE.buildableMinX from site.ts
-const BUILD_Z = -8.403  // -SITE.buildableMinY (negated: Revit +Y=North → Three.js -Z=North)
+/** Site centroid for centering — must match site-overlays.ts */
+const SITE_CX = 75.52
+const SITE_CY = 32.75
 
-/** Camera preset positions / targets */
+/** Building placement offset — aligns local wing coords (0,0) to the
+ *  offset boundary origin, then centers on the basemap (world origin). */
+const BUILD_X = 35.597 - SITE_CX   // buildableMinX centered
+const BUILD_Z = -(8.403 - SITE_CY) // buildableMinY centered + negated for Three.js
+
+/** Camera preset positions / targets — centered on origin */
 const PRESET_CAMERAS: Record<string, { position: [number, number, number]; target: [number, number, number] }> = {
-  '3D':       { position: [120, 80, -80],   target: [75, 0, -30] },
-  'Plan':     { position: [75, 150, -30],   target: [75, 0, -30] },
-  'South':    { position: [75, 30, 50],     target: [75, 15, -33] },
-  'West':     { position: [-50, 30, -33],   target: [75, 15, -33] },
-  'Overview': { position: [200, 120, -150], target: [60, 0, -30] },
+  '3D':       { position: [50, 60, 50],    target: [0, 0, 0] },
+  'Plan':     { position: [0, 150, 0],     target: [0, 0, 0] },
+  'South':    { position: [0, 30, 80],     target: [0, 15, 0] },
+  'West':     { position: [-80, 30, 0],    target: [0, 15, 0] },
+  'Overview': { position: [120, 100, 80],  target: [0, 0, 0] },
 }
 
 /** Create amenity meshes (pool, rooftop, restaurant, palms) relative to building placement. */

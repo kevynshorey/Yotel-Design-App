@@ -2,12 +2,17 @@ import * as THREE from 'three'
 import { ORIGINAL_BOUNDARY, OFFSET_BOUNDARY } from '@/config/site'
 import type { Point2D } from '@/engine/types'
 
+/** Site centroid used to align boundary with basemap center (world origin).
+ *  From SITE config: centroidX = 75.52, centroidY = 32.75 */
+const SITE_CX = 75.52
+const SITE_CY = 32.75
+
 /** Map site coordinates to Three.js world coordinates.
  *  Revit/Dynamo: +X = East, +Y = North
  *  Three.js:     +X = East, +Z = South (i.e. -Y)
- *  We negate Y → Z so north stays north on the satellite basemap. */
+ *  We center the boundary on the basemap origin and negate Y → Z. */
 function siteToWorld(p: Point2D): [number, number] {
-  return [p.x, -p.y]
+  return [p.x - SITE_CX, -(p.y - SITE_CY)]
 }
 
 function createBoundaryLine(
@@ -44,7 +49,7 @@ export function addSiteOverlays(scene: THREE.Scene) {
     new THREE.MeshStandardMaterial({ color: 0xd4d4d4, roughness: 1 }),
   )
   ground.rotation.x = -Math.PI / 2
-  ground.position.set(60, -0.01, -30)
+  ground.position.set(0, -0.01, 0)
   ground.receiveShadow = true
   scene.add(ground)
 }
