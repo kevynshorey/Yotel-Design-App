@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, Sun, UtensilsCrossed, Wrench, X } from 'lucide-react'
+import { Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, Sun, UtensilsCrossed, Waves, Wrench, X } from 'lucide-react'
 import { Viewer3D } from '@/components/viewer/viewer-3d'
 import { ViewerControls } from '@/components/viewer/viewer-controls'
 import { OptionsSidebar } from '@/components/design/options-sidebar'
@@ -16,6 +16,7 @@ import { FloorPlan } from '@/components/design/floor-plan'
 import { ViewAnalysis } from '@/components/design/view-analysis'
 import { FnbDesigner } from '@/components/design/fnb-designer'
 import { BohDashboard } from '@/components/design/boh-dashboard'
+import { PoolDeckDesigner } from '@/components/design/pool-deck-designer'
 import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
@@ -60,6 +61,7 @@ export default function DesignPage() {
   const [showViewAnalysis, setShowViewAnalysis] = useState(false)
   const [showFnb, setShowFnb] = useState(false)
   const [showBoh, setShowBoh] = useState(false)
+  const [showPoolDeck, setShowPoolDeck] = useState(false)
   const [floorIndex, setFloorIndex] = useState(0)
 
   const handleGenerate = useCallback(() => {
@@ -287,6 +289,9 @@ export default function DesignPage() {
         {/* BOH Dashboard overlay */}
         <BohDashboard isOpen={showBoh} onClose={() => setShowBoh(false)} />
 
+        {/* Pool Deck Designer overlay */}
+        <PoolDeckDesigner isOpen={showPoolDeck} onClose={() => setShowPoolDeck(false)} />
+
         {/* Action buttons */}
         <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
           {/* F&B Design button */}
@@ -318,6 +323,22 @@ export default function DesignPage() {
             >
               <Wrench size={14} />
               BOH Ops
+            </button>
+          )}
+
+          {/* Pool Deck button */}
+          {selectedOption && (
+            <button
+              onClick={() => setShowPoolDeck((v) => !v)}
+              title="Pool Deck Design"
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+                showPoolDeck
+                  ? 'bg-sky-600 text-white hover:bg-sky-700'
+                  : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+              }`}
+            >
+              <Waves size={14} />
+              Pool Deck
             </button>
           )}
 
