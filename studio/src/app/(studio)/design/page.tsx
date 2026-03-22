@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileDown, GitCompareArrows } from 'lucide-react'
+import { Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, Sun, X } from 'lucide-react'
 import { Viewer3D } from '@/components/viewer/viewer-3d'
 import { ViewerControls } from '@/components/viewer/viewer-controls'
 import { OptionsSidebar } from '@/components/design/options-sidebar'
@@ -11,8 +11,12 @@ import { MetricsPanel } from '@/components/design/metrics-panel'
 import { ScoringPanel } from '@/components/design/scoring-panel'
 import { AmenityPanel } from '@/components/design/amenity-panel'
 import { ComparisonPanel } from '@/components/design/comparison-panel'
+import { VersionPanel } from '@/components/design/version-panel'
+import { FloorPlan } from '@/components/design/floor-plan'
+import { ViewAnalysis } from '@/components/design/view-analysis'
 import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
+import { exportToExcel } from '@/lib/export-excel'
 import type { DesignOption } from '@/engine/types'
 
 const MODULE_ROUTES = ['/design', '/planning', '/finance', '/dataroom', '/invest'] as const
@@ -46,6 +50,14 @@ export default function DesignPage() {
   const [compareMode, setCompareMode] = useState(false)
   const [compareOption, setCompareOption] = useState<DesignOption | null>(null)
 
+  // Version history state
+  const [showVersions, setShowVersions] = useState(false)
+
+  // Floor plan & view analysis overlays
+  const [showFloorPlan, setShowFloorPlan] = useState(false)
+  const [showViewAnalysis, setShowViewAnalysis] = useState(false)
+  const [floorIndex, setFloorIndex] = useState(0)
+
   const handleGenerate = useCallback(() => {
     startTransition(() => {
       const generated = generateAll(40)
@@ -62,6 +74,24 @@ export default function DesignPage() {
     localStorage.setItem('yotel-selected-option', JSON.stringify(selectedOption))
     window.open('/report', '_blank')
   }, [selectedOption])
+
+  const handleExportExcel = useCallback(() => {
+    if (!selectedOption) return
+    exportToExcel(selectedOption)
+  }, [selectedOption])
+
+  const handleLoadVersion = useCallback(
+    (option: DesignOption) => {
+      // Inject the loaded option into the current options list (if not already present)
+      // and select it
+      const exists = options.some((o) => o.id === option.id)
+      if (!exists) {
+        setOptions([option, ...options])
+      }
+      selectOption(option.id)
+    },
+    [options, setOptions, selectOption],
+  )
 
   const handleToggleCompareMode = useCallback(() => {
     setCompareMode((prev) => {
@@ -124,8 +154,16 @@ export default function DesignPage() {
         return
       }
 
-      // Escape: Deselect or exit compare mode
+      // Escape: Close overlays, then deselect or exit compare mode
       if (e.key === 'Escape') {
+        if (showFloorPlan) {
+          setShowFloorPlan(false)
+          return
+        }
+        if (showViewAnalysis) {
+          setShowViewAnalysis(false)
+          return
+        }
         if (compareMode) {
           setCompareMode(false)
           setCompareOption(null)
@@ -156,7 +194,7 @@ export default function DesignPage() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [router, isPending, handleGenerate, selectOption, options, selectedOption, compareMode, handleToggleCompareMode])
+  }, [router, isPending, handleGenerate, selectOption, options, selectedOption, compareMode, handleToggleCompareMode, showFloorPlan, showViewAnalysis])
 
   return (
     <div className="flex h-full">
@@ -195,8 +233,102 @@ export default function DesignPage() {
         <GeneratorControls onGenerate={handleGenerate} isGenerating={isPending} />
         <AmenityPanel amenities={selectedOption?.amenities} />
 
+        {/* Floor Plan overlay — replaces 3D viewport */}
+        {showFloorPlan && (
+          <div className="absolute inset-0 z-30 flex flex-col bg-slate-950">
+            <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2">
+              <h2 className="text-sm font-semibold text-slate-200">
+                Floor Plan &mdash; {selectedOption?.form ?? ''} Form
+              </h2>
+              <button
+                onClick={() => setShowFloorPlan(false)}
+                className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <FloorPlan
+                option={selectedOption}
+                floorIndex={floorIndex}
+                onFloorChange={setFloorIndex}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* View Analysis floating panel */}
+        {showViewAnalysis && (
+          <div className="absolute bottom-0 right-0 top-0 z-30 w-[380px] border-l border-slate-800 bg-slate-950 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2">
+              <h2 className="text-sm font-semibold text-slate-200">
+                View &amp; Sun Analysis
+              </h2>
+              <button
+                onClick={() => setShowViewAnalysis(false)}
+                className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="h-[calc(100%-40px)] overflow-hidden">
+              <ViewAnalysis option={selectedOption} />
+            </div>
+          </div>
+        )}
+
         {/* Action buttons */}
         <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
+          {/* Floor Plan button */}
+          {selectedOption && (
+            <button
+              onClick={() => {
+                setShowFloorPlan((v) => !v)
+                if (showViewAnalysis) setShowViewAnalysis(false)
+              }}
+              title="Floor Plans"
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+                showFloorPlan
+                  ? 'bg-sky-600 text-white hover:bg-sky-700'
+                  : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+              }`}
+            >
+              <LayoutGrid size={14} />
+              Floor Plan
+            </button>
+          )}
+
+          {/* View Analysis button */}
+          {selectedOption && (
+            <button
+              onClick={() => {
+                setShowViewAnalysis((v) => !v)
+                if (showFloorPlan) setShowFloorPlan(false)
+              }}
+              title="View &amp; Sun Analysis"
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+                showViewAnalysis
+                  ? 'bg-sky-600 text-white hover:bg-sky-700'
+                  : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+              }`}
+            >
+              <Sun size={14} />
+              Views
+            </button>
+          )}
+
+          {/* Version history button */}
+          {selectedOption && (
+            <button
+              onClick={() => setShowVersions(true)}
+              title="Version History"
+              className="flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+            >
+              <Clock size={14} />
+              History
+            </button>
+          )}
+
           {/* Compare button */}
           {selectedOption && (
             <button
@@ -210,6 +342,18 @@ export default function DesignPage() {
             >
               <GitCompareArrows size={14} />
               {compareMode ? 'Exit Compare' : 'Compare'}
+            </button>
+          )}
+
+          {/* Download Excel button */}
+          {selectedOption && (
+            <button
+              onClick={handleExportExcel}
+              title="Download Excel (TSV)"
+              className="flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+            >
+              <FileSpreadsheet size={14} />
+              Download Excel
             </button>
           )}
 
@@ -234,6 +378,14 @@ export default function DesignPage() {
             onClose={handleToggleCompareMode}
           />
         )}
+
+        {/* Version history panel */}
+        <VersionPanel
+          isOpen={showVersions}
+          onClose={() => setShowVersions(false)}
+          onLoad={handleLoadVersion}
+          currentOption={selectedOption}
+        />
       </div>
 
       {/* Right sidebar */}
