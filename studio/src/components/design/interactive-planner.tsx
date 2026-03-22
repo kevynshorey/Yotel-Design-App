@@ -208,6 +208,36 @@ const COMPONENT_TEMPLATES: ComponentTemplate[] = [
     fill: '#ec4899',
     cornerRadius: 0,
   },
+  {
+    templateId: 'sim-racing',
+    label: 'Sim Racing Room',
+    category: 'amenity',
+    defaultWidth: 10,
+    defaultHeight: 5,
+    defaultStoreys: 1,
+    fill: '#a78bfa',
+    cornerRadius: 0,
+  },
+  {
+    templateId: 'grab-and-go',
+    label: 'Grab & Go Market',
+    category: 'service',
+    defaultWidth: 6,
+    defaultHeight: 5,
+    defaultStoreys: 1,
+    fill: '#a3e635',
+    cornerRadius: 0,
+  },
+  {
+    templateId: 'komyuniti-lounge',
+    label: 'Komyuniti Lounge',
+    category: 'amenity',
+    defaultWidth: 8,
+    defaultHeight: 5,
+    defaultStoreys: 1,
+    fill: '#38bdf8',
+    cornerRadius: 0,
+  },
 ]
 
 /* ------------------------------------------------------------------ */

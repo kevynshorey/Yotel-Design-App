@@ -3,7 +3,8 @@
 import { Button } from '@/components/ui/button'
 import { FloatingPanel } from '@/components/shell/floating-panel'
 import { Loader2, Play } from 'lucide-react'
-import { useUser, canGenerate } from '@/lib/auth'
+import { canGenerate } from '@/lib/auth'
+import { useUser } from '@/lib/use-user'
 
 interface GeneratorControlsProps {
   onGenerate: () => void

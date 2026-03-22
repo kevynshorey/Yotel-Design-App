@@ -11,7 +11,7 @@ import {
   Luggage,
   Music,
 } from 'lucide-react'
-import { BOH, calculateBohArea } from '@/config/construction'
+import { BOH, FOH, calculateBohArea } from '@/config/construction'
 import { PROGRAMME, AMENITY_BLOCK_SPACES } from '@/config/programme'
 
 /* ------------------------------------------------------------------ */
@@ -82,7 +82,7 @@ const BOH_ITEMS: Record<string, Record<string, number>> = {
   },
   'Creative & Co-Working': Object.fromEntries(
     AMENITY_BLOCK_SPACES
-      .filter(s => s.category === 'creative' || s.category === 'coworking')
+      .filter(s => s.category === 'creative' || s.category === 'coworking' || s.category === 'entertainment' || s.category === 'retail')
       .map(s => [s.name, s.area])
   ),
 }
@@ -286,7 +286,7 @@ function EfficiencySummary({ total }: { total: number }) {
   const bohPctOfGia = (total / giaEstimate) * 100
 
   // Approximate FOH area
-  const fohArea = 50 + 245 + 14 * 2 + 55 + 27 + 15 + 25 // from FOH config
+  const fohArea = FOH.missionControl + FOH.komyuniti + FOH.komyunitiLounge + FOH.hub * 2 + FOH.gym + FOH.publicWC + FOH.luggage + FOH.recordingStudio + FOH.podcastStudio + FOH.simRacingRoom + FOH.businessCenter + FOH.grabAndGo // from FOH config
 
   // Approximate total staff
   const totalStaff = 34 + 5 + 8 + 12 + 6 + 4 // F&B + laundry + housekeeping + admin + maintenance + guest services

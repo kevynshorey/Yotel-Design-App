@@ -42,7 +42,9 @@ export const AMENITY_BLOCK_SPACES: AmenitySpace[] = [
   { name: 'Co-Working Space',         area: 80,  floor: 1, category: 'coworking' },
   { name: 'Private Offices',          area: 40,  floor: 1, category: 'business' },
   { name: 'Meeting Room',             area: 25,  floor: 1, category: 'business' },
-  { name: 'Gaming Lounge',            area: 30,  floor: 1, category: 'coworking' },
+  { name: 'Sim Racing Gaming Room',   area: 50,  floor: 1, category: 'entertainment' },
+  { name: 'Grab & Go Supermarket',    area: 30,  floor: 0, category: 'retail' },
+  { name: 'Komyuniti Lounge',         area: 35,  floor: 0, category: 'lobby' },
 ]
 
 export const AMENITY_BLOCK = {

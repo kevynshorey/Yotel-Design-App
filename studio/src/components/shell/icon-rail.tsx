@@ -4,7 +4,8 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { LayoutDashboard, Box, FileCheck, BarChart3, FolderOpen, Users, Brain } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useUser, canUseAI } from '@/lib/auth'
+import { canUseAI } from '@/lib/auth'
+import { useUser } from '@/lib/use-user'
 
 const modules = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', shortcut: '0' },

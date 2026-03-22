@@ -42,15 +42,27 @@ const LEGEND_ITEMS = [
   { label: 'Core', color: COLORS.core },
   { label: 'FOH', color: COLORS.foh },
   { label: 'BOH', color: COLORS.boh },
+  { label: 'Studio', color: '#d946ef' },
+  { label: 'Entertainment', color: '#a78bfa' },
+  { label: 'Retail', color: '#a3e635' },
 ]
 
-// FOH zones for ground floor
+// FOH zones for ground floor — residential block
 const FOH_ZONES = [
   { label: 'Mission Control', area: FOH.missionControl, color: COLORS.foh },
-  { label: 'Komyuniti', area: FOH.komyuniti, color: COLORS.foh },
-  { label: 'Gym', area: FOH.gym, color: COLORS.foh },
-  { label: 'Hub', area: FOH.hub * 2, color: COLORS.foh },
+  { label: 'Komyuniti Restaurant', area: FOH.komyuniti, color: COLORS.foh },
+  { label: 'Grab & Go Market', area: FOH.grabAndGo, color: '#a3e635' },
+  { label: 'Komyuniti Lounge', area: FOH.komyunitiLounge, color: COLORS.foh },
   { label: 'Public WC', area: FOH.publicWC, color: COLORS.foh },
+]
+
+// First floor amenity block spaces
+const AMENITY_UPPER_ZONES = [
+  { label: 'Gym', area: FOH.gym, color: '#fb7185' },
+  { label: 'Recording Studio', area: FOH.recordingStudio, color: '#d946ef' },
+  { label: 'Podcast Studio', area: FOH.podcastStudio, color: '#d946ef' },
+  { label: 'Sim Racing Room', area: FOH.simRacingRoom, color: '#a78bfa' },
+  { label: 'Business Centre', area: FOH.businessCenter, color: '#34d399' },
 ]
 
 const BOH_ZONES = [
@@ -442,6 +454,106 @@ function renderGroundFloor(wings: Wing[]): React.ReactNode[] {
   return elements
 }
 
+/** Render amenity block upper floor (Level 1) — studios, gym, sim racing, business centre */
+function renderAmenityUpperFloor(wings: Wing[]): React.ReactNode[] {
+  const elements: React.ReactNode[] = []
+  if (wings.length === 0) return elements
+
+  const mainWing = wings[0]
+  const isEW = mainWing.direction === 'EW'
+  const wLen = isEW ? mainWing.length : mainWing.width
+  const wWid = isEW ? mainWing.width : mainWing.length
+  const wx = mainWing.x
+  const wy = mainWing.y
+
+  // Render amenity upper zones filling the wing
+  const zones = AMENITY_UPPER_ZONES
+  const totalArea = zones.reduce((s, z) => s + z.area, 0)
+  let xCursor = wx + EXT_WALL
+  const availW = wLen - 2 * EXT_WALL
+  const zoneH = wWid - 2 * EXT_WALL
+
+  for (let i = 0; i < zones.length; i++) {
+    const zone = zones[i]
+    const zoneW = (zone.area / totalArea) * availW
+
+    elements.push(
+      <rect
+        key={`amenity-l1-${i}`}
+        x={xCursor}
+        y={wy + EXT_WALL}
+        width={zoneW - 0.3}
+        height={zoneH}
+        fill={zone.color}
+        stroke={COLORS.wall}
+        strokeWidth={0.1}
+        opacity={0.75}
+      />,
+      <text
+        key={`amenity-l1-label-${i}`}
+        x={xCursor + (zoneW - 0.3) / 2}
+        y={wy + EXT_WALL + zoneH / 2}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fill="#1e293b"
+        fontSize={1.0}
+        fontWeight={600}
+      >
+        {zone.label} ({zone.area}m\u00B2)
+      </text>,
+    )
+    xCursor += zoneW
+  }
+
+  // Title
+  elements.push(
+    <text
+      key="amenity-l1-title"
+      x={wx + wLen / 2}
+      y={wy - 1}
+      textAnchor="middle"
+      fill="#d946ef"
+      fontSize={1.4}
+      fontWeight={700}
+    >
+      Amenity Block — Level 1
+    </text>,
+  )
+
+  // Additional wings as labeled zones
+  for (let w = 1; w < wings.length; w++) {
+    const wing = wings[w]
+    const isWingEW = wing.direction === 'EW'
+    elements.push(
+      <rect
+        key={`l1-wing-${w}`}
+        x={wing.x + EXT_WALL}
+        y={wing.y + EXT_WALL}
+        width={(isWingEW ? wing.length : wing.width) - 2 * EXT_WALL}
+        height={(isWingEW ? wing.width : wing.length) - 2 * EXT_WALL}
+        fill={COLORS.foh}
+        stroke={COLORS.wall}
+        strokeWidth={0.1}
+        opacity={0.5}
+      />,
+      <text
+        key={`l1-wing-label-${w}`}
+        x={wing.x + (isWingEW ? wing.length : wing.width) / 2}
+        y={wing.y + (isWingEW ? wing.width : wing.length) / 2}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fill="#e2e8f0"
+        fontSize={1.2}
+        fontWeight={500}
+      >
+        {wing.label}
+      </text>,
+    )
+  }
+
+  return elements
+}
+
 export function FloorPlan({ option, floorIndex, onFloorChange }: FloorPlanProps) {
   if (!option) {
     return (
@@ -504,6 +616,7 @@ export function FloorPlan({ option, floorIndex, onFloorChange }: FloorPlanProps)
 
           {/* Floor content */}
           {isGround && renderGroundFloor(wings)}
+          {currentFloor.level === 1 && currentFloor.use === 'FOH_BOH' && renderAmenityUpperFloor(wings)}
           {isRooftop && (
             <text
               x={wings[0].x + (wings[0].direction === 'EW' ? wings[0].length : wings[0].width) / 2}
@@ -519,6 +632,7 @@ export function FloorPlan({ option, floorIndex, onFloorChange }: FloorPlanProps)
           )}
           {!isGround &&
             !isRooftop &&
+            !(currentFloor.level === 1 && currentFloor.use === 'FOH_BOH') &&
             wings.map((w) => (
               <g key={`rooms-${w.id}`}>
                 {renderWingRooms(w, currentFloor, metrics.corridorType)}

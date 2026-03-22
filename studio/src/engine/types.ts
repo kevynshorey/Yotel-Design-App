@@ -208,7 +208,7 @@ export interface AmenitySpace {
   name: string
   area: number          // m²
   floor: number         // 0 = ground, 1 = upper
-  category: 'lobby' | 'food_beverage' | 'fitness' | 'business' | 'creative' | 'coworking'
+  category: 'lobby' | 'food_beverage' | 'fitness' | 'business' | 'creative' | 'coworking' | 'entertainment' | 'retail'
 }
 
 export interface AmenityBlock {

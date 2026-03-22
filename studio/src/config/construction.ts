@@ -23,14 +23,18 @@ export const CORE = {
 } as const
 
 export const FOH = {
-  missionControl: 50,     // m²
-  komyuniti: 245,
-  hub: 14,                // × 2
-  gym: 55,
+  missionControl: 50,     // m² — self check-in lobby
+  komyuniti: 245,         // m² — restaurant & bar
+  komyunitiLounge: 35,    // m² — separate lounge area
+  hub: 14,                // × 2 — co-working pods
+  gym: 80,                // m² — cardio + free weights + stretch (min 80m²)
   publicWC: 27,
   luggage: 19,
-  podcastStudio: 15,
-  gamingLounge: 25,
+  recordingStudio: 45,    // m² — professional-grade acoustic treatment
+  podcastStudio: 25,      // m² — soundproofed, video-ready
+  simRacingRoom: 50,      // m² — 4 full-motion sim rigs
+  businessCenter: 40,     // m² — hot desks + 2 private offices
+  grabAndGo: 30,          // m² — supermarket/convenience (snacks, essentials, souvenirs)
 } as const
 
 /** Back of House — comprehensive operational areas for 130-key resort.

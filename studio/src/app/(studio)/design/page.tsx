@@ -29,7 +29,8 @@ import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
 import { ExportDxfButton } from '@/components/design/export-dxf-button'
-import { useUser, canEdit, canExport, canGenerate } from '@/lib/auth'
+import { canEdit, canExport, canGenerate } from '@/lib/auth'
+import { useUser } from '@/lib/use-user'
 import type { DesignOption } from '@/engine/types'
 
 const MODULE_ROUTES = ['/design', '/planning', '/finance', '/dataroom', '/invest'] as const

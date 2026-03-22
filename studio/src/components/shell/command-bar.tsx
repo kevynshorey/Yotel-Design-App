@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 import { getSelectedOption } from '@/store/design-store'
-import { useUser } from '@/lib/auth'
+import { useUser } from '@/lib/use-user'
 import type { DesignOption } from '@/engine/types'
 
 export function CommandBar() {

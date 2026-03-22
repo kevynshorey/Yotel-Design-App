@@ -1,7 +1,13 @@
 'use client'
 
-import { Droplets, UtensilsCrossed, Sun, Wine } from 'lucide-react'
+import {
+  Droplets, UtensilsCrossed, Sun, Wine, Dumbbell, Mic, Podcast,
+  Gamepad2, Briefcase, ShoppingCart, DoorOpen, Sofa, TreePalm,
+  Car, MapPin,
+} from 'lucide-react'
 import type { AmenityProgramme } from '@/engine/amenities'
+import { ROOFTOP_BAR, POOL_DECK, AMENITY_BLOCK_SPACES } from '@/config/programme'
+import { FOH } from '@/config/construction'
 
 interface AmenityPanelProps {
   amenities?: AmenityProgramme | null
@@ -22,7 +28,7 @@ export function AmenityPanel({ amenities }: AmenityPanelProps) {
   const scorePct = Math.round(amenities.amenityScore * 100)
 
   return (
-    <div className="w-full md:absolute md:bottom-[120px] md:left-3 md:z-[11] md:w-72 rounded-xl border border-white/10 bg-slate-900/80 px-3 py-2.5 shadow-lg backdrop-blur-md">
+    <div className="w-full md:absolute md:bottom-[120px] md:left-3 md:z-[11] md:w-72 max-h-[calc(100vh-200px)] overflow-y-auto rounded-xl border border-white/10 bg-slate-900/80 px-3 py-2.5 shadow-lg backdrop-blur-md scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-semibold text-slate-200">Amenity Programme</h3>
@@ -32,36 +38,94 @@ export function AmenityPanel({ amenities }: AmenityPanelProps) {
       </div>
 
       <div className="mt-2 flex flex-col gap-2">
-        {/* Pool section */}
-        <Section icon={<Droplets className="h-3.5 w-3.5 text-sky-400" />} title="Pool" color="sky">
-          <Row label="Water" value={`${amenities.pool.waterArea}m²`} color="sky" />
-          <Row label="Deck" value={`${amenities.pool.deckArea}m²`} color="sky" />
-          <Row label="Infinity Edge" value={amenities.pool.hasInfinityEdge ? '\u2713' : '\u2717'} color="sky" />
-          <Row label="Swim-up Bar" value={amenities.pool.hasSwimUpBar ? '\u2713' : '\u2717'} color="sky" />
+        {/* 1. Rooftop Bar & Lounge */}
+        <Section icon={<Wine className="h-3.5 w-3.5 text-amber-400" />} title="Rooftop Bar & Lounge" color="amber">
+          <Row label="Bar" value={`${ROOFTOP_BAR.barArea}m\u00B2`} color="amber" />
+          <Row label="Grill Kitchen" value={`${ROOFTOP_BAR.kitchenArea}m\u00B2`} color="amber" />
+          <Row label="Raised Pool" value={`${ROOFTOP_BAR.plungePoolCount}\u00D7 plunge`} color="amber" />
+          <Row label="DJ Booth" value={`${ROOFTOP_BAR.djBoothArea}m\u00B2`} color="amber" />
+          <Row label="Lounge Area" value={`${ROOFTOP_BAR.loungeArea}m\u00B2`} color="amber" />
+          <Row label="Capacity" value={`${ROOFTOP_BAR.capacity} pax`} color="amber" />
         </Section>
 
-        {/* Rooftop section */}
-        <Section icon={<Wine className="h-3.5 w-3.5 text-amber-400" />} title="Rooftop" color="amber">
-          <Row label="Total" value={`${amenities.rooftopDeck.totalArea}m²`} color="amber" />
-          <Row label="Bar" value={`${amenities.rooftopDeck.barArea}m²`} color="amber" />
-          <Row
-            label="Loungers"
-            value={amenities.rooftopDeck.loungerCount.toString()}
-            color="amber"
-            icon={<Sun className="h-3 w-3 text-amber-400" />}
-          />
-          <Row label="Rooftop Pool" value={amenities.rooftopDeck.hasPool ? '\u2713' : '\u2717'} color="amber" />
+        {/* 2. Recording Studio */}
+        <Section icon={<Mic className="h-3.5 w-3.5 text-fuchsia-400" />} title="Recording Studio" color="fuchsia">
+          <Row label="Area" value={`${FOH.recordingStudio}m\u00B2`} color="fuchsia" />
+          <Row label="Location" value="Amenity Block L1" color="fuchsia" />
         </Section>
 
-        {/* Restaurant section */}
-        <Section
-          icon={<UtensilsCrossed className="h-3.5 w-3.5 text-emerald-400" />}
-          title="Restaurant"
-          color="emerald"
-        >
-          <Row label="Indoor" value={`${amenities.restaurant.indoorArea}m²`} color="emerald" />
-          <Row label="Outdoor" value={`${amenities.restaurant.outdoorArea}m²`} color="emerald" />
+        {/* 3. Podcast Studio */}
+        <Section icon={<Podcast className="h-3.5 w-3.5 text-fuchsia-400" />} title="Podcast Studio" color="fuchsia">
+          <Row label="Area" value={`${FOH.podcastStudio}m\u00B2`} color="fuchsia" />
+          <Row label="Location" value="Amenity Block L1" color="fuchsia" />
+        </Section>
+
+        {/* 4. Sim Racing Gaming Room */}
+        <Section icon={<Gamepad2 className="h-3.5 w-3.5 text-violet-400" />} title="Sim Racing Room" color="violet">
+          <Row label="Area" value={`${FOH.simRacingRoom}m\u00B2`} color="violet" />
+          <Row label="Rigs" value="4 full-motion" color="violet" />
+        </Section>
+
+        {/* 5. Business Center */}
+        <Section icon={<Briefcase className="h-3.5 w-3.5 text-emerald-400" />} title="Business Centre" color="emerald">
+          <Row label="Area" value={`${FOH.businessCenter}m\u00B2`} color="emerald" />
+          <Row label="Hot Desks + Offices" value="\u2713" color="emerald" />
+        </Section>
+
+        {/* 6. Grab & Go Supermarket */}
+        <Section icon={<ShoppingCart className="h-3.5 w-3.5 text-lime-400" />} title="Grab & Go Market" color="lime">
+          <Row label="Area" value={`${FOH.grabAndGo}m\u00B2`} color="lime" />
+          <Row label="Snacks / Essentials" value="\u2713" color="lime" />
+        </Section>
+
+        {/* 7. Restaurant & Bar */}
+        <Section icon={<UtensilsCrossed className="h-3.5 w-3.5 text-emerald-400" />} title="Restaurant & Bar" color="emerald">
+          <Row label="Indoor" value={`${amenities.restaurant.indoorArea}m\u00B2`} color="emerald" />
+          <Row label="Outdoor" value={`${amenities.restaurant.outdoorArea}m\u00B2`} color="emerald" />
           <Row label="Seats" value={amenities.restaurant.totalSeats.toString()} color="emerald" />
+        </Section>
+
+        {/* 8. Gym */}
+        <Section icon={<Dumbbell className="h-3.5 w-3.5 text-rose-400" />} title="Gym" color="rose">
+          <Row label="Area" value={`${FOH.gym}m\u00B2`} color="rose" />
+          <Row label="Cardio + Weights" value="\u2713" color="rose" />
+        </Section>
+
+        {/* 9. Mission Control */}
+        <Section icon={<DoorOpen className="h-3.5 w-3.5 text-sky-400" />} title="Mission Control" color="sky">
+          <Row label="Self Check-in" value={`${FOH.missionControl}m\u00B2`} color="sky" />
+        </Section>
+
+        {/* 10. Komyuniti Lounge */}
+        <Section icon={<Sofa className="h-3.5 w-3.5 text-sky-400" />} title="Komyuniti Lounge" color="sky">
+          <Row label="Area" value={`${FOH.komyunitiLounge}m\u00B2`} color="sky" />
+        </Section>
+
+        {/* 11. Central Pool Deck */}
+        <Section icon={<Droplets className="h-3.5 w-3.5 text-sky-400" />} title="Central Pool Deck" color="sky">
+          <Row label="Pool" value={`${amenities.pool.waterArea}m\u00B2`} color="sky" />
+          <Row label="Deck" value={`${amenities.pool.deckArea}m\u00B2`} color="sky" />
+          <Row label="Cabanas" value={String(POOL_DECK.cabanaCount)} color="sky" />
+          <Row label="Loungers" value={String(POOL_DECK.loungerCount)} color="sky" icon={<Sun className="h-3 w-3 text-sky-400" />} />
+          <Row label="Swim-up Bar" value={amenities.pool.hasSwimUpBar ? `${POOL_DECK.swimUpBarSeats} seats` : '\u2717'} color="sky" />
+          <Row label="Infinity Edge" value={amenities.pool.hasInfinityEdge ? '\u2713' : '\u2717'} color="sky" />
+        </Section>
+
+        {/* 12. Bay Street Entrance */}
+        <Section icon={<MapPin className="h-3.5 w-3.5 text-amber-400" />} title="Bay Street Entrance" color="amber">
+          <Row label="Arrival Portico" value="\u2713" color="amber" />
+          <Row label="Valet Lane" value="\u2713" color="amber" />
+        </Section>
+
+        {/* 13. Landscaping */}
+        <Section icon={<TreePalm className="h-3.5 w-3.5 text-emerald-400" />} title="Landscaping" color="emerald">
+          <Row label="Coverage" value={`${Math.round(POOL_DECK.landscapingPct * 100)}% of deck`} color="emerald" />
+          <Row label="Native Species" value="\u2713" color="emerald" />
+        </Section>
+
+        {/* 14. Parking */}
+        <Section icon={<Car className="h-3.5 w-3.5 text-slate-400" />} title="Parking Courts" color="slate">
+          <Row label="Flanking Entrance" value="Left + Right" color="slate" />
         </Section>
 
         {/* Summary */}
@@ -69,7 +133,7 @@ export function AmenityPanel({ amenities }: AmenityPanelProps) {
           <div className="flex justify-between text-[10px]">
             <span className="text-slate-400">Total Amenity Area</span>
             <span className="font-mono font-medium text-slate-200">
-              {amenities.totalAmenityArea.toLocaleString()}m²
+              {amenities.totalAmenityArea.toLocaleString()}m\u00B2
             </span>
           </div>
           <div className="mt-0.5 flex justify-between text-[10px]">
@@ -95,6 +159,8 @@ export function AmenityPanel({ amenities }: AmenityPanelProps) {
 
 /* -- Sub-components -- */
 
+type ColorName = 'sky' | 'amber' | 'emerald' | 'fuchsia' | 'violet' | 'rose' | 'lime' | 'slate'
+
 function Section({
   icon,
   title,
@@ -102,7 +168,7 @@ function Section({
 }: {
   icon: React.ReactNode
   title: string
-  color: string
+  color: ColorName
   children: React.ReactNode
 }) {
   return (
@@ -116,6 +182,17 @@ function Section({
   )
 }
 
+const COLOR_MAP: Record<ColorName, string> = {
+  sky: 'text-sky-400',
+  amber: 'text-amber-400',
+  emerald: 'text-emerald-400',
+  fuchsia: 'text-fuchsia-400',
+  violet: 'text-violet-400',
+  rose: 'text-rose-400',
+  lime: 'text-lime-400',
+  slate: 'text-slate-400',
+}
+
 function Row({
   label,
   value,
@@ -124,16 +201,13 @@ function Row({
 }: {
   label: string
   value: string
-  color: 'sky' | 'amber' | 'emerald'
+  color: ColorName
   icon?: React.ReactNode
 }) {
-  const colorClass =
-    color === 'sky' ? 'text-sky-400' : color === 'amber' ? 'text-amber-400' : 'text-emerald-400'
-
   return (
     <div className="flex justify-between text-[10px]">
       <span className="text-slate-500">{label}</span>
-      <span className={`flex items-center gap-1 font-mono font-medium ${colorClass}`}>
+      <span className={`flex items-center gap-1 font-mono font-medium ${COLOR_MAP[color]}`}>
         {icon}
         {value}
       </span>
