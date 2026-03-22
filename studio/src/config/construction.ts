@@ -84,7 +84,7 @@ export const BOH = {
   landscapeStore: 12,        // gardening tools, irrigation controls
 } as const
 
-/** Calculate total BOH area */
+/** Calculate total BOH area (includes operational + creative/amenity spaces) */
 export function calculateBohArea(): { total: number; categories: Record<string, { area: number; items: string[] }> } {
   const categories: Record<string, { area: number; items: string[] }> = {
     'Food & Beverage': {
@@ -116,6 +116,38 @@ export function calculateBohArea(): { total: number; categories: Record<string, 
   const total = Object.values(categories).reduce((sum, cat) => sum + cat.area, 0)
   return { total, categories }
 }
+
+// ── CAMPUS-SPECIFIC COSTS ──────────────────────────────────────────
+
+/** Pool deck and outdoor amenity construction costs */
+export const POOL_COSTS = {
+  poolDeckPerM2: 850,          // USD/m² — luxury finish (natural stone, drainage, lighting)
+  cabanaEach: 15000,           // USD per cabana — timber frame, thatched roof, curtains, furniture
+  swimUpBarFitout: 45000,      // USD — bar counter, plumbing, refrigeration, seating
+  poolConstruction: 1200,      // USD/m² water surface — infinity edge, tiling, filtration, heating
+  landscapingPerM2: 180,       // USD/m² — tropical planting, irrigation, hardscape paths
+  poolEquipment: 35000,        // USD — pumps, filtration, chemical dosing, heating
+} as const
+
+/** Creative and specialty space fit-out costs */
+export const CREATIVE_FITOUT = {
+  recordingStudio: 120000,     // USD total — acoustic treatment, control room, iso booth, wiring
+  podcastStudio: 45000,        // USD total — acoustic panels, desk, equipment rack, lighting
+  coworkingPerM2: 650,         // USD/m² — desks, power, data, acoustic partitions
+  officePerM2: 750,            // USD/m² — private office fit-out
+  meetingRoomPerM2: 800,       // USD/m² — AV, conferencing, joinery
+  gamingLoungePerM2: 550,      // USD/m² — seating, screens, acoustic treatment
+} as const
+
+/** Rooftop bar fit-out costs */
+export const ROOFTOP_COSTS = {
+  fitoutPerM2: 200,            // USD/m² — rooftop bar/lounge fit-out (furniture, lighting, planting)
+  barFitout: 85000,            // USD — main bar counter, refrigeration, glass wash, display
+  djBooth: 25000,              // USD — booth, sound system, lighting rig
+  plungePoolEach: 35000,       // USD — individual plunge pool, plumbing, tiling
+  kitchenFitout: 55000,        // USD — rooftop prep kitchen (not full production)
+  structuralUplift: 1.08,      // 8% uplift for rooftop-level structural loads (pools, bar, crowd)
+} as const
 
 /** Hurricane resilience — CUBiC Category 4+ design loads */
 export const HURRICANE_DESIGN = {

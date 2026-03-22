@@ -9,9 +9,10 @@ import {
   Briefcase,
   Users,
   Luggage,
+  Music,
 } from 'lucide-react'
 import { BOH, calculateBohArea } from '@/config/construction'
-import { PROGRAMME } from '@/config/programme'
+import { PROGRAMME, AMENITY_BLOCK_SPACES } from '@/config/programme'
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -79,6 +80,11 @@ const BOH_ITEMS: Record<string, Record<string, number>> = {
     'Pool Equipment': BOH.poolEquipment,
     'Landscape Store': BOH.landscapeStore,
   },
+  'Creative & Co-Working': Object.fromEntries(
+    AMENITY_BLOCK_SPACES
+      .filter(s => s.category === 'creative' || s.category === 'coworking')
+      .map(s => [s.name, s.area])
+  ),
 }
 
 const CATEGORY_STYLE: Record<string, { icon: typeof ChefHat; bg: string; text: string; ring: string }> = {
@@ -88,6 +94,7 @@ const CATEGORY_STYLE: Record<string, { icon: typeof ChefHat; bg: string; text: s
   'Administration':       { icon: Briefcase,  bg: 'bg-emerald-500/20', text: 'text-emerald-400', ring: 'ring-emerald-500/30' },
   'Staff Facilities':     { icon: Users,      bg: 'bg-rose-500/20',    text: 'text-rose-400',    ring: 'ring-rose-500/30' },
   'Guest Services':       { icon: Luggage,    bg: 'bg-cyan-500/20',    text: 'text-cyan-400',    ring: 'ring-cyan-500/30' },
+  'Creative & Co-Working': { icon: Music,     bg: 'bg-fuchsia-500/20', text: 'text-fuchsia-400', ring: 'ring-fuchsia-500/30' },
 }
 
 const BAR_COLOURS: Record<string, string> = {
@@ -96,7 +103,8 @@ const BAR_COLOURS: Record<string, string> = {
   'Engineering & Plant': '#38bdf8',
   'Administration':      '#34d399',
   'Staff Facilities':    '#fb7185',
-  'Guest Services':      '#22d3ee',
+  'Guest Services':        '#22d3ee',
+  'Creative & Co-Working': '#d946ef',
 }
 
 /* ------------------------------------------------------------------ */

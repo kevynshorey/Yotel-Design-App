@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, LayoutList, Sun, UtensilsCrossed, Waves, Wrench, X } from 'lucide-react'
+import { Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, LayoutList, Map, Sun, UtensilsCrossed, Waves, Wrench, X } from 'lucide-react'
 import { Viewer3D } from '@/components/viewer/viewer-3d'
 import { ViewerControls } from '@/components/viewer/viewer-controls'
 import { OptionsSidebar } from '@/components/design/options-sidebar'
@@ -18,6 +18,7 @@ import { ViewAnalysis } from '@/components/design/view-analysis'
 import { FnbDesigner } from '@/components/design/fnb-designer'
 import { BohDashboard } from '@/components/design/boh-dashboard'
 import { PoolDeckDesigner } from '@/components/design/pool-deck-designer'
+import { SitePlanner } from '@/components/design/site-planner'
 import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
@@ -87,6 +88,7 @@ function DesignPageInner() {
   const [showFnb, setShowFnb] = useState(false)
   const [showBoh, setShowBoh] = useState(false)
   const [showPoolDeck, setShowPoolDeck] = useState(false)
+  const [showSitePlan, setShowSitePlan] = useState(false)
   const [floorIndex, setFloorIndex] = useState(0)
 
   const handleGenerate = useCallback(() => {
@@ -342,6 +344,9 @@ function DesignPageInner() {
         {/* Pool Deck Designer overlay */}
         <PoolDeckDesigner isOpen={showPoolDeck} onClose={() => setShowPoolDeck(false)} />
 
+        {/* Site Planner overlay */}
+        <SitePlanner isOpen={showSitePlan} onClose={() => setShowSitePlan(false)} />
+
         {/* Options Table overlay */}
         <OptionsTable
           options={options}
@@ -415,6 +420,20 @@ function DesignPageInner() {
               <span className="hidden sm:inline">Pool</span>
             </button>
           )}
+
+          {/* Site Plan button */}
+          <button
+            onClick={() => setShowSitePlan((v) => !v)}
+            title="Interactive Site Plan"
+            className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
+              showSitePlan
+                ? 'bg-sky-600 text-white hover:bg-sky-700'
+                : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+            }`}
+          >
+            <Map size={14} />
+            <span className="hidden sm:inline">Site Plan</span>
+          </button>
 
           {/* Floor Plan button */}
           {selectedOption && (

@@ -202,6 +202,72 @@ export interface OptionGroups {
   pad_heavy: string[]
 }
 
+// ── Campus Layout (two-building design) ──
+
+export interface AmenitySpace {
+  name: string
+  area: number          // m²
+  floor: number         // 0 = ground, 1 = upper
+  category: 'lobby' | 'food_beverage' | 'fitness' | 'business' | 'creative' | 'coworking'
+}
+
+export interface AmenityBlock {
+  footprint: number     // m² ground floor footprint
+  storeys: number       // typically 2
+  totalGia: number      // m² gross internal area
+  spaces: AmenitySpace[]
+  position: { x: number; y: number }  // placement in site coords
+  width: number         // m (E-W dimension)
+  depth: number         // m (N-S dimension)
+}
+
+export interface PoolDeck {
+  poolLength: number    // m
+  poolWidth: number     // m
+  poolArea: number      // m² water surface
+  deckArea: number      // m² total deck (excluding pool)
+  totalArea: number     // m² pool + deck + landscaping
+  cabanaCount: number
+  loungerCount: number
+  hasSwimUpBar: boolean
+  hasInfinityEdge: boolean
+  position: { x: number; y: number }
+  width: number         // m (E-W)
+  depth: number         // m (N-S)
+}
+
+export interface RooftopBar {
+  totalArea: number     // m²
+  barArea: number       // m²
+  loungeArea: number    // m²
+  plungePoolCount: number
+  plungePoolArea: number // m² each
+  djBoothArea: number   // m²
+  capacity: number      // persons
+  has270Views: boolean
+}
+
+export interface CampusLayout {
+  amenityBlock: AmenityBlock
+  residentialBlock: {
+    footprint: number
+    storeys: number
+    totalGia: number
+    groundFloorUse: 'BOH'
+    yotelFloors: readonly number[]     // e.g. [1, 2, 3]
+    yotelpadFloors: readonly number[]  // e.g. [4, 5]
+    rooftopBar: RooftopBar
+    position: { x: number; y: number }
+    width: number
+    depth: number
+  }
+  poolDeck: PoolDeck
+  buildingGap: number         // m between the two buildings
+  totalSiteGia: number        // m² combined GIA
+  totalFootprint: number      // m² combined ground coverage
+  siteCoverage: number        // ratio (0-1)
+}
+
 // Camera
 export interface CameraPreset {
   name: string
