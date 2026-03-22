@@ -8,10 +8,11 @@ export const YOTEL_ROOMS: Record<string, RoomType> = {
 }
 
 export const YOTELPAD_UNITS: Record<string, RoomType> = {
-  Studio:           { label: 'PAD Studio',     nia: 22.0, bayWidth: 3.67, bays: 1,   pct: 0.67, color: '#B8456A' },
-  OneBed:           { label: 'PAD 1-Bedroom',  nia: 32.0, bayWidth: 5.07, bays: 1.5, pct: 0.20, color: '#A03B5C' },
-  TwoBed:           { label: 'PAD 2-Bedroom',  nia: 48.0, bayWidth: 6.67, bays: 2,   pct: 0.07, color: '#8A3050' },
-  AccessibleStudio: { label: 'PAD Accessible', nia: 27.0, bayWidth: 4.28, bays: 1.2, pct: 0.07, color: '#16a34a' },
+  Studio:           { label: 'PAD Studio',     nia: 25.0, bayWidth: 3.67, bays: 1,   pct: 0.67, color: '#B8456A' },
+  OneBed:           { label: 'PAD 1-Bedroom',  nia: 40.0, bayWidth: 5.07, bays: 1.5, pct: 0.20, color: '#A03B5C' },
+  TwoBed:           { label: 'PAD 2-Bedroom',  nia: 60.0, bayWidth: 6.67, bays: 2,   pct: 0.07, color: '#8A3050' },
+  AccessibleStudio: { label: 'PAD Accessible', nia: 30.0, bayWidth: 4.28, bays: 1.2, pct: 0.07, color: '#16a34a' },
+  SuperStar:        { label: 'SuperStar Suite', nia: 75.0, bayWidth: 8.0, bays: 2.5, pct: 0.00, color: '#c084fc' },
 }
 
 export const PROGRAMME = {
@@ -30,7 +31,7 @@ export const PROGRAMME = {
  *  2-storey, ~400-500m² footprint. */
 export const AMENITY_BLOCK_SPACES: AmenitySpace[] = [
   // Ground floor
-  { name: 'Mission Control (Lobby)',  area: 55,  floor: 0, category: 'lobby' },
+  { name: 'Mission Control (Lobby)',  area: 80,  floor: 0, category: 'lobby' },
   { name: 'Komyuniti Restaurant/Bar', area: 245, floor: 0, category: 'food_beverage' },
   { name: 'Gym',                      area: 60,  floor: 0, category: 'fitness' },
   { name: 'Business Center',          area: 30,  floor: 0, category: 'business' },
@@ -45,6 +46,7 @@ export const AMENITY_BLOCK_SPACES: AmenitySpace[] = [
   { name: 'Sim Racing Gaming Room',   area: 50,  floor: 1, category: 'entertainment' },
   { name: 'Grab & Go Supermarket',    area: 30,  floor: 0, category: 'retail' },
   { name: 'Komyuniti Lounge',         area: 35,  floor: 0, category: 'lobby' },
+  { name: 'Guest Laundry',            area: 20,  floor: 0, category: 'lobby' },
 ]
 
 export const AMENITY_BLOCK = {

@@ -26,6 +26,9 @@ export const PLANNING_RULES = {
   minRoadSetback: 5.79, // 19 feet building line from road — TCPA
   coastalSetback: 30.0, // 30 metres from high water mark — CZMU
   cliffSetback: 10.0, // 10 metres from cliff edge — CZMU
+  czmu: {
+    coralReefBuffer: 50, // metres from reef edge
+  },
 
   // ── BOUNDARY SPLAYS ──────────────────────────────────────────────────
   twoNineteenFtSplay: 1.52, // 5 feet — when two 19ft building lines meet
@@ -43,7 +46,7 @@ export const PLANNING_RULES = {
   noiseLimit: 65, // dB(A) at boundary — daytime
   noiseLimitNight: 55, // dB(A) at boundary — nighttime
   constructionHours: { start: 7, end: 18 } as const, // 7am-6pm Mon-Fri
-  constructionHoursSat: { start: 8, end: 13 } as const, // 8am-1pm Saturday
+  constructionHoursSat: { start: 7, end: 13 } as const, // 7am-1pm Saturday
   noConstructionSunday: true,
 
   // ── WATER — BWA ──────────────────────────────────────────────────────
@@ -80,6 +83,10 @@ export const PLANNING_RULES = {
   accessibleRouteRequired: true,
   liftRequired: true, // for buildings >2 storeys
   wheelchairAccessibleEntrance: true,
+  minCorridorWidth: 1.2, // metres
+  minTurningCircle: 1.5, // metres diameter
+  maxRampGradient: 0.083, // 1:12 ratio
+  minDoorWidth: 0.9, // metres clear opening
 
   // ── UNESCO / HERITAGE ────────────────────────────────────────────────
   unescoBufferZone: true, // site is within UNESCO buffer
@@ -118,6 +125,9 @@ export const PLANNING_RULES = {
     freeWifiRequired: true,
     gymRequired: true,
     selfCheckInRequired: true,
+    signageRequired: true,
+    wayfindingStandard: 'YOTEL Global' as const,
+    externalSignageMaxHeight: 3.0, // metres
   },
 
   // ── YOTELPAD BRAND STANDARDS ─────────────────────────────────────────
@@ -219,6 +229,7 @@ export const RULE_CATEGORIES = {
     rules: {
       'Coastal setback': `${PLANNING_RULES.coastalSetback}m from high water mark`,
       'Cliff setback': `${PLANNING_RULES.cliffSetback}m from cliff edge`,
+      'Coral reef buffer': `${PLANNING_RULES.czmu.coralReefBuffer}m from reef edge`,
     },
   },
   'Environmental Protection (EPD)': {
@@ -285,6 +296,10 @@ export const RULE_CATEGORIES = {
       'Accessible route': 'Required throughout',
       'Lift': 'Required for >2 storeys',
       'Wheelchair entrance': 'Required',
+      'Min corridor width': `${PLANNING_RULES.minCorridorWidth}m`,
+      'Min turning circle': `${PLANNING_RULES.minTurningCircle}m diameter`,
+      'Max ramp gradient': `1:12 (${PLANNING_RULES.maxRampGradient})`,
+      'Min door width': `${PLANNING_RULES.minDoorWidth}m clear`,
     },
   },
   'UNESCO / Heritage': {

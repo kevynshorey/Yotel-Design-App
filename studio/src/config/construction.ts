@@ -23,7 +23,7 @@ export const CORE = {
 } as const
 
 export const FOH = {
-  missionControl: 50,     // m² — self check-in lobby
+  missionControl: 80,     // m² — self check-in lobby
   komyuniti: 245,         // m² — restaurant & bar
   komyunitiLounge: 35,    // m² — separate lounge area
   hub: 14,                // × 2 — co-working pods
