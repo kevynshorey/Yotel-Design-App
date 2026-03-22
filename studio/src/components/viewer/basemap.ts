@@ -7,8 +7,8 @@ import type { BasemapType } from '@/engine/types'
  *    T567A (SW): E 24,497.45 / N 65,180.58 → 13.087619, -59.611850
  *    SE corner:  E 24,617.78 / N 65,188.37 → 13.087689, -59.610740
  *  Full-plot centroid (~30m north of S edge): */
-const SITE_LAT = 13.08789
-const SITE_LON = -59.61130
+const SITE_LAT = 13.090731
+const SITE_LON = -59.608315
 
 /** Tile URL generators for each basemap type. */
 const TILE_URL: Record<string, (z: number, y: number, x: number) => string> = {

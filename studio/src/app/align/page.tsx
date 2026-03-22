@@ -5,8 +5,8 @@ import { ORIGINAL_BOUNDARY } from '@/config/site'
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const INIT_LAT = 13.08789
-const INIT_LON = -59.61130
+const INIT_LAT = 13.090731
+const INIT_LON = -59.608315
 const INIT_ZOOM = 18
 const TILE_SIZE = 256
 
