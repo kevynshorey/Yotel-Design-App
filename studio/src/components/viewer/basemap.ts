@@ -7,8 +7,22 @@ import type { BasemapType } from '@/engine/types'
  *    T567A (SW): E 24,497.45 / N 65,180.58 → 13.087619, -59.611850
  *    SE corner:  E 24,617.78 / N 65,188.37 → 13.087689, -59.610740
  *  Full-plot centroid (~30m north of S edge): */
-const SITE_LAT = 13.090731
-const SITE_LON = -59.608315
+/** Default coordinates — overridden by localStorage 'yotel-site-position' if saved via /align */
+const DEFAULT_LAT = 13.090731
+const DEFAULT_LON = -59.608315
+
+function getSiteCoords(): { lat: number; lon: number } {
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = localStorage.getItem('yotel-site-position')
+      if (saved) {
+        const { lat, lon } = JSON.parse(saved)
+        if (typeof lat === 'number' && typeof lon === 'number') return { lat, lon }
+      }
+    } catch { /* ignore */ }
+  }
+  return { lat: DEFAULT_LAT, lon: DEFAULT_LON }
+}
 
 /** Tile URL generators for each basemap type. */
 const TILE_URL: Record<string, (z: number, y: number, x: number) => string> = {
@@ -57,6 +71,7 @@ export function loadBasemapTiles(
   if (basemap === 'None' || !TILE_URL[basemap]) return
 
   const urlFn = TILE_URL[basemap]
+  const { lat: SITE_LAT, lon: SITE_LON } = getSiteCoords()
   const { tileX, tileY, fracX, fracY, tileM } = getTileInfo(SITE_LAT, SITE_LON, zoom)
   const loader = new THREE.TextureLoader()
   loader.crossOrigin = 'anonymous'

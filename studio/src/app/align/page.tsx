@@ -379,27 +379,49 @@ export default function AlignPage() {
           </div>
 
           {/* Buttons */}
-          <div className="mt-3 flex gap-2">
-            <button
-              onClick={handleCopy}
-              className="flex-1 px-3 py-1.5 text-xs font-medium rounded bg-red-600 hover:bg-red-500 text-white transition-colors"
-            >
-              {copied ? 'Copied!' : 'Copy Coordinates'}
-            </button>
+          <div className="mt-3 flex flex-col gap-2">
             <button
               onClick={() => {
-                setPolyOffsetX(0)
-                setPolyOffsetY(0)
-                setRotation(0)
-                setCenterLat(INIT_LAT)
-                setCenterLon(INIT_LON)
-                setZoom(INIT_ZOOM)
+                // Save to localStorage so the 3D viewer picks it up
+                const data = {
+                  lat: parseFloat(polyLat.toFixed(6)),
+                  lon: parseFloat(polyLon.toFixed(6)),
+                  rotation: rotation,
+                }
+                localStorage.setItem('yotel-site-position', JSON.stringify(data))
+                setCopied(true)
+                setTimeout(() => setCopied(false), 2000)
               }}
-              className="px-3 py-1.5 text-xs font-medium rounded bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+              className="w-full px-3 py-2 text-sm font-semibold rounded bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
             >
-              Reset
+              {copied ? '✓ Saved to App!' : '💾 Save Position to App'}
             </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCopy}
+                className="flex-1 px-3 py-1.5 text-xs font-medium rounded bg-red-600 hover:bg-red-500 text-white transition-colors"
+              >
+                Copy Coordinates
+              </button>
+              <button
+                onClick={() => {
+                  setPolyOffsetX(0)
+                  setPolyOffsetY(0)
+                  setRotation(0)
+                  setCenterLat(INIT_LAT)
+                  setCenterLon(INIT_LON)
+                  setZoom(INIT_ZOOM)
+                }}
+                className="px-3 py-1.5 text-xs font-medium rounded bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+              >
+                Reset
+              </button>
+            </div>
           </div>
+          <p className="mt-2 text-[10px] text-slate-500">
+            Drag the red boundary onto your plot, then click &quot;Save Position to App&quot;.
+            The 3D viewer will use this position automatically.
+          </p>
         </div>
       </div>
 
