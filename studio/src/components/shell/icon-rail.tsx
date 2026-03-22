@@ -2,10 +2,11 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Box, FileCheck, BarChart3, FolderOpen, Users } from 'lucide-react'
+import { LayoutDashboard, Box, FileCheck, BarChart3, FolderOpen, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const modules = [
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', shortcut: '0' },
   { href: '/design', icon: Box, label: 'Design', shortcut: '1' },
   { href: '/planning', icon: FileCheck, label: 'Planning', shortcut: '2' },
   { href: '/finance', icon: BarChart3, label: 'Finance', shortcut: '3' },

@@ -25,7 +25,7 @@ export default function LoginPage() {
       body: JSON.stringify({ password }),
     })
     if (res.ok) {
-      router.push('/design')
+      router.push('/dashboard')
       router.refresh()
     } else {
       setError(true)
