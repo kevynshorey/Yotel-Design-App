@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import SustainabilitySection from '@/components/planning/sustainability-section'
 import InfrastructureSection from '@/components/planning/infrastructure-section'
+import LEEDTracker from '@/components/sustainability/leed-tracker'
 import { calculateParking } from '@/config/parking'
 import { calculateDrainage } from '@/config/drainage'
 import { calculateLandscape } from '@/config/landscape'
@@ -510,6 +511,9 @@ export default function PlanningPage() {
 
           {/* Sustainability & EDGE Certification */}
           <SustainabilitySection option={selectedOption} />
+
+          {/* LEED v4.1 BD+C: Hospitality Certification Tracker */}
+          <LEEDTracker />
 
           {/* Site Infrastructure & Services */}
           <InfrastructureSection option={selectedOption} />

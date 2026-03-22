@@ -1,6 +1,7 @@
 import { IconRail } from '@/components/shell/icon-rail'
 import { CommandBar } from '@/components/shell/command-bar'
 import { KeyboardNav } from '@/components/shell/keyboard-nav'
+import { ChatPanel } from '@/components/ai/chat-panel'
 import { DesignProvider } from '@/context/design-context'
 
 export default function StudioLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
           <main className="relative flex-1 overflow-hidden pb-14 md:pb-0">{children}</main>
         </div>
       </div>
+      <ChatPanel />
     </DesignProvider>
   )
 }

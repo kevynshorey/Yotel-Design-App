@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Box, FileCheck, BarChart3, FolderOpen, Users } from 'lucide-react'
+import { LayoutDashboard, Box, FileCheck, BarChart3, FolderOpen, Users, Brain } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const modules = [
@@ -60,6 +60,23 @@ export function IconRail() {
           </div>
         )
       })}
+
+      {/* Spacer pushes AI button to bottom on desktop */}
+      <div className="hidden md:mt-auto md:block" />
+
+      {/* AI Assistant toggle */}
+      <div className="group relative">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('toggle-ai-chat'))}
+          className="flex flex-col items-center justify-center gap-0.5 rounded-lg px-2 py-1 text-violet-400 transition-colors hover:bg-violet-500/10 hover:text-violet-300 md:h-10 md:w-10 md:flex-row md:gap-0 md:px-0 md:py-0"
+        >
+          <Brain className="h-5 w-5" />
+          <span className="text-[9px] leading-tight md:hidden">AI</span>
+        </button>
+        <div className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 rounded bg-slate-800 px-2 py-1 text-[10px] text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 whitespace-nowrap z-50 hidden md:block">
+          AI Assistant
+        </div>
+      </div>
     </nav>
   )
 }
