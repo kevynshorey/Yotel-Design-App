@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, Sun, X } from 'lucide-react'
+import { Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, Sun, UtensilsCrossed, X } from 'lucide-react'
 import { Viewer3D } from '@/components/viewer/viewer-3d'
 import { ViewerControls } from '@/components/viewer/viewer-controls'
 import { OptionsSidebar } from '@/components/design/options-sidebar'
@@ -14,6 +14,7 @@ import { ComparisonPanel } from '@/components/design/comparison-panel'
 import { VersionPanel } from '@/components/design/version-panel'
 import { FloorPlan } from '@/components/design/floor-plan'
 import { ViewAnalysis } from '@/components/design/view-analysis'
+import { FnbDesigner } from '@/components/design/fnb-designer'
 import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
@@ -56,6 +57,7 @@ export default function DesignPage() {
   // Floor plan & view analysis overlays
   const [showFloorPlan, setShowFloorPlan] = useState(false)
   const [showViewAnalysis, setShowViewAnalysis] = useState(false)
+  const [showFnb, setShowFnb] = useState(false)
   const [floorIndex, setFloorIndex] = useState(0)
 
   const handleGenerate = useCallback(() => {
@@ -277,8 +279,27 @@ export default function DesignPage() {
           </div>
         )}
 
+        {/* F&B Designer overlay */}
+        <FnbDesigner isOpen={showFnb} onClose={() => setShowFnb(false)} />
+
         {/* Action buttons */}
         <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
+          {/* F&B Design button */}
+          {selectedOption && (
+            <button
+              onClick={() => setShowFnb((v) => !v)}
+              title="F&B Venue Design"
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+                showFnb
+                  ? 'bg-sky-600 text-white hover:bg-sky-700'
+                  : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+              }`}
+            >
+              <UtensilsCrossed size={14} />
+              F&amp;B Design
+            </button>
+          )}
+
           {/* Floor Plan button */}
           {selectedOption && (
             <button
