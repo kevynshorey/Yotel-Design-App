@@ -3,8 +3,9 @@ import type { BasemapType } from '@/engine/types'
 
 /** Site coordinates for Carlisle Bay, Bridgetown.
  *  Source: Google Maps pin from development sponsor (Kevyn Shorey).
- *  https://maps.app.goo.gl/N2GWpi8wS577mAvi8 */
-const SITE_LAT = 13.090646
+ *  https://maps.app.goo.gl/N2GWpi8wS577mAvi8
+ *  Adjusted ~35m south to align boundary with correct parcel. */
+const SITE_LAT = 13.090330
 const SITE_LON = -59.608705
 
 /** Tile URL generators for each basemap type. */
