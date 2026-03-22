@@ -1,12 +1,14 @@
 import * as THREE from 'three'
 import type { BasemapType } from '@/engine/types'
 
-/** Site coordinates for Carlisle Bay, Bridgetown.
- *  Source: Google Maps pin from development sponsor (Kevyn Shorey).
- *  https://maps.app.goo.gl/N2GWpi8wS577mAvi8
- *  Adjusted ~35m south to align boundary with correct parcel. */
-const SITE_LAT = 13.090330
-const SITE_LON = -59.608705
+/** Site coordinates for Carlisle Bay, Bridgetown — Woodside, Bay Street.
+ *  Derived from survey plan "Woodside Bay St (Soft Copy)-Model.pdf"
+ *  using Barbados National Grid → WGS84 conversion:
+ *    T567A (SW): E 24,497.45 / N 65,180.58 → 13.087619, -59.611850
+ *    SE corner:  E 24,617.78 / N 65,188.37 → 13.087689, -59.610740
+ *  Full-plot centroid (~30m north of S edge): */
+const SITE_LAT = 13.08789
+const SITE_LON = -59.61130
 
 /** Tile URL generators for each basemap type. */
 const TILE_URL: Record<string, (z: number, y: number, x: number) => string> = {
