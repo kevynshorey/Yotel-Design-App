@@ -1,9 +1,11 @@
 import * as THREE from 'three'
 import type { BasemapType } from '@/engine/types'
 
-/** Site coordinates for Carlisle Bay, Bridgetown (from mapData.js). */
-const SITE_LAT = 13.090456
-const SITE_LON = -59.608805
+/** Site coordinates for Carlisle Bay, Bridgetown.
+ *  Source: Revit project location via Dynamo 0a_site_boundary.py fallback.
+ *  Places site on Bay Street facing Carlisle Bay beach (west). */
+const SITE_LAT = 13.0969
+const SITE_LON = -59.6145
 
 /** Tile URL generators for each basemap type. */
 const TILE_URL: Record<string, (z: number, y: number, x: number) => string> = {

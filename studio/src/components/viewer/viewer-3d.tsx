@@ -109,15 +109,15 @@ interface Viewer3DProps {
  *  offset boundary origin (buildableMinX, buildableMinY) so buildings
  *  render correctly within the boundary overlays. */
 const BUILD_X = 35.597  // SITE.buildableMinX from site.ts
-const BUILD_Z = 8.403   // SITE.buildableMinY from site.ts
+const BUILD_Z = -8.403  // -SITE.buildableMinY (negated: Revit +Y=North → Three.js -Z=North)
 
 /** Camera preset positions / targets */
 const PRESET_CAMERAS: Record<string, { position: [number, number, number]; target: [number, number, number] }> = {
-  '3D':       { position: [120, 80, 80],   target: [75, 0, 30] },
-  'Plan':     { position: [75, 150, 30],   target: [75, 0, 30] },
-  'South':    { position: [75, 30, -50],   target: [75, 15, 33] },
-  'West':     { position: [-50, 30, 33],   target: [75, 15, 33] },
-  'Overview': { position: [200, 120, 150], target: [60, 0, 30] },
+  '3D':       { position: [120, 80, -80],   target: [75, 0, -30] },
+  'Plan':     { position: [75, 150, -30],   target: [75, 0, -30] },
+  'South':    { position: [75, 30, 50],     target: [75, 15, -33] },
+  'West':     { position: [-50, 30, -33],   target: [75, 15, -33] },
+  'Overview': { position: [200, 120, -150], target: [60, 0, -30] },
 }
 
 /** Create amenity meshes (pool, rooftop, restaurant, palms) relative to building placement. */
@@ -137,7 +137,7 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   })
   const poolMesh = new THREE.Mesh(poolGeo, poolMat)
   poolMesh.rotation.x = -Math.PI / 2
-  poolMesh.position.set(BUILD_X - 10 - 3, 0.02, BUILD_Z + 6)
+  poolMesh.position.set(BUILD_X - 10 - 3, 0.02, BUILD_Z - 6)
   poolMesh.receiveShadow = true
   group.add(poolMesh)
 
@@ -151,7 +151,7 @@ function buildAmenities(buildingTopY: number): THREE.Group {
     opacity: 0.85,
   })
   const barMesh = new THREE.Mesh(barGeo, barMat)
-  barMesh.position.set(BUILD_X + 3, buildingTopY + 1.5, BUILD_Z + 2)
+  barMesh.position.set(BUILD_X + 3, buildingTopY + 1.5, BUILD_Z - 2)
   barMesh.castShadow = true
   group.add(barMesh)
 
@@ -159,12 +159,12 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   const loungerGeo = new THREE.BoxGeometry(2, 0.15, 0.7)
   const loungerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
   const loungerPositions = [
-    [BUILD_X + 12, BUILD_Z + 2],
-    [BUILD_X + 12, BUILD_Z + 4],
-    [BUILD_X + 12, BUILD_Z + 6],
-    [BUILD_X + 15, BUILD_Z + 2],
-    [BUILD_X + 15, BUILD_Z + 4],
-    [BUILD_X + 15, BUILD_Z + 6],
+    [BUILD_X + 12, BUILD_Z - 2],
+    [BUILD_X + 12, BUILD_Z - 4],
+    [BUILD_X + 12, BUILD_Z - 6],
+    [BUILD_X + 15, BUILD_Z - 2],
+    [BUILD_X + 15, BUILD_Z - 4],
+    [BUILD_X + 15, BUILD_Z - 6],
   ]
   for (const [lx, lz] of loungerPositions) {
     const lounger = new THREE.Mesh(loungerGeo, loungerMat)
@@ -185,7 +185,7 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   })
   const roofPoolMesh = new THREE.Mesh(roofPoolGeo, roofPoolMat)
   roofPoolMesh.rotation.x = -Math.PI / 2
-  roofPoolMesh.position.set(BUILD_X + 6, buildingTopY + 0.02, BUILD_Z + 10)
+  roofPoolMesh.position.set(BUILD_X + 6, buildingTopY + 0.02, BUILD_Z - 10)
   group.add(roofPoolMesh)
 
   // ── Ground-level restaurant ──
@@ -198,7 +198,7 @@ function buildAmenities(buildingTopY: number): THREE.Group {
     opacity: 0.7,
   })
   const restRoof = new THREE.Mesh(restRoofGeo, restRoofMat)
-  restRoof.position.set(BUILD_X - 10 - 3, 4, BUILD_Z + 6 + 10)
+  restRoof.position.set(BUILD_X - 10 - 3, 4, BUILD_Z - 6 - 10)
   restRoof.castShadow = true
   group.add(restRoof)
 
@@ -209,7 +209,7 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   ]
   for (const [ox, oz] of postOffsets) {
     const post = new THREE.Mesh(postGeo, postMat)
-    post.position.set(BUILD_X - 13 + ox, 2, BUILD_Z + 16 + oz)
+    post.position.set(BUILD_X - 13 + ox, 2, BUILD_Z - 16 + oz)
     group.add(post)
   }
 
@@ -220,14 +220,14 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   const canopyMat = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.7 })
 
   const treePositions = [
-    [BUILD_X - 25, BUILD_Z - 2],
-    [BUILD_X - 22, BUILD_Z + 14],
-    [BUILD_X - 18, BUILD_Z - 4],
-    [BUILD_X - 28, BUILD_Z + 6],
-    [BUILD_X - 20, BUILD_Z + 20],
-    [BUILD_X - 26, BUILD_Z + 18],
-    [BUILD_X - 15, BUILD_Z + 22],
-    [BUILD_X - 30, BUILD_Z + 10],
+    [BUILD_X - 25, BUILD_Z + 2],
+    [BUILD_X - 22, BUILD_Z - 14],
+    [BUILD_X - 18, BUILD_Z + 4],
+    [BUILD_X - 28, BUILD_Z - 6],
+    [BUILD_X - 20, BUILD_Z - 20],
+    [BUILD_X - 26, BUILD_Z - 18],
+    [BUILD_X - 15, BUILD_Z - 22],
+    [BUILD_X - 30, BUILD_Z - 10],
   ]
   for (const [tx, tz] of treePositions) {
     const trunk = new THREE.Mesh(trunkGeo, trunkMat)
@@ -547,7 +547,7 @@ export function Viewer3D({
         mesh.position.set(
           wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2) + BUILD_X,
           yPos,
-          wing.y + (wing.direction === 'EW' ? wing.width / 2 : wing.length / 2) + BUILD_Z,
+          -(wing.y + (wing.direction === 'EW' ? wing.width / 2 : wing.length / 2)) + BUILD_Z,
         )
         mesh.castShadow = true
         mesh.receiveShadow = true

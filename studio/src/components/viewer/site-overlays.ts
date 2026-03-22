@@ -2,14 +2,26 @@ import * as THREE from 'three'
 import { ORIGINAL_BOUNDARY, OFFSET_BOUNDARY } from '@/config/site'
 import type { Point2D } from '@/engine/types'
 
+/** Map site coordinates to Three.js world coordinates.
+ *  Revit/Dynamo: +X = East, +Y = North
+ *  Three.js:     +X = East, +Z = South (i.e. -Y)
+ *  We negate Y → Z so north stays north on the satellite basemap. */
+function siteToWorld(p: Point2D): [number, number] {
+  return [p.x, -p.y]
+}
+
 function createBoundaryLine(
   points: Point2D[],
   color: number,
   dashed: boolean = false,
   y: number = 0.1,
 ): THREE.Line {
-  const positions = points.flatMap(p => [p.x, y, p.y])
-  positions.push(points[0].x, y, points[0].y)
+  const positions = points.flatMap(p => {
+    const [wx, wz] = siteToWorld(p)
+    return [wx, y, wz]
+  })
+  const [cx, cz] = siteToWorld(points[0])
+  positions.push(cx, y, cz)
 
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
@@ -32,7 +44,7 @@ export function addSiteOverlays(scene: THREE.Scene) {
     new THREE.MeshStandardMaterial({ color: 0xd4d4d4, roughness: 1 }),
   )
   ground.rotation.x = -Math.PI / 2
-  ground.position.set(60, -0.01, 30)
+  ground.position.set(60, -0.01, -30)
   ground.receiveShadow = true
   scene.add(ground)
 }
