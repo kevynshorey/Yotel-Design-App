@@ -232,9 +232,11 @@ function DesignPageInner() {
   }, [router, isPending, handleGenerate, selectOption, options, selectedOption, compareMode, handleToggleCompareMode, showFloorPlan, showViewAnalysis, showTable])
 
   return (
-    <div className="flex h-full">
-      {/* Main viewport */}
-      <div className="relative flex-1">
+    <div className="flex h-full flex-col md:flex-row">
+      {/* Main viewport + panels wrapper — scrollable on mobile */}
+      <div className="flex flex-1 flex-col min-h-0 overflow-y-auto md:overflow-visible">
+        {/* 3D viewport area */}
+        <div className="relative flex-shrink-0 h-[50vh] md:h-full md:flex-1">
         <Viewer3D
           selectedOption={selectedOption}
           className="h-full w-full"
@@ -279,11 +281,13 @@ function DesignPageInner() {
         {/* Loading overlay */}
         {isPending && <GeneratingOverlay />}
 
-        {/* Floating overlays */}
-        <MetricsPanel option={selectedOption} />
-        <ScoringPanel option={selectedOption} />
+        {/* Floating overlays — absolute positioned on md+, hidden on mobile (shown below viewport instead) */}
+        <div className="hidden md:block">
+          <MetricsPanel option={selectedOption} />
+          <ScoringPanel option={selectedOption} />
+          <AmenityPanel amenities={selectedOption?.amenities} />
+        </div>
         <GeneratorControls onGenerate={handleGenerate} isGenerating={isPending} />
-        <AmenityPanel amenities={selectedOption?.amenities} />
 
         {/* Floor Plan overlay — replaces 3D viewport */}
         {showFloorPlan && (
@@ -311,7 +315,7 @@ function DesignPageInner() {
 
         {/* View Analysis floating panel */}
         {showViewAnalysis && (
-          <div className="absolute bottom-0 right-0 top-0 z-30 w-[380px] border-l border-slate-800 bg-slate-950 shadow-2xl">
+          <div className="absolute bottom-0 right-0 top-0 z-30 w-full md:w-[380px] border-l border-slate-800 bg-slate-950 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2">
               <h2 className="text-sm font-semibold text-slate-200">
                 View &amp; Sun Analysis
@@ -350,17 +354,17 @@ function DesignPageInner() {
           onClose={() => setShowTable(false)}
         />
 
-        {/* Action buttons */}
-        <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
+        {/* Action buttons — scrollable row on mobile, positioned bottom-right on md+ */}
+        <div className="absolute bottom-2 right-2 left-2 md:left-auto md:bottom-4 md:right-4 z-20 flex items-center gap-1.5 md:gap-2 overflow-x-auto pb-1 md:pb-0 md:overflow-visible">
           {/* Table View button */}
           {options.length > 0 && (
             <button
               onClick={() => setShowTable(true)}
               title="Table View"
-              className="flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+              className="flex items-center gap-1.5 md:gap-2 rounded-lg bg-[#0f172a] px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b] flex-shrink-0"
             >
               <LayoutList size={14} />
-              Table View
+              <span className="hidden sm:inline">Table View</span>
             </button>
           )}
 
@@ -369,14 +373,14 @@ function DesignPageInner() {
             <button
               onClick={() => setShowFnb((v) => !v)}
               title="F&B Venue Design"
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+              className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
                 showFnb
                   ? 'bg-sky-600 text-white hover:bg-sky-700'
                   : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
               }`}
             >
               <UtensilsCrossed size={14} />
-              F&amp;B Design
+              <span className="hidden sm:inline">F&amp;B</span>
             </button>
           )}
 
@@ -385,14 +389,14 @@ function DesignPageInner() {
             <button
               onClick={() => setShowBoh((v) => !v)}
               title="Back of House Operations"
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+              className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
                 showBoh
                   ? 'bg-sky-600 text-white hover:bg-sky-700'
                   : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
               }`}
             >
               <Wrench size={14} />
-              BOH Ops
+              <span className="hidden sm:inline">BOH</span>
             </button>
           )}
 
@@ -401,14 +405,14 @@ function DesignPageInner() {
             <button
               onClick={() => setShowPoolDeck((v) => !v)}
               title="Pool Deck Design"
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+              className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
                 showPoolDeck
                   ? 'bg-sky-600 text-white hover:bg-sky-700'
                   : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
               }`}
             >
               <Waves size={14} />
-              Pool Deck
+              <span className="hidden sm:inline">Pool</span>
             </button>
           )}
 
@@ -420,14 +424,14 @@ function DesignPageInner() {
                 if (showViewAnalysis) setShowViewAnalysis(false)
               }}
               title="Floor Plans"
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+              className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
                 showFloorPlan
                   ? 'bg-sky-600 text-white hover:bg-sky-700'
                   : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
               }`}
             >
               <LayoutGrid size={14} />
-              Floor Plan
+              <span className="hidden sm:inline">Floor Plan</span>
             </button>
           )}
 
@@ -439,14 +443,14 @@ function DesignPageInner() {
                 if (showFloorPlan) setShowFloorPlan(false)
               }}
               title="View &amp; Sun Analysis"
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+              className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
                 showViewAnalysis
                   ? 'bg-sky-600 text-white hover:bg-sky-700'
                   : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
               }`}
             >
               <Sun size={14} />
-              Views
+              <span className="hidden sm:inline">Views</span>
             </button>
           )}
 
@@ -455,10 +459,10 @@ function DesignPageInner() {
             <button
               onClick={() => setShowVersions(true)}
               title="Version History"
-              className="flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+              className="flex items-center gap-1.5 md:gap-2 rounded-lg bg-[#0f172a] px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b] flex-shrink-0"
             >
               <Clock size={14} />
-              History
+              <span className="hidden sm:inline">History</span>
             </button>
           )}
 
@@ -467,35 +471,35 @@ function DesignPageInner() {
             <button
               onClick={handleToggleCompareMode}
               title={compareMode ? 'Exit compare mode (C)' : 'Compare options (C)'}
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium shadow-lg transition-colors ${
+              className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
                 compareMode
                   ? 'bg-sky-600 text-white hover:bg-sky-700'
                   : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
               }`}
             >
               <GitCompareArrows size={14} />
-              {compareMode ? 'Exit Compare' : 'Compare'}
+              <span className="hidden sm:inline">{compareMode ? 'Exit Compare' : 'Compare'}</span>
             </button>
           )}
 
-          {/* Download Excel button */}
+          {/* Download Excel button — hidden on mobile */}
           {selectedOption && (
             <button
               onClick={handleExportExcel}
               title="Download Excel (TSV)"
-              className="flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+              className="hidden md:flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
             >
               <FileSpreadsheet size={14} />
               Download Excel
             </button>
           )}
 
-          {/* Export Report button */}
+          {/* Export Report button — hidden on mobile */}
           {selectedOption && (
             <button
               onClick={handleExportReport}
               title="Export Feasibility Report (PDF)"
-              className="flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+              className="hidden md:flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
             >
               <FileDown size={14} />
               Export Report
@@ -519,7 +523,15 @@ function DesignPageInner() {
           onLoad={handleLoadVersion}
           currentOption={selectedOption}
         />
-      </div>
+        </div>{/* end viewport div */}
+
+        {/* Mobile stacked panels — visible below viewport on small screens */}
+        <div className="flex flex-col gap-2 p-2 md:hidden">
+          <MetricsPanel option={selectedOption} />
+          <ScoringPanel option={selectedOption} />
+          <AmenityPanel amenities={selectedOption?.amenities} />
+        </div>
+      </div>{/* end scrollable wrapper */}
 
       {/* Right sidebar */}
       <OptionsSidebar

@@ -19,8 +19,9 @@ export function MetricsPanel({ option }: MetricsPanelProps) {
 
   const { metrics, amenities } = option
   return (
-    <FloatingPanel position="top-left">
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+    <FloatingPanel position="top-left" className="w-full md:w-auto">
+      <h3 className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1 md:hidden">Metrics</h3>
+      <div className="grid grid-cols-3 md:grid-cols-2 gap-x-4 gap-y-1 text-xs">
         <Metric label="Keys" value={metrics.totalKeys} />
         <Metric label="YOTEL" value={metrics.yotelKeys} />
         <Metric label="YOTELPAD" value={metrics.padUnits} />

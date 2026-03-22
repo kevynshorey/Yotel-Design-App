@@ -7,10 +7,10 @@ interface FloatingPanelProps {
 }
 
 const positionClasses = {
-  'top-left': 'top-3 left-3',
-  'top-right': 'top-3 right-3',
-  'bottom-left': 'bottom-3 left-3',
-  'bottom-right': 'bottom-3 right-3',
+  'top-left': 'md:top-3 md:left-3',
+  'top-right': 'md:top-3 md:right-3',
+  'bottom-left': 'md:bottom-3 md:left-3',
+  'bottom-right': 'md:bottom-3 md:right-3',
 }
 
 export function FloatingPanel({ children, className, position }: FloatingPanelProps) {
@@ -20,7 +20,9 @@ export function FloatingPanel({ children, className, position }: FloatingPanelPr
         'rounded-xl border border-white/10 bg-slate-900/85 px-3 py-2 shadow-lg backdrop-blur-xl',
         'max-h-[40vh] overflow-y-auto',
         'pointer-events-auto',
-        position && `absolute ${positionClasses[position]} z-10`,
+        // Mobile: static flow (will be stacked in a scrollable area)
+        // md+: absolute positioned floating overlays
+        position && `md:absolute ${positionClasses[position]} md:z-10`,
         className,
       )}
     >
