@@ -15,6 +15,12 @@ export function OptionCard({ option, isSelected, onSelect, isCompareTarget, comp
   const { metrics, score, validation, form } = option
   const showCompareHint = compareMode && !isSelected && !isCompareTarget
 
+  const yocValue = option.cost.total > 0
+    ? option.revenue.stabilisedNoi / option.cost.total * 100
+    : 0
+  const yieldOnCost = option.cost.total > 0 ? yocValue.toFixed(1) : '\u2014'
+  const yocColor = yocValue > 8 ? 'text-emerald-500' : yocValue >= 6 ? 'text-sky-500' : yocValue >= 4 ? 'text-amber-500' : 'text-red-500'
+
   return (
     <button
       onClick={() => onSelect(option.id)}
@@ -60,7 +66,10 @@ export function OptionCard({ option, isSelected, onSelect, isCompareTarget, comp
         <Metric label="GFA" value={`${metrics.gia.toFixed(0)}m²`} />
         <Metric label="Storeys" value={Math.round(metrics.buildingHeight / 3.2 + 1)} />
         <Metric label="$/key" value={`${(metrics.costPerKey / 1000).toFixed(0)}k`} />
-        <Metric label="Coverage" value={`${(metrics.coverage * 100).toFixed(0)}%`} />
+        <div>
+          <div className="text-slate-400">YoC</div>
+          <div className={cn('font-mono font-medium', yocColor)}>{yieldOnCost}%</div>
+        </div>
         <Metric label="Views" value={`${metrics.westFacade.toFixed(0)}m`} />
       </div>
       {option.amenities && (

@@ -125,6 +125,50 @@ export function buildOption(params: GenerationParams): DesignOption {
   }
 }
 
+/** Find optimal YT/PAD split for a given form configuration.
+ *  Tests splits from 60% to 85% YOTEL (in 5% steps) and picks
+ *  the one with highest yield on cost. */
+function optimizeUnitMix(
+  form: FormType, area: number, width: number, storeys: number
+): { ytRooms: number; padUnits: number; yieldOnCost: number } | null {
+  let bestYield = -1
+  let bestSplit = { ytRooms: 100, padUnits: 30, yieldOnCost: 0 }
+
+  // Total capacity estimate
+  const formResult = generateForm(form, area, width)
+  const wings = formResult.wings.map(w => ({ ...w, floors: storeys }))
+  const roomsFloor = roomsPerFloor(wings, 'double_loaded', YOTEL_ROOMS)
+  const upperFloors = storeys - 1
+  const maxRooms = Math.floor(roomsFloor * upperFloors)
+
+  for (let ytPct = 60; ytPct <= 85; ytPct += 5) {
+    const yt = Math.round(maxRooms * ytPct / 100)
+    const pad = maxRooms - yt
+
+    if (yt < 50 || pad < 10 || yt + pad < 80) continue
+
+    try {
+      const params: GenerationParams = {
+        form, targetFloorArea: area, wingWidth: width,
+        storeys, corridorType: 'double_loaded' as const,
+        ytRooms: yt, padUnits: pad, outdoorPosition: 'WEST' as const,
+      }
+      const opt = buildOption(params)
+      if (!opt.validation.isValid) continue
+
+      const yoc = opt.cost.total > 0 ? opt.revenue.stabilisedNoi / opt.cost.total : 0
+      if (yoc > bestYield) {
+        bestYield = yoc
+        bestSplit = { ytRooms: yt, padUnits: pad, yieldOnCost: yoc }
+      }
+    } catch {
+      continue
+    }
+  }
+
+  return bestYield > 0 ? bestSplit : null
+}
+
 export function generateAll(maxOptions: number = 50): DesignOption[] {
   optionCounter = 0
   const options: DesignOption[] = []
@@ -146,6 +190,31 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
               } catch {
                 // Skip invalid parameter combinations
               }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Add optimized unit mix options for each form/area/width/storey combo
+  for (const form of DESIGN_SPACE.forms) {
+    for (const area of DESIGN_SPACE.floorAreas) {
+      for (const width of DESIGN_SPACE.wingWidths) {
+        for (const storeys of DESIGN_SPACE.storeys) {
+          const optimal = optimizeUnitMix(form, area, width, storeys)
+          if (optimal) {
+            try {
+              const params: GenerationParams = {
+                form, targetFloorArea: area, wingWidth: width,
+                storeys, corridorType: 'double_loaded' as const,
+                ytRooms: optimal.ytRooms, padUnits: optimal.padUnits,
+                outdoorPosition: 'WEST' as const,
+              }
+              const opt = buildOption(params)
+              if (opt.validation.isValid) options.push(opt)
+            } catch {
+              // Skip invalid optimized combinations
             }
           }
         }

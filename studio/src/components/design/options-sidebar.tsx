@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { useState } from 'react'
-import type { DesignOption } from '@/engine/types'
+import type { DesignOption, FormType } from '@/engine/types'
 import { OptionCard } from './option-card'
 import { cn } from '@/lib/utils'
 
@@ -16,8 +16,44 @@ interface OptionsSidebarProps {
   compareTargetId?: string | null
 }
 
+type SortKey = 'score' | 'cost' | 'keys' | 'yield'
+
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'score', label: 'Score' },
+  { key: 'cost', label: 'Cost' },
+  { key: 'keys', label: 'Keys' },
+  { key: 'yield', label: 'Yield' },
+]
+
+const FORM_FILTERS: { key: string; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'BAR', label: 'BAR' },
+  { key: 'BAR_NS', label: 'BAR_NS' },
+  { key: 'L', label: 'L' },
+  { key: 'U', label: 'U' },
+  { key: 'C', label: 'C' },
+]
+
 export function OptionsSidebar({ options, selectedId, onSelect, compareMode, compareTargetId }: OptionsSidebarProps) {
   const [isOpen, setIsOpen] = useState(true)
+  const [sortBy, setSortBy] = useState<SortKey>('score')
+  const [filterForm, setFilterForm] = useState<string>('all')
+
+  // Filter + sort logic
+  const filtered = options
+    .filter(o => filterForm === 'all' || o.form === filterForm)
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'cost': return a.metrics.costPerKey - b.metrics.costPerKey
+        case 'keys': return b.metrics.totalKeys - a.metrics.totalKeys
+        case 'yield': {
+          const ya = a.cost.total > 0 ? a.revenue.stabilisedNoi / a.cost.total : 0
+          const yb = b.cost.total > 0 ? b.revenue.stabilisedNoi / b.cost.total : 0
+          return yb - ya
+        }
+        default: return b.score - a.score
+      }
+    })
 
   return (
     <div className={cn('relative flex h-full flex-col border-l border-slate-200 bg-white/80 backdrop-blur-sm transition-all', isOpen ? 'w-60' : 'w-0')}>
@@ -33,17 +69,51 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
         <>
           <div className="border-b px-3 py-2">
             <h3 className="text-xs font-semibold text-slate-900">
-              {options.length} Options
+              {filtered.length} of {options.length} Options
               {compareMode && (
                 <span className="ml-2 rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-600">
                   Compare Mode
                 </span>
               )}
             </h3>
+            {/* Sort pills */}
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {SORT_OPTIONS.map(s => (
+                <button
+                  key={s.key}
+                  onClick={() => setSortBy(s.key)}
+                  className={cn(
+                    'rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors',
+                    sortBy === s.key
+                      ? 'bg-sky-500/20 text-sky-400'
+                      : 'bg-slate-800 text-slate-400 hover:text-slate-300',
+                  )}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+            {/* Form filter pills */}
+            <div className="mt-1 flex flex-wrap gap-1">
+              {FORM_FILTERS.map(f => (
+                <button
+                  key={f.key}
+                  onClick={() => setFilterForm(f.key)}
+                  className={cn(
+                    'rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors',
+                    filterForm === f.key
+                      ? 'bg-sky-500/20 text-sky-400'
+                      : 'bg-slate-800 text-slate-400 hover:text-slate-300',
+                  )}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
           <ScrollArea className="flex-1 px-2 py-2">
             <div className="flex flex-col gap-2">
-              {options.map((opt) => (
+              {filtered.map((opt) => (
                 <OptionCard
                   key={opt.id}
                   option={opt}
