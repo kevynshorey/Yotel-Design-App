@@ -86,16 +86,16 @@ export function loadBasemapTiles(
            half, 0, -half,  // NE  (3)
         ])
 
-        // UVs: map image pixels to world positions
-        // Image (0,0) = top-left = NW corner of tile
-        // Image (1,0) = top-right = NE corner
-        // Image (0,1) = bottom-left = SW corner
-        // Image (1,1) = bottom-right = SE corner
+        // UVs: map tile image pixels to world vertex positions.
+        // Three.js TextureLoader uses flipY=true (default), which means:
+        //   V=0 → image TOP (= north edge of tile)
+        //   V=1 → image BOTTOM (= south edge of tile)
+        // So: NW vertex needs V=0 (north), SW vertex needs V=1 (south)
         const uvs = new Float32Array([
-          0, 0,   // vertex 0 (SW) → image bottom-left (0,1) but WebGL flips Y → (0,0)
-          1, 0,   // vertex 1 (SE) → image bottom-right
-          0, 1,   // vertex 2 (NW) → image top-left
-          1, 1,   // vertex 3 (NE) → image top-right
+          0, 1,   // vertex 0 (SW) → V=1 = image south edge ✓
+          1, 1,   // vertex 1 (SE) → V=1 = image south edge ✓
+          0, 0,   // vertex 2 (NW) → V=0 = image north edge ✓
+          1, 0,   // vertex 3 (NE) → V=0 = image north edge ✓
         ])
 
         const indices = new Uint16Array([0, 1, 2, 1, 3, 2])
