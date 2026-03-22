@@ -21,10 +21,10 @@ const DESIGN_SPACE = {
   forms: ['BAR', 'BAR_NS', 'L', 'U', 'C'] as FormType[],
   floorAreas: [650, 770, 900, 1050],
   wingWidths: [13.6, 14.0, 16.1],
-  storeys: [5, 6, 7],
+  storeys: [5, 6],
   corridors: ['double_loaded'] as CorridorType[],
-  ytRooms: [80, 90, 100, 110],
-  padUnits: [20, 25, 30, 35],
+  ytRooms: [95, 100, 105, 110],
+  padUnits: [30, 35, 40],
   outdoor: ['WEST'] as OutdoorPosition[],
 }
 
@@ -71,7 +71,7 @@ export function buildOption(params: GenerationParams): DesignOption {
   // Calculate metrics
   const totalGia = floors.reduce((sum, f) => sum + f.gia, 0)
   const totalKeys = actualYtRooms + actualPadUnits
-  if (totalKeys < 50) throw new Error('Too few keys')
+  if (totalKeys < 130) throw new Error(`Below 130-key minimum (got ${totalKeys})`)
   const height = GROUND_H + (params.storeys - 1) * FLOOR_H
   const coverage = formResult.footprint / SITE.buildableArea
   const outdoorTotal = params.outdoorPosition === 'BOTH' ? 660 + 80 :

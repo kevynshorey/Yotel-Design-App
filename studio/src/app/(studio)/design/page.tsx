@@ -379,8 +379,8 @@ function DesignPageInner() {
           onClose={() => setShowTable(false)}
         />
 
-        {/* Action buttons — scrollable row on mobile, positioned bottom-right on md+ */}
-        <div className="absolute bottom-2 right-2 left-2 md:left-auto md:bottom-4 md:right-4 z-20 flex items-center gap-1.5 md:gap-2 overflow-x-auto pb-1 md:pb-0 md:overflow-visible">
+        {/* Action buttons — scrollable row on both mobile and desktop */}
+        <div className="absolute bottom-2 right-2 left-2 md:bottom-4 md:right-4 md:left-4 z-20 flex items-center gap-1.5 md:gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
           {/* Table View button */}
           {options.length > 0 && (
             <button
@@ -537,34 +537,37 @@ function DesignPageInner() {
             </button>
           )}
 
-          {/* DXF CAD Export button — admin only, hidden on mobile */}
+          {/* DXF CAD Export button — admin only */}
           {selectedOption && allowExport && (
             <ExportDxfButton option={selectedOption} />
           )}
 
-          {/* Download Excel button — admin only, hidden on mobile */}
+          {/* Download Excel button — admin only */}
           {selectedOption && allowExport && (
             <button
               onClick={handleExportExcel}
               title="Download Excel (TSV)"
-              className="hidden md:flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+              className="flex items-center gap-1.5 md:gap-2 rounded-lg bg-[#0f172a] px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b] flex-shrink-0"
             >
               <FileSpreadsheet size={14} />
-              Download Excel
+              <span className="hidden sm:inline">Excel</span>
             </button>
           )}
 
-          {/* Export Report button — admin only, hidden on mobile */}
+          {/* Export Report button — admin only */}
           {selectedOption && allowExport && (
             <button
               onClick={handleExportReport}
               title="Export Feasibility Report (PDF)"
-              className="hidden md:flex items-center gap-2 rounded-lg bg-[#0f172a] px-3 py-2 text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b]"
+              className="flex items-center gap-1.5 md:gap-2 rounded-lg bg-[#0f172a] px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium text-white shadow-lg transition-colors hover:bg-[#1e293b] flex-shrink-0"
             >
               <FileDown size={14} />
-              Export Report
+              <span className="hidden sm:inline">Report</span>
             </button>
           )}
+
+          {/* Right spacer so last button isn't flush with edge when scrolling */}
+          <div className="flex-shrink-0 w-1" aria-hidden="true" />
         </div>
 
         {/* Comparison panel */}

@@ -9,7 +9,7 @@ interface ScoringPanelProps {
 export function ScoringPanel({ option }: ScoringPanelProps) {
   if (!option) {
     return (
-      <FloatingPanel position="top-right" className="w-full md:w-64">
+      <FloatingPanel position="scoring" className="w-full md:w-64">
         <div className="flex h-24 flex-col items-center justify-center rounded-lg border border-dashed border-slate-700">
           <p className="text-xs text-slate-400">Select an option</p>
           <p className="text-[10px] text-slate-300">to view scoring</p>
@@ -19,7 +19,7 @@ export function ScoringPanel({ option }: ScoringPanelProps) {
   }
 
   return (
-    <FloatingPanel position="top-right" className="w-full md:w-64">
+    <FloatingPanel position="scoring" className="w-full md:w-64">
       <h3 className="text-xs font-semibold text-slate-100">
         Score: <span className="font-mono text-base text-sky-400">{option.score.toFixed(1)}</span>
       </h3>

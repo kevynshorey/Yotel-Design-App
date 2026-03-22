@@ -15,7 +15,7 @@ export function GeneratorControls({ onGenerate, isGenerating }: GeneratorControl
   const allowed = canGenerate(user)
 
   return (
-    <FloatingPanel position="bottom-left" className="w-72">
+    <FloatingPanel position="generator" className="w-72">
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-semibold text-slate-900">Generator</h3>
         <div className="relative group">

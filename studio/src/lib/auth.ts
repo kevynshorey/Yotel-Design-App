@@ -68,11 +68,22 @@ export function getUserFromCookie(): AppUser | null {
   return null
 }
 
-/** React hook — reads user from cookie on mount and after login events */
+/** React hook — reads user from cookie on mount and after login events.
+ *  Initialises eagerly (SSR-safe) so the very first client render already
+ *  reflects the cookie value — prevents a flash of "view-only" state that
+ *  disables the Generate button for admin users. */
 export function useUser(): AppUser | null {
-  const [user, setUser] = useState<AppUser | null>(null)
+  const [user, setUser] = useState<AppUser | null>(() => {
+    // Eagerly read cookie during initial state — safe because this only
+    // runs on the client (the component tree is 'use client').
+    if (typeof document !== 'undefined') {
+      return getUserFromCookie()
+    }
+    return null
+  })
 
   useEffect(() => {
+    // Re-sync in case the cookie changed between SSR and hydration
     setUser(getUserFromCookie())
 
     const handler = () => setUser(getUserFromCookie())

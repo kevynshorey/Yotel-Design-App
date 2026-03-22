@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import {
   Box,
   LayoutGrid,
@@ -12,6 +13,8 @@ import {
   Sun,
   Sunset,
   Moon,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react'
 
 interface ViewerControlsProps {
@@ -131,9 +134,11 @@ export function ViewerControls({
   timeOfDay,
   onTimeOfDayChange,
 }: ViewerControlsProps) {
+  const [expanded, setExpanded] = useState(false)
+
   return (
-    <div className="absolute right-3 top-3 z-10 flex flex-col gap-2 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-xl p-2">
-      {/* Camera Presets */}
+    <div className="absolute right-3 top-3 z-[15] flex flex-col gap-2 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-xl p-2 max-w-[200px]">
+      {/* Camera Presets — always visible */}
       <div>
         <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
           Camera
@@ -152,94 +157,8 @@ export function ViewerControls({
         </div>
       </div>
 
-      {/* Separator */}
+      {/* View Options — always visible (the toggles) */}
       <div className="border-t border-white/10" />
-
-      {/* Walkthrough & Cinematic */}
-      <div>
-        <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
-          Walkthrough
-        </div>
-        <div className="flex gap-0.5">
-          <IconButton
-            active={isWalking}
-            onClick={onWalkthrough}
-            title={isWalking ? 'Exit walkthrough (ESC)' : 'First-person walkthrough'}
-          >
-            <Footprints size={16} />
-          </IconButton>
-          <IconButton
-            active={isCinematic}
-            onClick={onCinematic}
-            title={isCinematic ? 'Stop fly-around' : 'Cinematic fly-around'}
-          >
-            <Video size={16} />
-          </IconButton>
-        </div>
-        {isWalking && (
-          <div className="mt-1 rounded bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
-            Click to look, WASD to move, ESC to exit
-          </div>
-        )}
-        {isCinematic && (
-          <div className="mt-1 rounded bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
-            Cinematic fly-around playing...
-          </div>
-        )}
-      </div>
-
-      {/* Separator */}
-      <div className="border-t border-white/10" />
-
-      {/* Time of Day */}
-      <div>
-        <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
-          Time of Day
-        </div>
-        <div className="flex gap-0.5">
-          {TIME_PRESETS.map(({ id, label, Icon }) => (
-            <IconButton
-              key={id}
-              active={timeOfDay === id}
-              onClick={() => onTimeOfDayChange(id)}
-              title={label}
-            >
-              <Icon size={16} />
-            </IconButton>
-          ))}
-        </div>
-      </div>
-
-      {/* Separator */}
-      <div className="border-t border-white/10" />
-
-      {/* Basemap */}
-      <div>
-        <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
-          Basemap
-        </div>
-        <div className="flex gap-0.5">
-          {BASEMAP_OPTIONS.map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onBasemapChange(id)}
-              className={`rounded-lg px-2 py-1 text-xs transition-colors ${
-                activeBasemap === id
-                  ? 'bg-sky-500/20 text-sky-400'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Separator */}
-      <div className="border-t border-white/10" />
-
-      {/* View Options */}
       <div>
         <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
           View Options
@@ -262,6 +181,98 @@ export function ViewerControls({
           />
         </div>
       </div>
+
+      {/* Expand/collapse for additional controls */}
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="flex w-full items-center justify-center gap-1 rounded-lg py-1 text-[10px] text-white/50 transition-colors hover:bg-white/10 hover:text-white/80"
+      >
+        {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+        {expanded ? 'Less' : 'More controls'}
+      </button>
+
+      {expanded && (
+        <>
+          {/* Walkthrough & Cinematic */}
+          <div className="border-t border-white/10" />
+          <div>
+            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+              Walkthrough
+            </div>
+            <div className="flex gap-0.5">
+              <IconButton
+                active={isWalking}
+                onClick={onWalkthrough}
+                title={isWalking ? 'Exit walkthrough (ESC)' : 'First-person walkthrough'}
+              >
+                <Footprints size={16} />
+              </IconButton>
+              <IconButton
+                active={isCinematic}
+                onClick={onCinematic}
+                title={isCinematic ? 'Stop fly-around' : 'Cinematic fly-around'}
+              >
+                <Video size={16} />
+              </IconButton>
+            </div>
+            {isWalking && (
+              <div className="mt-1 rounded bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
+                Click to look, WASD to move, ESC to exit
+              </div>
+            )}
+            {isCinematic && (
+              <div className="mt-1 rounded bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
+                Cinematic fly-around playing...
+              </div>
+            )}
+          </div>
+
+          {/* Time of Day */}
+          <div className="border-t border-white/10" />
+          <div>
+            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+              Time of Day
+            </div>
+            <div className="flex gap-0.5">
+              {TIME_PRESETS.map(({ id, label, Icon }) => (
+                <IconButton
+                  key={id}
+                  active={timeOfDay === id}
+                  onClick={() => onTimeOfDayChange(id)}
+                  title={label}
+                >
+                  <Icon size={16} />
+                </IconButton>
+              ))}
+            </div>
+          </div>
+
+          {/* Basemap */}
+          <div className="border-t border-white/10" />
+          <div>
+            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+              Basemap
+            </div>
+            <div className="flex gap-0.5">
+              {BASEMAP_OPTIONS.map(({ id, label }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => onBasemapChange(id)}
+                  className={`rounded-lg px-2 py-1 text-xs transition-colors ${
+                    activeBasemap === id
+                      ? 'bg-sky-500/20 text-sky-400'
+                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
