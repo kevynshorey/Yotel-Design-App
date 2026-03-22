@@ -9,9 +9,11 @@ interface OptionCardProps {
   onSelect: (id: string) => void
   isCompareTarget?: boolean
   compareMode?: boolean
+  isFavourite?: boolean
+  onToggleFavourite?: () => void
 }
 
-export function OptionCard({ option, isSelected, onSelect, isCompareTarget, compareMode }: OptionCardProps) {
+export function OptionCard({ option, isSelected, onSelect, isCompareTarget, compareMode, isFavourite, onToggleFavourite }: OptionCardProps) {
   const { metrics, score, validation, form } = option
   const showCompareHint = compareMode && !isSelected && !isCompareTarget
   const isCurated = !!option.curatedName
@@ -37,6 +39,33 @@ export function OptionCard({ option, isSelected, onSelect, isCompareTarget, comp
               : 'border-slate-200 bg-white hover:border-slate-300',
       )}
     >
+      {/* Favourite toggle */}
+      {onToggleFavourite && (
+        <span
+          role="button"
+          tabIndex={-1}
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggleFavourite()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.stopPropagation()
+              onToggleFavourite()
+            }
+          }}
+          className={cn(
+            'absolute right-1.5 top-1.5 z-20 flex h-5 w-5 items-center justify-center rounded-full transition-colors',
+            isFavourite
+              ? 'text-amber-400 hover:text-amber-300'
+              : 'text-slate-300 opacity-0 group-hover:opacity-100 hover:text-amber-400',
+          )}
+          title={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
+        >
+          <Star className={cn('h-3.5 w-3.5', isFavourite && 'fill-amber-400')} />
+        </span>
+      )}
+
       {/* Compare badges */}
       {isSelected && compareMode && (
         <span className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-sky-400 text-[10px] font-bold text-white shadow">

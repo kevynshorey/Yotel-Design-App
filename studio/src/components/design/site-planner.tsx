@@ -8,6 +8,7 @@ import {
   SITE,
   PLANNING_REGS,
 } from '@/config/site'
+import type { DesignOption } from '@/engine/types'
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -351,20 +352,123 @@ function runComplianceChecks(items: PlaceableItem[]): ComplianceCheck[] {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Derive layout items from a DesignOption                            */
+/* ------------------------------------------------------------------ */
+
+/** Material colours matching the 3D viewer */
+const WING_COLORS: Record<string, { fill: string; stroke: string }> = {
+  FOH_BOH: { fill: '#D4B896', stroke: '#b89e7a' },
+  YOTEL:   { fill: '#1A6B5C', stroke: '#145a4d' },
+  YOTELPAD: { fill: '#C4756E', stroke: '#a5615b' },
+  ROOFTOP: { fill: '#E8DCC8', stroke: '#c9bfad' },
+}
+
+function itemsFromOption(option: DesignOption): PlaceableItem[] {
+  const items: PlaceableItem[] = []
+
+  // Place each wing as a building block.
+  // Wings define x, y in site-relative metres (origin = buildable zone corner).
+  // We offset by SITE.buildableMinX / Y so they sit in the correct place on
+  // the site boundary coordinate system used by the SVG.
+  const baseX = SITE.buildableMinX ?? 35.597
+  const baseY = SITE.buildableMinY ?? 8.403
+
+  for (const wing of option.wings) {
+    const w = wing.direction === 'EW' ? wing.length : wing.width
+    const h = wing.direction === 'EW' ? wing.width : wing.length
+
+    // Determine the primary use for colouring based on the floor stack
+    const topFloor = option.floors[option.floors.length - 1]
+    const groundFloor = option.floors[0]
+    const primaryUse = option.floors.length > 2
+      ? option.floors[1]?.use ?? 'YOTEL'
+      : groundFloor?.use ?? 'YOTEL'
+    const colours = WING_COLORS[primaryUse] ?? { fill: '#14b8a6', stroke: '#0d9488' }
+
+    items.push({
+      id: `wing-${wing.id}`,
+      label: wing.label,
+      type: 'building',
+      x: baseX + wing.x,
+      y: baseY + wing.y,
+      w,
+      h,
+      fill: colours.fill,
+      stroke: colours.stroke,
+      floors: option.floors.length,
+    })
+  }
+
+  // Add default amenity items (pool, cabanas etc.) positioned relative to the
+  // first wing so they make contextual sense.
+  const firstWing = option.wings[0]
+  if (firstWing) {
+    const wx = baseX + firstWing.x
+    const wy = baseY + firstWing.y
+    const wh = firstWing.direction === 'EW' ? firstWing.width : firstWing.length
+
+    items.push({
+      id: 'pool',
+      label: 'Pool',
+      type: 'amenity',
+      x: wx,
+      y: wy + wh + 2,
+      w: 15,
+      h: 8,
+      fill: '#3b82f6',
+      stroke: '#2563eb',
+      rx: 3,
+      ry: 3,
+    })
+
+    items.push({
+      id: 'pool-bar',
+      label: 'Pool Bar',
+      type: 'amenity',
+      x: wx + 17,
+      y: wy + wh + 4,
+      w: 4,
+      h: 4,
+      fill: '#f59e0b',
+      stroke: '#d97706',
+    })
+
+    // Cabanas
+    for (let i = 0; i < 3; i++) {
+      items.push({
+        id: `cabana-${i + 1}`,
+        label: `Cabana ${i + 1}`,
+        type: 'amenity',
+        x: wx + 24 + i * 4,
+        y: wy + wh + 4,
+        w: 3,
+        h: 3,
+        fill: '#92400e',
+        stroke: '#78350f',
+      })
+    }
+  }
+
+  return items
+}
+
+/* ------------------------------------------------------------------ */
 /*  Component props                                                    */
 /* ------------------------------------------------------------------ */
 
 interface SitePlannerProps {
   isOpen: boolean
   onClose: () => void
+  selectedOption?: DesignOption | null
 }
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-export function SitePlanner({ isOpen, onClose }: SitePlannerProps) {
-  // Items state
+export function SitePlanner({ isOpen, onClose, selectedOption }: SitePlannerProps) {
+  // Items state — derived from selectedOption when available, else fall back to
+  // localStorage or DEFAULT_ITEMS.
   const [items, setItems] = useState<PlaceableItem[]>(() => {
     if (typeof window === 'undefined') return DEFAULT_ITEMS
     const stored = localStorage.getItem('yotel-site-planner')
@@ -377,6 +481,16 @@ export function SitePlanner({ isOpen, onClose }: SitePlannerProps) {
     }
     return DEFAULT_ITEMS
   })
+
+  // Re-derive items when the selected design option changes
+  const prevOptionIdRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!selectedOption) return
+    // Only update when the option actually changes
+    if (prevOptionIdRef.current === selectedOption.id) return
+    prevOptionIdRef.current = selectedOption.id
+    setItems(itemsFromOption(selectedOption))
+  }, [selectedOption])
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [dragState, setDragState] = useState<{
@@ -491,12 +605,12 @@ export function SitePlanner({ isOpen, onClose }: SitePlannerProps) {
     return () => window.removeEventListener('keydown', handleKey)
   }, [isOpen, selectedId])
 
-  // Reset handler
+  // Reset handler — revert to option-derived layout or default
   const handleReset = useCallback(() => {
-    setItems(DEFAULT_ITEMS)
+    setItems(selectedOption ? itemsFromOption(selectedOption) : DEFAULT_ITEMS)
     setSelectedId(null)
     localStorage.removeItem('yotel-site-planner')
-  }, [])
+  }, [selectedOption])
 
   // Save handler
   const handleSave = useCallback(() => {
@@ -528,6 +642,11 @@ export function SitePlanner({ isOpen, onClose }: SitePlannerProps) {
       <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2">
         <h2 className="text-sm font-semibold text-slate-200">
           Interactive Site Planner
+          {selectedOption && (
+            <span className="ml-2 font-normal text-slate-400">
+              — {selectedOption.curatedName ?? `Option ${selectedOption.id}`} ({selectedOption.form})
+            </span>
+          )}
         </h2>
         <div className="flex items-center gap-2">
           <button

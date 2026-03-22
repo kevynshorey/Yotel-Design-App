@@ -540,13 +540,14 @@ export function Viewer3D({
           opacity: 0.85,
         })
 
+        const geoH = h - 0.1
         const geometry = new THREE.BoxGeometry(
           wing.direction === 'EW' ? wing.length : wing.width,
-          h - 0.1,
+          geoH,
           wing.direction === 'EW' ? wing.width : wing.length,
         )
         const mesh = new THREE.Mesh(geometry, mat)
-        const yPos = currentY + h / 2
+        const yPos = currentY + geoH / 2
         mesh.position.set(
           wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2) + BUILD_X,
           yPos,

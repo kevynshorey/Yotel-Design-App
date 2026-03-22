@@ -1,11 +1,34 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { ChevronRight, ChevronLeft } from 'lucide-react'
-import { useState } from 'react'
+import { ChevronRight, ChevronLeft, Star } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
 import type { DesignOption, FormType } from '@/engine/types'
 import { OptionCard } from './option-card'
 import { cn } from '@/lib/utils'
+
+const FAVOURITES_KEY = 'yotel-favourites'
+
+function loadFavourites(): Set<string> {
+  try {
+    const raw = localStorage.getItem(FAVOURITES_KEY)
+    if (raw) {
+      const arr = JSON.parse(raw)
+      if (Array.isArray(arr)) return new Set(arr)
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return new Set()
+}
+
+function saveFavourites(favs: Set<string>) {
+  try {
+    localStorage.setItem(FAVOURITES_KEY, JSON.stringify([...favs]))
+  } catch {
+    // ignore storage errors
+  }
+}
 
 interface OptionsSidebarProps {
   options: DesignOption[]
@@ -26,6 +49,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 
 const FORM_FILTERS: { key: string; label: string }[] = [
   { key: 'all', label: 'All' },
+  { key: 'favourites', label: '\u2605 Favourites' },
   { key: 'BAR', label: 'BAR' },
   { key: 'BAR_NS', label: 'BAR_NS' },
   { key: 'L', label: 'L' },
@@ -38,17 +62,42 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
   const [mobileExpanded, setMobileExpanded] = useState(false)
   const [sortBy, setSortBy] = useState<SortKey>('score')
   const [filterForm, setFilterForm] = useState<string>('all')
+  const [favourites, setFavourites] = useState<Set<string>>(() => loadFavourites())
+
+  // Persist favourites to localStorage whenever they change
+  useEffect(() => {
+    saveFavourites(favourites)
+  }, [favourites])
+
+  const toggleFavourite = useCallback((id: string) => {
+    setFavourites(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }, [])
 
   // Filter + sort logic
   const filtered = options
-    .filter(o => filterForm === 'all' || o.form === filterForm)
+    .filter(o => {
+      if (filterForm === 'all') return true
+      if (filterForm === 'favourites') return favourites.has(o.id)
+      return o.form === filterForm
+    })
 
   // Separate curated from sweep, preserving curated order when filter is "All"
   const curatedOptions = filtered.filter(o => !!o.curatedName)
   const sweepOptions = filtered.filter(o => !o.curatedName)
 
-  // Sort sweep options by selected sort key
-  sweepOptions.sort((a, b) => {
+  // Sort helper: favourites first, then by sort key
+  function sortWithFavourites(a: DesignOption, b: DesignOption): number {
+    const aFav = favourites.has(a.id) ? 1 : 0
+    const bFav = favourites.has(b.id) ? 1 : 0
+    if (aFav !== bFav) return bFav - aFav
     switch (sortBy) {
       case 'cost': return a.metrics.costPerKey - b.metrics.costPerKey
       case 'keys': return b.metrics.totalKeys - a.metrics.totalKeys
@@ -59,23 +108,17 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
       }
       default: return b.score - a.score
     }
-  })
+  }
 
-  // Sort curated by sort key too (but recommended always first)
+  // Sort sweep options: favourites first, then by selected sort key
+  sweepOptions.sort(sortWithFavourites)
+
+  // Sort curated by sort key too (but recommended always first, then favourites)
   curatedOptions.sort((a, b) => {
     const aRec = a.curatedId === 'beacon' ? 1 : 0
     const bRec = b.curatedId === 'beacon' ? 1 : 0
     if (aRec !== bRec) return bRec - aRec
-    switch (sortBy) {
-      case 'cost': return a.metrics.costPerKey - b.metrics.costPerKey
-      case 'keys': return b.metrics.totalKeys - a.metrics.totalKeys
-      case 'yield': {
-        const ya = a.cost.total > 0 ? a.revenue.stabilisedNoi / a.cost.total : 0
-        const yb = b.cost.total > 0 ? b.revenue.stabilisedNoi / b.cost.total : 0
-        return yb - ya
-      }
-      default: return b.score - a.score
-    }
+    return sortWithFavourites(a, b)
   })
 
   const sidebarContent = (
@@ -142,6 +185,8 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
                   onSelect={onSelect}
                   compareMode={compareMode}
                   isCompareTarget={opt.id === compareTargetId}
+                  isFavourite={favourites.has(opt.id)}
+                  onToggleFavourite={() => toggleFavourite(opt.id)}
                 />
               ))}
             </>
@@ -162,6 +207,8 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
                   onSelect={onSelect}
                   compareMode={compareMode}
                   isCompareTarget={opt.id === compareTargetId}
+                  isFavourite={favourites.has(opt.id)}
+                  onToggleFavourite={() => toggleFavourite(opt.id)}
                 />
               ))}
             </>

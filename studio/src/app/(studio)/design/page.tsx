@@ -19,6 +19,12 @@ import { FnbDesigner } from '@/components/design/fnb-designer'
 import { BohDashboard } from '@/components/design/boh-dashboard'
 import { PoolDeckDesigner } from '@/components/design/pool-deck-designer'
 import { SitePlanner } from '@/components/design/site-planner'
+import dynamic from 'next/dynamic'
+
+const InteractivePlanner = dynamic(
+  () => import('@/components/design/interactive-planner').then(m => ({ default: m.InteractivePlanner })),
+  { ssr: false }
+)
 import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
@@ -89,6 +95,7 @@ function DesignPageInner() {
   const [showBoh, setShowBoh] = useState(false)
   const [showPoolDeck, setShowPoolDeck] = useState(false)
   const [showSitePlan, setShowSitePlan] = useState(false)
+  const [showInteractivePlanner, setShowInteractivePlanner] = useState(false)
   const [floorIndex, setFloorIndex] = useState(0)
 
   const handleGenerate = useCallback(() => {
@@ -345,7 +352,8 @@ function DesignPageInner() {
         <PoolDeckDesigner isOpen={showPoolDeck} onClose={() => setShowPoolDeck(false)} />
 
         {/* Site Planner overlay */}
-        <SitePlanner isOpen={showSitePlan} onClose={() => setShowSitePlan(false)} />
+        <SitePlanner isOpen={showSitePlan} onClose={() => setShowSitePlan(false)} selectedOption={selectedOption} />
+        <InteractivePlanner isOpen={showInteractivePlanner} onClose={() => setShowInteractivePlanner(false)} selectedOption={selectedOption} />
 
         {/* Options Table overlay */}
         <OptionsTable
@@ -433,6 +441,20 @@ function DesignPageInner() {
           >
             <Map size={14} />
             <span className="hidden sm:inline">Site Plan</span>
+          </button>
+
+          {/* Interactive Planner button */}
+          <button
+            onClick={() => setShowInteractivePlanner((v) => !v)}
+            title="Drag & Drop Site Planner"
+            className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
+              showInteractivePlanner
+                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+            }`}
+          >
+            <LayoutGrid size={14} />
+            <span className="hidden sm:inline">Design Studio</span>
           </button>
 
           {/* Floor Plan button */}
