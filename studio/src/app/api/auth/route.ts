@@ -1,19 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const ACCESS_CODE = process.env.ACCESS_CODE ?? 'aces'
+import { authenticatePassword, COOKIE_NAME, AUTH_COOKIE_NAME } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   const { password } = await req.json()
 
-  if (password === ACCESS_CODE) {
-    const res = NextResponse.json({ ok: true })
-    res.cookies.set('studio-auth', 'authenticated', {
+  const user = authenticatePassword(password)
+
+  if (user) {
+    const res = NextResponse.json({ ok: true, user })
+
+    // Legacy auth cookie (keeps middleware working)
+    res.cookies.set(AUTH_COOKIE_NAME, 'authenticated', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',
     })
+
+    // User info cookie (readable by client JS for role checks)
+    res.cookies.set(COOKIE_NAME, JSON.stringify(user), {
+      httpOnly: false, // needs to be readable by client
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    })
+
     return res
   }
 

@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { KeyRound, ArrowRight, Shield, Building2, MapPin, Palmtree, Waves } from 'lucide-react'
+import { KeyRound, ArrowRight, Shield, Building2, MapPin, Palmtree, Waves, CheckCircle2 } from 'lucide-react'
+import type { AppUser } from '@/lib/auth'
 
 export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [loggedInUser, setLoggedInUser] = useState<AppUser | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -25,8 +27,15 @@ export default function LoginPage() {
       body: JSON.stringify({ password }),
     })
     if (res.ok) {
-      router.push('/dashboard')
-      router.refresh()
+      const data = await res.json()
+      setLoggedInUser(data.user as AppUser)
+      // Dispatch event so other components can pick up the user
+      window.dispatchEvent(new Event('user-changed'))
+      // Brief delay to show welcome message
+      setTimeout(() => {
+        router.push('/dashboard')
+        router.refresh()
+      }, 1200)
     } else {
       setError(true)
       setPassword('')
@@ -176,51 +185,75 @@ export default function LoginPage() {
         >
           {/* Form card */}
           <div className="rounded-2xl border border-slate-800/60 bg-slate-900/60 p-8 shadow-2xl shadow-black/20 backdrop-blur-xl">
-            <div className="mb-6 text-center lg:text-left">
-              <h2 className="text-lg font-semibold text-white">Access Studio</h2>
-              <p className="mt-1 text-xs text-slate-400">
-                Enter your access code to view the development platform
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="relative">
-                <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value)
-                    setError(false)
-                  }}
-                  placeholder="Access code"
-                  autoFocus
-                  disabled={loading}
-                  className="w-full rounded-lg border border-slate-700/60 bg-slate-800/60 py-3 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-colors focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400/50 focus:bg-slate-800/80 disabled:opacity-50"
-                />
-              </div>
-
-              {error && (
-                <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2">
-                  <p className="text-xs text-red-400">Invalid access code. Please try again.</p>
+            {loggedInUser ? (
+              /* ── Welcome message after successful login ── */
+              <div className="flex flex-col items-center gap-4 py-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20">
+                  <CheckCircle2 className="h-6 w-6 text-emerald-400" />
                 </div>
-              )}
+                <div className="text-center">
+                  <h2 className="text-lg font-semibold text-white">
+                    Welcome back, {loggedInUser.name}
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-400">
+                    {loggedInUser.role === 'admin' ? 'Full access' : 'View-only access'}
+                  </p>
+                </div>
+                <div className="h-1 w-24 overflow-hidden rounded-full bg-slate-800">
+                  <div className="h-full animate-pulse rounded-full bg-sky-400" style={{ width: '100%' }} />
+                </div>
+                <p className="text-[10px] text-slate-500">Entering studio...</p>
+              </div>
+            ) : (
+              /* ── Login form ── */
+              <>
+                <div className="mb-6 text-center lg:text-left">
+                  <h2 className="text-lg font-semibold text-white">Access Studio</h2>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Enter your access code to view the development platform
+                  </p>
+                </div>
 
-              <button
-                type="submit"
-                disabled={loading || !password}
-                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 py-3 text-sm font-medium text-white shadow-lg shadow-sky-500/20 transition-all hover:bg-sky-400 hover:shadow-sky-400/25 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
-              >
-                {loading ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                ) : (
-                  <>
-                    Enter Studio
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                  </>
-                )}
-              </button>
-            </form>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="relative">
+                    <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value)
+                        setError(false)
+                      }}
+                      placeholder="Access code"
+                      autoFocus
+                      disabled={loading}
+                      className="w-full rounded-lg border border-slate-700/60 bg-slate-800/60 py-3 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 transition-colors focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400/50 focus:bg-slate-800/80 disabled:opacity-50"
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2">
+                      <p className="text-xs text-red-400">Invalid access code. Please try again.</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading || !password}
+                    className="group flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 py-3 text-sm font-medium text-white shadow-lg shadow-sky-500/20 transition-all hover:bg-sky-400 hover:shadow-sky-400/25 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+                  >
+                    {loading ? (
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    ) : (
+                      <>
+                        Enter Studio
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              </>
+            )}
 
             <div className="mt-6 flex items-center gap-2 border-t border-slate-800/60 pt-4">
               <Shield className="h-3 w-3 text-slate-600" />
