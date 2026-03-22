@@ -1,12 +1,93 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { createRenderer, createCamera, createLights } from './scene-setup'
 import { loadBasemapTiles, clearBasemapTiles } from './basemap'
 import { addSiteOverlays } from './site-overlays'
+import { WalkthroughController } from './walkthrough'
+import { CinematicController, getCinematicPath } from './cinematic'
 import type { DesignOption, BasemapType } from '@/engine/types'
+
+// ── Time-of-day types and presets ──────────────────────────────────
+export type TimeOfDay = 'morning' | 'midday' | 'sunset' | 'night'
+
+const LIGHTING_PRESETS: Record<TimeOfDay, {
+  skyColor: number
+  sunColor: number
+  sunIntensity: number
+  sunPosition: [number, number, number]
+  ambientIntensity: number
+  ambientColor: number
+}> = {
+  morning: {
+    skyColor: 0xffd4a0,
+    sunColor: 0xffcc88,
+    sunIntensity: 1.2,
+    sunPosition: [80, 30, -60],
+    ambientIntensity: 0.5,
+    ambientColor: 0xffeedd,
+  },
+  midday: {
+    skyColor: 0x87CEEB,
+    sunColor: 0xffffff,
+    sunIntensity: 1.8,
+    sunPosition: [10, 80, 0],
+    ambientIntensity: 0.6,
+    ambientColor: 0xf0f0ff,
+  },
+  sunset: {
+    skyColor: 0xff6b35,
+    sunColor: 0xff8844,
+    sunIntensity: 1.0,
+    sunPosition: [-80, 15, 20],
+    ambientIntensity: 0.3,
+    ambientColor: 0xff9966,
+  },
+  night: {
+    skyColor: 0x0a0a2e,
+    sunColor: 0x4466aa,
+    sunIntensity: 0.3,
+    sunPosition: [0, 60, 0],
+    ambientIntensity: 0.15,
+    ambientColor: 0x1a1a3e,
+  },
+}
+
+// ── Upgraded materials ─────────────────────────────────────────────
+const MATERIALS: Record<string, THREE.MeshStandardMaterial> = {
+  FOH_BOH: new THREE.MeshStandardMaterial({
+    color: 0xD4B896,
+    roughness: 0.85,
+    metalness: 0.05,
+    transparent: true,
+    opacity: 0.9,
+  }),
+  YOTEL: new THREE.MeshStandardMaterial({
+    color: 0x1A6B5C,
+    roughness: 0.3,
+    metalness: 0.4,
+    transparent: true,
+    opacity: 0.85,
+    envMapIntensity: 1.5,
+  }),
+  YOTELPAD: new THREE.MeshStandardMaterial({
+    color: 0xC4756E,
+    roughness: 0.35,
+    metalness: 0.35,
+    transparent: true,
+    opacity: 0.85,
+    envMapIntensity: 1.5,
+  }),
+  ROOFTOP: new THREE.MeshStandardMaterial({
+    color: 0xE8DCC8,
+    roughness: 0.9,
+    metalness: 0.0,
+    transparent: true,
+    opacity: 0.8,
+  }),
+}
 
 interface Viewer3DProps {
   selectedOption?: DesignOption | null
@@ -17,6 +98,11 @@ interface Viewer3DProps {
   showBoundaries?: boolean
   showAmenities?: boolean
   explodedView?: boolean
+  walkthroughMode?: boolean
+  cinematicMode?: boolean
+  timeOfDay?: TimeOfDay
+  onWalkthroughExit?: () => void
+  onCinematicEnd?: () => void
 }
 
 /** Building placement offset — aligns local wing coords (0,0) to the
@@ -51,13 +137,11 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   })
   const poolMesh = new THREE.Mesh(poolGeo, poolMat)
   poolMesh.rotation.x = -Math.PI / 2
-  // West of building with 3m gap: BUILD_X - 10 (half pool width) - 3
   poolMesh.position.set(BUILD_X - 10 - 3, 0.02, BUILD_Z + 6)
   poolMesh.receiveShadow = true
   group.add(poolMesh)
 
   // ── Rooftop deck ──
-  // Bar structure
   const barGeo = new THREE.BoxGeometry(6, 3, 3)
   const barMat = new THREE.MeshStandardMaterial({
     color: 0xD4A050,
@@ -71,7 +155,7 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   barMesh.castShadow = true
   group.add(barMesh)
 
-  // Sun loungers (rows of small thin boxes)
+  // Sun loungers
   const loungerGeo = new THREE.BoxGeometry(2, 0.15, 0.7)
   const loungerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
   const loungerPositions = [
@@ -104,8 +188,7 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   roofPoolMesh.position.set(BUILD_X + 6, buildingTopY + 0.02, BUILD_Z + 10)
   group.add(roofPoolMesh)
 
-  // ── Ground-level restaurant (adjacent to pool, west side) ──
-  // Roof slab
+  // ── Ground-level restaurant ──
   const restRoofGeo = new THREE.BoxGeometry(12, 0.3, 8)
   const restRoofMat = new THREE.MeshStandardMaterial({
     color: 0x8B6914,
@@ -119,7 +202,6 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   restRoof.castShadow = true
   group.add(restRoof)
 
-  // Four support posts for the restaurant
   const postGeo = new THREE.CylinderGeometry(0.15, 0.15, 4, 8)
   const postMat = new THREE.MeshStandardMaterial({ color: 0x8B6914, roughness: 0.6 })
   const postOffsets = [
@@ -131,7 +213,7 @@ function buildAmenities(buildingTopY: number): THREE.Group {
     group.add(post)
   }
 
-  // ── Palm trees around pool area ──
+  // ── Palm trees ──
   const trunkGeo = new THREE.CylinderGeometry(0.2, 0.2, 5, 8)
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.9 })
   const canopyGeo = new THREE.ConeGeometry(1, 8, 8)
@@ -170,15 +252,29 @@ export function Viewer3D({
   showBoundaries = true,
   showAmenities = true,
   explodedView = false,
+  walkthroughMode = false,
+  cinematicMode = false,
+  timeOfDay = 'midday',
+  onWalkthroughExit,
+  onCinematicEnd,
 }: Viewer3DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sceneRef = useRef<THREE.Scene | null>(null)
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
   const controlsRef = useRef<OrbitControls | null>(null)
   const buildingGroupRef = useRef<THREE.Group | null>(null)
   const amenityGroupRef = useRef<THREE.Group | null>(null)
+  const walkthroughRef = useRef<WalkthroughController | null>(null)
+  const cinematicRef = useRef<CinematicController | null>(null)
   /** Store original (non-exploded) Y positions for building meshes */
   const floorOriginalYRef = useRef<Map<THREE.Object3D, number>>(new Map())
+
+  // Stable callback refs so we can use them inside animate loop
+  const onWalkthroughExitRef = useRef(onWalkthroughExit)
+  onWalkthroughExitRef.current = onWalkthroughExit
+  const onCinematicEndRef = useRef(onCinematicEnd)
+  onCinematicEndRef.current = onCinematicEnd
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -189,9 +285,19 @@ export function Viewer3D({
     sceneRef.current = scene
 
     const renderer = createRenderer(canvas)
+    rendererRef.current = renderer
     const camera = createCamera(canvas.clientWidth / canvas.clientHeight)
     cameraRef.current = camera
     createLights(scene)
+
+    // Create a simple gradient environment map for glass reflections
+    const pmremGenerator = new THREE.PMREMGenerator(renderer)
+    const envScene = new THREE.Scene()
+    envScene.background = new THREE.Color(0x87CEEB)
+    const envMap = pmremGenerator.fromScene(envScene).texture
+    scene.environment = envMap
+    pmremGenerator.dispose()
+
     loadBasemapTiles(scene, 'Google')
     addSiteOverlays(scene)
 
@@ -223,7 +329,16 @@ export function Viewer3D({
     let frameId: number
     function animate() {
       frameId = requestAnimationFrame(animate)
-      controls.update()
+
+      // Update active controller
+      if (walkthroughRef.current?.enabled) {
+        walkthroughRef.current.update()
+      } else if (cinematicRef.current?.isPlaying) {
+        cinematicRef.current.update()
+      } else {
+        controls.update()
+      }
+
       renderer.render(scene, camera)
     }
     animate()
@@ -233,6 +348,9 @@ export function Viewer3D({
       resizeObserver.disconnect()
       controls.dispose()
       renderer.dispose()
+      // Clean up walkthrough/cinematic if still active
+      walkthroughRef.current?.disable()
+      cinematicRef.current?.stop()
     }
   }, [])
 
@@ -299,6 +417,96 @@ export function Viewer3D({
     }
   }, [explodedView])
 
+  // ── Walkthrough mode ──
+  useEffect(() => {
+    const camera = cameraRef.current
+    const canvas = canvasRef.current
+    const controls = controlsRef.current
+    if (!camera || !canvas || !controls) return
+
+    if (walkthroughMode) {
+      // Disable orbit controls and cinematic
+      controls.enabled = false
+      cinematicRef.current?.stop()
+
+      const wt = new WalkthroughController(camera, canvas)
+      // Start at pool deck area
+      const startPos = new THREE.Vector3(BUILD_X - 10, 0, BUILD_Z + 6)
+      wt.enable(startPos)
+      walkthroughRef.current = wt
+
+      // ESC exits walkthrough
+      const handleEsc = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onWalkthroughExitRef.current?.()
+        }
+      }
+      document.addEventListener('keydown', handleEsc)
+      return () => {
+        document.removeEventListener('keydown', handleEsc)
+      }
+    } else {
+      // Exiting walkthrough mode
+      walkthroughRef.current?.disable()
+      walkthroughRef.current = null
+      controls.enabled = true
+    }
+  }, [walkthroughMode])
+
+  // ── Cinematic mode ──
+  useEffect(() => {
+    const camera = cameraRef.current
+    const controls = controlsRef.current
+    if (!camera || !controls) return
+
+    if (cinematicMode) {
+      // Disable orbit controls and walkthrough
+      controls.enabled = false
+      walkthroughRef.current?.disable()
+
+      const center = new THREE.Vector3(BUILD_X + 20, 0, BUILD_Z + 10)
+      const keyframes = getCinematicPath(center)
+      const cc = new CinematicController(camera, keyframes)
+      cc.onComplete = () => {
+        onCinematicEndRef.current?.()
+      }
+      cc.play()
+      cinematicRef.current = cc
+    } else {
+      // Exiting cinematic mode
+      cinematicRef.current?.stop()
+      cinematicRef.current = null
+      controls.enabled = true
+    }
+  }, [cinematicMode])
+
+  // ── Time of day ──
+  useEffect(() => {
+    const scene = sceneRef.current
+    if (!scene) return
+
+    const preset = LIGHTING_PRESETS[timeOfDay]
+    if (!preset) return
+
+    // Update scene background
+    scene.background = new THREE.Color(preset.skyColor)
+
+    // Find and update lights
+    for (const child of scene.children) {
+      if (child instanceof THREE.AmbientLight) {
+        child.color.setHex(preset.ambientColor)
+        child.intensity = preset.ambientIntensity
+      } else if (child instanceof THREE.DirectionalLight) {
+        child.color.setHex(preset.sunColor)
+        child.intensity = preset.sunIntensity
+        child.position.set(...preset.sunPosition)
+      } else if (child instanceof THREE.HemisphereLight) {
+        child.color.setHex(preset.skyColor)
+        child.intensity = preset.ambientIntensity * 0.8
+      }
+    }
+  }, [timeOfDay])
+
   // ── Rebuild building geometry when selectedOption changes ──
   useEffect(() => {
     const group = buildingGroupRef.current
@@ -313,12 +521,6 @@ export function Viewer3D({
 
     const GROUND_H = 4.5
     const FLOOR_H = 3.2
-    const COLORS: Record<string, number> = {
-      FOH_BOH: 0xD4B896,
-      YOTEL: 0x1A6B5C,
-      YOTELPAD: 0xC4756E,
-      ROOFTOP: 0xE8DCC8,
-    }
 
     const { wings } = selectedOption
     let maxBuildingY = 0
@@ -327,21 +529,20 @@ export function Viewer3D({
       let currentY = 0
       for (const floor of selectedOption.floors) {
         const h = floor.level === 0 ? GROUND_H : FLOOR_H
-        const color = COLORS[floor.use] ?? 0xcccccc
+        const mat = MATERIALS[floor.use]?.clone() ?? new THREE.MeshStandardMaterial({
+          color: 0xcccccc,
+          roughness: 0.7,
+          metalness: 0.1,
+          transparent: true,
+          opacity: 0.85,
+        })
 
         const geometry = new THREE.BoxGeometry(
           wing.direction === 'EW' ? wing.length : wing.width,
           h - 0.1,
           wing.direction === 'EW' ? wing.width : wing.length,
         )
-        const material = new THREE.MeshStandardMaterial({
-          color,
-          roughness: 0.7,
-          metalness: 0.1,
-          transparent: true,
-          opacity: 0.85,
-        })
-        const mesh = new THREE.Mesh(geometry, material)
+        const mesh = new THREE.Mesh(geometry, mat)
         const yPos = currentY + h / 2
         mesh.position.set(
           wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2) + BUILD_X,

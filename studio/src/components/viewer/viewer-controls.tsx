@@ -6,13 +6,12 @@ import {
   ArrowUp,
   ArrowLeft,
   Maximize2,
-  Map,
-  MapPin,
-  Mountain,
-  EyeOff,
-  Fence,
-  Palmtree,
-  Layers,
+  Footprints,
+  Video,
+  Sunrise,
+  Sun,
+  Sunset,
+  Moon,
 } from 'lucide-react'
 
 interface ViewerControlsProps {
@@ -26,6 +25,12 @@ interface ViewerControlsProps {
   onToggleBoundaries: () => void
   onToggleAmenities: () => void
   onToggleExploded: () => void
+  onWalkthrough: () => void
+  onCinematic: () => void
+  isWalking: boolean
+  isCinematic: boolean
+  timeOfDay: string
+  onTimeOfDayChange: (time: string) => void
 }
 
 const CAMERA_PRESETS = [
@@ -41,6 +46,13 @@ const BASEMAP_OPTIONS = [
   { id: 'Street', label: 'Street' },
   { id: 'Topo', label: 'Topo' },
   { id: 'None', label: 'None' },
+] as const
+
+const TIME_PRESETS = [
+  { id: 'morning', label: 'Morning', Icon: Sunrise },
+  { id: 'midday', label: 'Midday', Icon: Sun },
+  { id: 'sunset', label: 'Sunset', Icon: Sunset },
+  { id: 'night', label: 'Night', Icon: Moon },
 ] as const
 
 function IconButton({
@@ -112,6 +124,12 @@ export function ViewerControls({
   onToggleBoundaries,
   onToggleAmenities,
   onToggleExploded,
+  onWalkthrough,
+  onCinematic,
+  isWalking,
+  isCinematic,
+  timeOfDay,
+  onTimeOfDayChange,
 }: ViewerControlsProps) {
   return (
     <div className="absolute right-3 top-3 z-10 flex flex-col gap-2 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-xl p-2">
@@ -126,6 +144,64 @@ export function ViewerControls({
               key={id}
               active={activePreset === id}
               onClick={() => onCameraChange(id)}
+              title={label}
+            >
+              <Icon size={16} />
+            </IconButton>
+          ))}
+        </div>
+      </div>
+
+      {/* Separator */}
+      <div className="border-t border-white/10" />
+
+      {/* Walkthrough & Cinematic */}
+      <div>
+        <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+          Walkthrough
+        </div>
+        <div className="flex gap-0.5">
+          <IconButton
+            active={isWalking}
+            onClick={onWalkthrough}
+            title={isWalking ? 'Exit walkthrough (ESC)' : 'First-person walkthrough'}
+          >
+            <Footprints size={16} />
+          </IconButton>
+          <IconButton
+            active={isCinematic}
+            onClick={onCinematic}
+            title={isCinematic ? 'Stop fly-around' : 'Cinematic fly-around'}
+          >
+            <Video size={16} />
+          </IconButton>
+        </div>
+        {isWalking && (
+          <div className="mt-1 rounded bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
+            Click to look, WASD to move, ESC to exit
+          </div>
+        )}
+        {isCinematic && (
+          <div className="mt-1 rounded bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
+            Cinematic fly-around playing...
+          </div>
+        )}
+      </div>
+
+      {/* Separator */}
+      <div className="border-t border-white/10" />
+
+      {/* Time of Day */}
+      <div>
+        <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+          Time of Day
+        </div>
+        <div className="flex gap-0.5">
+          {TIME_PRESETS.map(({ id, label, Icon }) => (
+            <IconButton
+              key={id}
+              active={timeOfDay === id}
+              onClick={() => onTimeOfDayChange(id)}
               title={label}
             >
               <Icon size={16} />

@@ -49,6 +49,11 @@ export default function DesignPage() {
   const [showAmenities, setShowAmenities] = useState(true)
   const [explodedView, setExplodedView] = useState(false)
 
+  // Walkthrough / cinematic / time-of-day state
+  const [walkthroughMode, setWalkthroughMode] = useState(false)
+  const [cinematicMode, setCinematicMode] = useState(false)
+  const [timeOfDay, setTimeOfDay] = useState('midday')
+
   // Comparison state
   const [compareMode, setCompareMode] = useState(false)
   const [compareOption, setCompareOption] = useState<DesignOption | null>(null)
@@ -214,6 +219,11 @@ export default function DesignPage() {
           showBoundaries={showBoundaries}
           showAmenities={showAmenities}
           explodedView={explodedView}
+          walkthroughMode={walkthroughMode}
+          cinematicMode={cinematicMode}
+          timeOfDay={timeOfDay as 'morning' | 'midday' | 'sunset' | 'night'}
+          onWalkthroughExit={() => setWalkthroughMode(false)}
+          onCinematicEnd={() => setCinematicMode(false)}
         />
 
         {/* Viewer controls overlay */}
@@ -228,6 +238,18 @@ export default function DesignPage() {
           onToggleBoundaries={() => setShowBoundaries((v) => !v)}
           onToggleAmenities={() => setShowAmenities((v) => !v)}
           onToggleExploded={() => setExplodedView((v) => !v)}
+          onWalkthrough={() => {
+            setWalkthroughMode((v) => !v)
+            if (!walkthroughMode) setCinematicMode(false)
+          }}
+          onCinematic={() => {
+            setCinematicMode((v) => !v)
+            if (!cinematicMode) setWalkthroughMode(false)
+          }}
+          isWalking={walkthroughMode}
+          isCinematic={cinematicMode}
+          timeOfDay={timeOfDay}
+          onTimeOfDayChange={setTimeOfDay}
         />
 
         {/* Loading overlay */}
