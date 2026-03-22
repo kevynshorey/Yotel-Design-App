@@ -3,7 +3,7 @@
 import {
   Droplets, UtensilsCrossed, Sun, Wine, Dumbbell, Mic, Podcast,
   Gamepad2, Briefcase, ShoppingCart, DoorOpen, Sofa, TreePalm,
-  Car, MapPin,
+  Car, MapPin, X,
 } from 'lucide-react'
 import type { AmenityProgramme } from '@/engine/amenities'
 import { ROOFTOP_BAR, POOL_DECK, AMENITY_BLOCK_SPACES } from '@/config/programme'
@@ -11,15 +11,24 @@ import { FOH } from '@/config/construction'
 
 interface AmenityPanelProps {
   amenities?: AmenityProgramme | null
+  isOpen: boolean
+  onClose: () => void
 }
 
-export function AmenityPanel({ amenities }: AmenityPanelProps) {
+export function AmenityPanel({ amenities, isOpen, onClose }: AmenityPanelProps) {
+  if (!isOpen) return null
+
   if (!amenities) {
     return (
-      <div className="w-full md:absolute md:bottom-[120px] md:left-3 md:z-[11] md:w-72 rounded-xl border border-dashed border-white/10 bg-slate-900/40 px-3 py-2.5 backdrop-blur-md">
-        <div className="flex h-16 flex-col items-center justify-center">
-          <p className="text-xs text-slate-500">Select an option</p>
-          <p className="text-[10px] text-slate-600">to view amenity programme</p>
+      <div className="absolute bottom-14 left-3 z-[15] w-72 rounded-xl border border-white/10 bg-slate-900/90 px-3 py-2.5 shadow-lg backdrop-blur-xl">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-slate-200">Amenity Programme</h3>
+          <button type="button" onClick={onClose} className="rounded p-0.5 text-slate-500 hover:bg-white/10 hover:text-slate-300">
+            <X size={14} />
+          </button>
+        </div>
+        <div className="mt-2 flex h-12 items-center justify-center">
+          <p className="text-[10px] text-slate-500">Select an option to view amenities</p>
         </div>
       </div>
     )
@@ -28,13 +37,18 @@ export function AmenityPanel({ amenities }: AmenityPanelProps) {
   const scorePct = Math.round(amenities.amenityScore * 100)
 
   return (
-    <div className="w-full md:absolute md:bottom-[120px] md:left-3 md:z-[11] md:w-72 max-h-[calc(100vh-200px)] overflow-y-auto rounded-xl border border-white/10 bg-slate-900/80 px-3 py-2.5 shadow-lg backdrop-blur-md scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+    <div className="absolute bottom-14 left-3 z-[15] w-72 max-h-[calc(100vh-120px)] overflow-y-auto rounded-xl border border-white/10 bg-slate-900/90 px-3 py-2.5 shadow-lg backdrop-blur-xl scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-semibold text-slate-200">Amenity Programme</h3>
-        <span className="rounded-full bg-sky-500/20 px-2 py-0.5 font-mono text-[10px] font-semibold text-sky-400">
-          {scorePct}%
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-sky-500/20 px-2 py-0.5 font-mono text-[10px] font-semibold text-sky-400">
+            {scorePct}%
+          </span>
+          <button type="button" onClick={onClose} className="rounded p-0.5 text-slate-500 hover:bg-white/10 hover:text-slate-300">
+            <X size={14} />
+          </button>
+        </div>
       </div>
 
       <div className="mt-2 flex flex-col gap-2">

@@ -1,34 +1,40 @@
-import { FloatingPanel } from '@/components/shell/floating-panel'
+'use client'
+
+import { X } from 'lucide-react'
 import type { DesignOption, ScoreBreakdown } from '@/engine/types'
 import { cn } from '@/lib/utils'
 
 interface ScoringPanelProps {
   option: DesignOption | null
+  isOpen: boolean
+  onClose: () => void
 }
 
-export function ScoringPanel({ option }: ScoringPanelProps) {
-  if (!option) {
-    return (
-      <FloatingPanel position="scoring" className="w-full md:w-64">
-        <div className="flex h-24 flex-col items-center justify-center rounded-lg border border-dashed border-slate-700">
-          <p className="text-xs text-slate-400">Select an option</p>
-          <p className="text-[10px] text-slate-300">to view scoring</p>
-        </div>
-      </FloatingPanel>
-    )
-  }
+export function ScoringPanel({ option, isOpen, onClose }: ScoringPanelProps) {
+  if (!isOpen || !option) return null
 
   return (
-    <FloatingPanel position="scoring" className="w-full md:w-64">
-      <h3 className="text-xs font-semibold text-slate-100">
-        Score: <span className="font-mono text-base text-sky-400">{option.score.toFixed(1)}</span>
-      </h3>
-      <div className="mt-2 flex flex-col gap-1">
-        {Object.entries(option.scoringBreakdown).map(([key, bd]) => (
-          <ScoreRow key={key} name={key} breakdown={bd} />
-        ))}
+    <div className="absolute right-3 top-3 z-[15] w-64 rounded-xl border border-white/10 bg-slate-900/90 shadow-lg backdrop-blur-xl">
+      <div className="flex items-center justify-between px-3 py-2">
+        <h3 className="text-xs font-semibold text-slate-100">
+          Score: <span className="font-mono text-base text-sky-400">{option.score.toFixed(1)}</span>
+        </h3>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded p-0.5 text-slate-500 transition-colors hover:bg-white/10 hover:text-slate-300"
+        >
+          <X size={14} />
+        </button>
       </div>
-    </FloatingPanel>
+      <div className="border-t border-white/10 px-3 pb-2 pt-2">
+        <div className="flex flex-col gap-1">
+          {Object.entries(option.scoringBreakdown).map(([key, bd]) => (
+            <ScoreRow key={key} name={key} breakdown={bd} />
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
 

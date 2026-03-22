@@ -71,7 +71,9 @@ export function generateForm(
     }
     case 'U': {
       const Lw = clamp(targetFloorArea / (3 * W), maxL)
-      const gap = Math.max(8, Lw)
+      // Cap gap so the total NS extent (gap + 2*W) fits within buildable NS minus setbacks.
+      const maxGap = maxW - 2 * SETBACK - 2 * W
+      const gap = Math.min(Math.max(8, Lw), maxGap)
       wings.push({
         id: wingId(), label: 'South', x: ox, y: oy,
         length: Lw, width: W, direction: 'EW', floors: 0,
@@ -91,7 +93,9 @@ export function generateForm(
     }
     case 'C': {
       const Lw = clamp(targetFloorArea / (3 * W), maxL)
-      const gap = Math.max(8, Lw)
+      // Cap gap so the total NS extent (gap + 2*W) fits within buildable NS minus setbacks.
+      const maxGap = maxW - 2 * SETBACK - 2 * W
+      const gap = Math.min(Math.max(8, Lw), maxGap)
       wings.push({
         id: wingId(), label: 'South', x: ox, y: oy,
         length: Lw, width: W, direction: 'EW', floors: 0,

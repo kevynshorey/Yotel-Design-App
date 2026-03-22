@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, LayoutList, Map, Sun, UtensilsCrossed, Waves, Wrench, X } from 'lucide-react'
+import { BarChart3, Clock, FileDown, FileSpreadsheet, GitCompareArrows, LayoutGrid, LayoutList, Map, Sun, TreePalm, UtensilsCrossed, Waves, Wrench, X } from 'lucide-react'
 import { Viewer3D } from '@/components/viewer/viewer-3d'
 import { ViewerControls } from '@/components/viewer/viewer-controls'
 import { OptionsSidebar } from '@/components/design/options-sidebar'
@@ -88,6 +88,10 @@ function DesignPageInner() {
   // Table view state
   const [showTable, setShowTable] = useState(false)
 
+  // Panel visibility state (hidden by default, toggled via action bar)
+  const [showScoring, setShowScoring] = useState(false)
+  const [showAmenityPanel, setShowAmenityPanel] = useState(false)
+
   // Open table view if URL param says so
   useEffect(() => {
     if (searchParams.get('view') === 'table') {
@@ -143,14 +147,14 @@ function DesignPageInner() {
   const handleToggleCompareMode = useCallback(() => {
     setCompareMode((prev) => {
       if (prev) {
-        // Turning off — clear compare option
+        // Turning off -- clear compare option
         setCompareOption(null)
       }
       return !prev
     })
   }, [])
 
-  // Handle option selection — in compare mode, second click sets compare target
+  // Handle option selection -- in compare mode, second click sets compare target
   const handleOptionSelect = useCallback(
     (id: string) => {
       if (compareMode && selectedOption && id !== selectedOption.id) {
@@ -215,6 +219,14 @@ function DesignPageInner() {
           setShowViewAnalysis(false)
           return
         }
+        if (showScoring) {
+          setShowScoring(false)
+          return
+        }
+        if (showAmenityPanel) {
+          setShowAmenityPanel(false)
+          return
+        }
         if (compareMode) {
           setCompareMode(false)
           setCompareOption(null)
@@ -245,7 +257,7 @@ function DesignPageInner() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [router, isPending, handleGenerate, selectOption, options, selectedOption, compareMode, handleToggleCompareMode, showFloorPlan, showViewAnalysis, showTable])
+  }, [router, isPending, handleGenerate, selectOption, options, selectedOption, compareMode, handleToggleCompareMode, showFloorPlan, showViewAnalysis, showTable, showScoring, showAmenityPanel])
 
   return (
     <div className="flex h-full flex-col md:flex-row">
@@ -255,10 +267,11 @@ function DesignPageInner() {
           <span>Viewing as {user.name} — contact admin for edit access</span>
         </div>
       )}
-      {/* Main viewport + panels wrapper — scrollable on mobile */}
+      {/* Main viewport + panels wrapper -- scrollable on mobile */}
       <div className="flex flex-1 flex-col min-h-0 overflow-y-auto md:overflow-visible">
         {/* 3D viewport area */}
         <div className="relative flex-shrink-0 h-[50vh] md:h-full md:flex-1">
+        {/* z-5: 3D viewer fills the viewport */}
         <Viewer3D
           selectedOption={selectedOption}
           className="h-full w-full"
@@ -274,7 +287,13 @@ function DesignPageInner() {
           onCinematicEnd={() => setCinematicMode(false)}
         />
 
-        {/* Viewer controls overlay */}
+        {/* z-10: Floating panels (collapsed state) / z-15: expanded */}
+        {/* Top-left: Metrics panel (collapsible, collapsed by default) */}
+        <div className="hidden md:block">
+          <MetricsPanel option={selectedOption} />
+        </div>
+
+        {/* Top-right: Viewer controls (collapsed by default) */}
         <ViewerControls
           activePreset={activePreset}
           activeBasemap={activeBasemap}
@@ -303,17 +322,26 @@ function DesignPageInner() {
         {/* Loading overlay */}
         {isPending && <GeneratingOverlay />}
 
-        {/* Floating overlays — absolute positioned on md+, hidden on mobile (shown below viewport instead) */}
-        <div className="hidden md:block">
-          <MetricsPanel option={selectedOption} />
-          <ScoringPanel option={selectedOption} />
-          <AmenityPanel amenities={selectedOption?.amenities} />
-        </div>
+        {/* z-15: Scoring panel (hidden by default, toggled via action bar) */}
+        <ScoringPanel
+          option={selectedOption}
+          isOpen={showScoring}
+          onClose={() => setShowScoring(false)}
+        />
+
+        {/* z-15: Amenity panel (hidden by default, toggled via action bar) */}
+        <AmenityPanel
+          amenities={selectedOption?.amenities}
+          isOpen={showAmenityPanel}
+          onClose={() => setShowAmenityPanel(false)}
+        />
+
+        {/* Bottom-left: Generator (compact, always visible) */}
         <GeneratorControls onGenerate={handleGenerate} isGenerating={isPending} />
 
-        {/* Floor Plan overlay — replaces 3D viewport */}
+        {/* z-50: Floor Plan overlay -- replaces 3D viewport */}
         {showFloorPlan && (
-          <div className="absolute inset-0 z-30 flex flex-col bg-slate-950">
+          <div className="absolute inset-0 z-50 flex flex-col bg-slate-950">
             <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2">
               <h2 className="text-sm font-semibold text-slate-200">
                 Floor Plan &mdash; {selectedOption?.form ?? ''} Form
@@ -335,9 +363,9 @@ function DesignPageInner() {
           </div>
         )}
 
-        {/* View Analysis floating panel */}
+        {/* z-50: View Analysis floating panel */}
         {showViewAnalysis && (
-          <div className="absolute bottom-0 right-0 top-0 z-30 w-full md:w-[380px] border-l border-slate-800 bg-slate-950 shadow-2xl">
+          <div className="absolute bottom-0 right-0 top-0 z-50 w-full md:w-[380px] border-l border-slate-800 bg-slate-950 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2">
               <h2 className="text-sm font-semibold text-slate-200">
                 View &amp; Sun Analysis
@@ -355,20 +383,20 @@ function DesignPageInner() {
           </div>
         )}
 
-        {/* F&B Designer overlay */}
+        {/* z-50: F&B Designer overlay */}
         <FnbDesigner isOpen={showFnb} onClose={() => setShowFnb(false)} />
 
-        {/* BOH Dashboard overlay */}
+        {/* z-50: BOH Dashboard overlay */}
         <BohDashboard isOpen={showBoh} onClose={() => setShowBoh(false)} />
 
-        {/* Pool Deck Designer overlay */}
+        {/* z-50: Pool Deck Designer overlay */}
         <PoolDeckDesigner isOpen={showPoolDeck} onClose={() => setShowPoolDeck(false)} />
 
-        {/* Site Planner overlay */}
+        {/* z-50: Site Planner overlay */}
         <SitePlanner isOpen={showSitePlan} onClose={() => setShowSitePlan(false)} selectedOption={selectedOption} />
         <InteractivePlanner isOpen={showInteractivePlanner} onClose={() => setShowInteractivePlanner(false)} selectedOption={selectedOption} />
 
-        {/* Options Table overlay */}
+        {/* z-50: Options Table overlay */}
         <OptionsTable
           options={options}
           selectedId={selectedOption?.id ?? null}
@@ -380,8 +408,8 @@ function DesignPageInner() {
           onClose={() => setShowTable(false)}
         />
 
-        {/* Action buttons — scrollable row on both mobile and desktop */}
-        <div className="absolute bottom-2 right-2 left-2 md:bottom-4 md:right-4 md:left-4 z-20 flex items-center gap-1.5 md:gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+        {/* z-30: Action buttons -- scrollable row at bottom */}
+        <div className="absolute bottom-2 right-2 left-2 md:bottom-4 md:right-4 md:left-4 z-30 flex items-center gap-1.5 md:gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
           {/* Table View button */}
           {options.length > 0 && (
             <button
@@ -391,6 +419,38 @@ function DesignPageInner() {
             >
               <LayoutList size={14} />
               <span className="hidden sm:inline">Table View</span>
+            </button>
+          )}
+
+          {/* Scoring panel toggle */}
+          {selectedOption && (
+            <button
+              onClick={() => setShowScoring((v) => !v)}
+              title="Score Breakdown"
+              className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
+                showScoring
+                  ? 'bg-sky-600 text-white hover:bg-sky-700'
+                  : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+              }`}
+            >
+              <BarChart3 size={14} />
+              <span className="hidden sm:inline">Scoring</span>
+            </button>
+          )}
+
+          {/* Amenity panel toggle */}
+          {selectedOption && (
+            <button
+              onClick={() => setShowAmenityPanel((v) => !v)}
+              title="Amenity Programme"
+              className={`flex items-center gap-1.5 md:gap-2 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs font-medium shadow-lg transition-colors flex-shrink-0 ${
+                showAmenityPanel
+                  ? 'bg-sky-600 text-white hover:bg-sky-700'
+                  : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+              }`}
+            >
+              <TreePalm size={14} />
+              <span className="hidden sm:inline">Amenities</span>
             </button>
           )}
 
@@ -456,7 +516,7 @@ function DesignPageInner() {
             <span className="hidden sm:inline">Site Plan</span>
           </button>
 
-          {/* Interactive Planner button — admin only */}
+          {/* Interactive Planner button -- admin only */}
           {isAdmin && (
             <button
               onClick={() => setShowInteractivePlanner((v) => !v)}
@@ -510,7 +570,7 @@ function DesignPageInner() {
             </button>
           )}
 
-          {/* Version history button — admin only */}
+          {/* Version history button -- admin only */}
           {selectedOption && isAdmin && (
             <button
               onClick={() => setShowVersions(true)}
@@ -538,12 +598,12 @@ function DesignPageInner() {
             </button>
           )}
 
-          {/* DXF CAD Export button — admin only */}
+          {/* DXF CAD Export button -- admin only */}
           {selectedOption && allowExport && (
             <ExportDxfButton option={selectedOption} />
           )}
 
-          {/* Download Excel button — admin only */}
+          {/* Download Excel button -- admin only */}
           {selectedOption && allowExport && (
             <button
               onClick={handleExportExcel}
@@ -555,7 +615,7 @@ function DesignPageInner() {
             </button>
           )}
 
-          {/* Export Report button — admin only */}
+          {/* Export Report button -- admin only */}
           {selectedOption && allowExport && (
             <button
               onClick={handleExportReport}
@@ -571,7 +631,7 @@ function DesignPageInner() {
           <div className="flex-shrink-0 w-1" aria-hidden="true" />
         </div>
 
-        {/* Comparison panel */}
+        {/* z-50: Comparison panel */}
         {compareMode && selectedOption && compareOption && (
           <ComparisonPanel
             optionA={selectedOption}
@@ -580,7 +640,7 @@ function DesignPageInner() {
           />
         )}
 
-        {/* Version history panel */}
+        {/* z-50: Version history panel */}
         <VersionPanel
           isOpen={showVersions}
           onClose={() => setShowVersions(false)}
@@ -589,15 +649,19 @@ function DesignPageInner() {
         />
         </div>{/* end viewport div */}
 
-        {/* Mobile stacked panels — visible below viewport on small screens */}
+        {/* Mobile stacked panels -- visible below viewport on small screens */}
         <div className="flex flex-col gap-2 p-2 md:hidden">
           <MetricsPanel option={selectedOption} />
-          <ScoringPanel option={selectedOption} />
-          <AmenityPanel amenities={selectedOption?.amenities} />
+          {showScoring && (
+            <ScoringPanel option={selectedOption} isOpen={showScoring} onClose={() => setShowScoring(false)} />
+          )}
+          {showAmenityPanel && (
+            <AmenityPanel amenities={selectedOption?.amenities} isOpen={showAmenityPanel} onClose={() => setShowAmenityPanel(false)} />
+          )}
         </div>
       </div>{/* end scrollable wrapper */}
 
-      {/* Right sidebar */}
+      {/* z-20: Right sidebar */}
       <OptionsSidebar
         options={options}
         selectedId={selectedOption?.id ?? null}

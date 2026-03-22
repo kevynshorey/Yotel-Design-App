@@ -173,7 +173,7 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
             <>
               <div className="flex items-center gap-2 px-1 pt-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600">
-                  Architect&apos;s Options
+                  Kevyn Yotel Designs
                 </span>
                 <span className="flex-1 border-t border-sky-500/30" />
               </div>

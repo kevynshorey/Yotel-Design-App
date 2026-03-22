@@ -42,7 +42,7 @@ export const SITE = {
   buildableArea: 3599.1,
   maxCoverage: 0.50,
   maxFootprint: 1800,
-  maxHeight: 25.0,
+  maxHeight: 22.0,
   buildableEW: 79.84,
   buildableNS: 48.69,
   buildableMinX: 35.597,
@@ -58,7 +58,7 @@ export const SITE = {
 export const PLANNING_REGS = {
   coastalSetback: 30,           // metres from High Water Mark (CZMU requirement)
   maxCoverage: 0.50,            // 50% for commercial/tourism use
-  maxHeight: 25.0,              // metres — discretionary, but conservative for heritage zone proximity
+  maxHeight: 22.0,              // metres — discretionary, but conservative for heritage zone proximity
   heightPrecedent: { hilton: 8, hyatt: 15 }, // existing approvals in area (storeys)
   roadSetbackClassI: 15.24,     // 50 ft from road centre
   roadSetbackClassII: 9.75,     // 32 ft from road centre

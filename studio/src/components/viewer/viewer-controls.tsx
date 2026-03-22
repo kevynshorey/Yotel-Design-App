@@ -15,6 +15,7 @@ import {
   Moon,
   ChevronDown,
   ChevronUp,
+  Settings2,
 } from 'lucide-react'
 
 interface ViewerControlsProps {
@@ -74,7 +75,7 @@ function IconButton({
       type="button"
       onClick={onClick}
       title={title}
-      className={`rounded-lg p-2 transition-colors ${
+      className={`rounded-lg p-1.5 transition-colors ${
         active
           ? 'bg-sky-500/20 text-sky-400'
           : 'text-white/70 hover:bg-white/10 hover:text-white'
@@ -98,17 +99,17 @@ function ToggleRow({
     <button
       type="button"
       onClick={onToggle}
-      className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-xs transition-colors hover:bg-white/10"
+      className="flex w-full items-center justify-between rounded-lg px-2 py-1 text-[10px] transition-colors hover:bg-white/10"
     >
       <span className="text-white/70">{label}</span>
       <span
-        className={`h-4 w-8 rounded-full transition-colors ${
+        className={`h-3.5 w-7 rounded-full transition-colors ${
           active ? 'bg-sky-500' : 'bg-white/20'
         } relative`}
       >
         <span
-          className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform ${
-            active ? 'translate-x-4' : 'translate-x-0.5'
+          className={`absolute top-0.5 h-2.5 w-2.5 rounded-full bg-white transition-transform ${
+            active ? 'translate-x-3.5' : 'translate-x-0.5'
           }`}
         />
       </span>
@@ -134,13 +135,42 @@ export function ViewerControls({
   timeOfDay,
   onTimeOfDayChange,
 }: ViewerControlsProps) {
+  const [isOpen, setIsOpen] = useState(false)
   const [expanded, setExpanded] = useState(false)
 
+  // Collapsed: just a small gear button
+  if (!isOpen) {
+    return (
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        title="Viewer Controls"
+        className="absolute right-3 top-3 z-10 rounded-xl border border-white/10 bg-slate-900/85 p-2 shadow-lg backdrop-blur-xl text-white/70 hover:text-white transition-colors"
+      >
+        <Settings2 size={16} />
+      </button>
+    )
+  }
+
   return (
-    <div className="absolute right-3 top-3 z-[15] flex flex-col gap-2 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-xl p-2 max-w-[200px]">
-      {/* Camera Presets — always visible */}
+    <div className="absolute right-3 top-3 z-[15] flex flex-col gap-1.5 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl p-2 max-w-[200px]">
+      {/* Header with close */}
+      <div className="flex items-center justify-between px-1">
+        <span className="text-[10px] font-medium uppercase tracking-wider text-white/40">
+          Controls
+        </span>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="rounded p-0.5 text-white/40 hover:bg-white/10 hover:text-white/80"
+        >
+          <ChevronUp size={12} />
+        </button>
+      </div>
+
+      {/* Camera Presets */}
       <div>
-        <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+        <div className="px-1 pb-0.5 text-[9px] font-medium uppercase tracking-wider text-white/30">
           Camera
         </div>
         <div className="flex gap-0.5">
@@ -151,45 +181,28 @@ export function ViewerControls({
               onClick={() => onCameraChange(id)}
               title={label}
             >
-              <Icon size={16} />
+              <Icon size={14} />
             </IconButton>
           ))}
         </div>
       </div>
 
-      {/* View Options — always visible (the toggles) */}
+      {/* View Options */}
       <div className="border-t border-white/10" />
-      <div>
-        <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
-          View Options
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <ToggleRow
-            label="Show Boundaries"
-            active={showBoundaries}
-            onToggle={onToggleBoundaries}
-          />
-          <ToggleRow
-            label="Show Amenities"
-            active={showAmenities}
-            onToggle={onToggleAmenities}
-          />
-          <ToggleRow
-            label="Exploded View"
-            active={explodedView}
-            onToggle={onToggleExploded}
-          />
-        </div>
+      <div className="flex flex-col gap-0.5">
+        <ToggleRow label="Boundaries" active={showBoundaries} onToggle={onToggleBoundaries} />
+        <ToggleRow label="Amenities" active={showAmenities} onToggle={onToggleAmenities} />
+        <ToggleRow label="Exploded" active={explodedView} onToggle={onToggleExploded} />
       </div>
 
       {/* Expand/collapse for additional controls */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center justify-center gap-1 rounded-lg py-1 text-[10px] text-white/50 transition-colors hover:bg-white/10 hover:text-white/80"
+        className="flex w-full items-center justify-center gap-1 rounded-lg py-0.5 text-[9px] text-white/40 transition-colors hover:bg-white/10 hover:text-white/70"
       >
-        {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-        {expanded ? 'Less' : 'More controls'}
+        {expanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+        {expanded ? 'Less' : 'More'}
       </button>
 
       {expanded && (
@@ -197,7 +210,7 @@ export function ViewerControls({
           {/* Walkthrough & Cinematic */}
           <div className="border-t border-white/10" />
           <div>
-            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+            <div className="px-1 pb-0.5 text-[9px] font-medium uppercase tracking-wider text-white/30">
               Walkthrough
             </div>
             <div className="flex gap-0.5">
@@ -206,24 +219,24 @@ export function ViewerControls({
                 onClick={onWalkthrough}
                 title={isWalking ? 'Exit walkthrough (ESC)' : 'First-person walkthrough'}
               >
-                <Footprints size={16} />
+                <Footprints size={14} />
               </IconButton>
               <IconButton
                 active={isCinematic}
                 onClick={onCinematic}
                 title={isCinematic ? 'Stop fly-around' : 'Cinematic fly-around'}
               >
-                <Video size={16} />
+                <Video size={14} />
               </IconButton>
             </div>
             {isWalking && (
-              <div className="mt-1 rounded bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
-                Click to look, WASD to move, ESC to exit
+              <div className="mt-1 rounded bg-sky-500/10 px-2 py-0.5 text-[9px] text-sky-400">
+                WASD to move, ESC to exit
               </div>
             )}
             {isCinematic && (
-              <div className="mt-1 rounded bg-sky-500/10 px-2 py-1 text-[10px] text-sky-400">
-                Cinematic fly-around playing...
+              <div className="mt-1 rounded bg-sky-500/10 px-2 py-0.5 text-[9px] text-sky-400">
+                Cinematic playing...
               </div>
             )}
           </div>
@@ -231,7 +244,7 @@ export function ViewerControls({
           {/* Time of Day */}
           <div className="border-t border-white/10" />
           <div>
-            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+            <div className="px-1 pb-0.5 text-[9px] font-medium uppercase tracking-wider text-white/30">
               Time of Day
             </div>
             <div className="flex gap-0.5">
@@ -242,7 +255,7 @@ export function ViewerControls({
                   onClick={() => onTimeOfDayChange(id)}
                   title={label}
                 >
-                  <Icon size={16} />
+                  <Icon size={14} />
                 </IconButton>
               ))}
             </div>
@@ -251,7 +264,7 @@ export function ViewerControls({
           {/* Basemap */}
           <div className="border-t border-white/10" />
           <div>
-            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-white/40">
+            <div className="px-1 pb-0.5 text-[9px] font-medium uppercase tracking-wider text-white/30">
               Basemap
             </div>
             <div className="flex gap-0.5">
@@ -260,7 +273,7 @@ export function ViewerControls({
                   key={id}
                   type="button"
                   onClick={() => onBasemapChange(id)}
-                  className={`rounded-lg px-2 py-1 text-xs transition-colors ${
+                  className={`rounded-lg px-2 py-0.5 text-[10px] transition-colors ${
                     activeBasemap === id
                       ? 'bg-sky-500/20 text-sky-400'
                       : 'text-white/70 hover:bg-white/10 hover:text-white'

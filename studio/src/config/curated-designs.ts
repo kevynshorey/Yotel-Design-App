@@ -138,14 +138,14 @@ const coastalBar: CuratedDesign = {
   description:
     'A single east-west bar building positioned at the north of the site, maximising the ocean-facing west facade. The simple rectangular plan delivers the highest structural efficiency and lowest construction cost per key while giving every YOTEL room a sea view or courtyard outlook. Resort-sized 19m2 rooms and a full rooftop programme with bar, grill kitchen, and raised pool.',
   concept:
-    'The Coastal Bar draws on the Caribbean tradition of the long, low oceanfront hotel — a clean horizontal datum against the sky. The 56m-long west facade is a continuous ribbon of floor-to-ceiling glass and sliding louvred screens, giving 100 resort-sized YOTEL rooms (19m2 each) direct sunset views across Carlisle Bay. PAD residences occupy the top two floors with private balconies. The amenity pavilion anchors the south edge near Bay Street, framing a generous Rixos-style pool courtyard between the two volumes. Guests arrive from Bay Street through a grand portico into Mission Control, with parking flanking the entrance gate. The ground-floor amenity block houses the restaurant and bar, grab-and-go market, and Komyuniti lounge, while the upper level holds the gym, recording studio, podcast studio, sim racing room, and business centre.',
+    'The Coastal Bar draws on the Caribbean tradition of the long, low oceanfront hotel — a clean horizontal datum against the sky. The 74.5m-long west facade is a continuous ribbon of floor-to-ceiling glass and sliding louvred screens, giving 100 resort-sized YOTEL rooms (19m2 each) direct sunset views across Carlisle Bay. PAD residences occupy the fifth floor with private balconies. The amenity pavilion anchors the south edge near Bay Street, framing a generous Rixos-style pool courtyard between the two volumes. Guests arrive from Bay Street through a grand portico into Mission Control, with parking flanking the entrance gate. The ground-floor amenity block houses the restaurant and bar, grab-and-go market, and Komyuniti lounge, while the upper level holds the gym, recording studio, podcast studio, sim racing room, and business centre.',
   formType: 'BAR',
   storeys: 6,
   yotelKeys: 100,
-  padKeys: 34,
-  totalKeys: 134,
+  padKeys: 32,
+  totalKeys: 132,
   wings: [
-    { id: 'bar-main', label: 'Main Bar', x: 0, y: 0, length: 56, width: 15, direction: 'EW', floors: 6 },
+    { id: 'bar-main', label: 'Main Bar', x: 1.83, y: 1.83, length: 74.5, width: 16.1, direction: 'EW', floors: 6 },
   ],
   floorProgramme: {
     ground: [
@@ -168,17 +168,17 @@ const coastalBar: CuratedDesign = {
       'Staff Facilities',
     ],
     typical_yt: [
-      '34 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
+      '36 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
       'Central corridor double-loaded',
       'Laundry chute + ice/vending alcove',
       '100 YOTEL keys total across 3 floors',
     ],
     typical_pad: [
-      '17 PAD units per floor (floors 5-6)',
+      '32 PAD units on floor 5',
       'Mix of studios (25m2), 1-beds (40m2), 2-beds (60m2)',
       'Shared lounge at corridor end',
       'Private balconies west-facing',
-      '34 PAD keys total across 2 floors',
+      '32 PAD keys total on 1 floor',
     ],
     rooftop: [
       'Rooftop Bar & Lounge (280m2)',
@@ -240,12 +240,12 @@ const courtyardL: CuratedDesign = {
     'The Courtyard L is the recommended option for balancing views, microclimate, and buildability. The longer west wing (50m) faces Carlisle Bay; the shorter north wing (32m) returns inland, shading the pool deck from late-afternoon sun. The L-form generates a sheltered courtyard microclimate — cooler by 2-3 degrees C than an exposed deck — while maintaining unobstructed ocean views from every west-facing room. Guests arrive from Bay Street into a south-facing amenity pavilion housing Mission Control, the restaurant and bar, and grab-and-go market at ground level, with gym, studios, sim racing, and business centre above. Parking flanks the entrance gate on both sides.',
   formType: 'L',
   storeys: 6,
-  yotelKeys: 102,
-  padKeys: 34,
-  totalKeys: 136,
+  yotelKeys: 100,
+  padKeys: 32,
+  totalKeys: 132,
   wings: [
-    { id: 'l-west', label: 'West Wing (Ocean)', x: 0, y: 0, length: 50, width: 14.5, direction: 'NS', floors: 6 },
-    { id: 'l-north', label: 'North Wing', x: 0, y: 0, length: 32, width: 14.5, direction: 'EW', floors: 6 },
+    { id: 'l-main', label: 'Main Wing (E-W)', x: 1.83, y: 1.83, length: 46.9, width: 16.1, direction: 'EW', floors: 6 },
+    { id: 'l-branch', label: 'Branch Wing (N-S)', x: 32.63, y: 1.83, length: 31.3, width: 16.1, direction: 'NS', floors: 6 },
   ],
   floorProgramme: {
     ground: [
@@ -269,17 +269,17 @@ const courtyardL: CuratedDesign = {
     ],
     typical_yt: [
       '34 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
-      'West wing: 22 sea-view rooms',
-      'North wing: 12 courtyard-view rooms',
+      'Main wing: 20 sea-view rooms',
+      'Branch wing: 14 courtyard-view rooms',
       'Connecting node at L-junction',
-      '102 YOTEL keys total across 3 floors',
+      '100 YOTEL keys total across 3 floors',
     ],
     typical_pad: [
-      '17 PAD units per floor (floors 5-6)',
-      'West wing: 11 sea-view PADs',
-      'North wing: 6 garden-view PADs',
+      '16 PAD units per floor (floors 5-6)',
+      'Main wing: 10 sea-view PADs',
+      'Branch wing: 6 garden-view PADs',
       'Premium corner units at L-junction',
-      '34 PAD keys total across 2 floors',
+      '32 PAD keys total across 2 floors',
     ],
     rooftop: [
       'Rooftop Bar & Lounge (300m2)',
@@ -342,13 +342,13 @@ const bayViewU: CuratedDesign = {
     'The Bay View U is the quintessential Caribbean resort typology reimagined for a modern dual-brand hotel. Three wings — north (30m), east (44m), and south (30m) — embrace a landscaped pool courtyard that opens dramatically toward the ocean. The east wing houses the primary corridor spine; the two flanking wings create a generous 30m-wide view corridor framing Carlisle Bay. The amenity pavilion sits beyond the south wing on Bay Street, with parking flanking the entrance gate. Guests arrive from Bay Street through Mission Control, passing the restaurant and grab-and-go before discovering the pool courtyard and ocean beyond. PAD residences crown the upper floors with wrap-around balconies at the U-corners. The upper amenity floor houses the gym, recording studio, podcast studio, sim racing room, and business centre.',
   formType: 'U',
   storeys: 6,
-  yotelKeys: 102,
-  padKeys: 36,
-  totalKeys: 138,
+  yotelKeys: 100,
+  padKeys: 30,
+  totalKeys: 130,
   wings: [
-    { id: 'u-north', label: 'North Wing', x: 0, y: 30, length: 30, width: 13.5, direction: 'EW', floors: 6 },
-    { id: 'u-east', label: 'East Wing (Spine)', x: 16.5, y: 0, length: 44, width: 13.5, direction: 'NS', floors: 6 },
-    { id: 'u-south', label: 'South Wing', x: 0, y: 0, length: 30, width: 13.5, direction: 'EW', floors: 6 },
+    { id: 'u-south', label: 'South Wing', x: 1.83, y: 1.83, length: 21.7, width: 16.1, direction: 'EW', floors: 6 },
+    { id: 'u-north', label: 'North Wing', x: 1.83, y: 30.76, length: 21.7, width: 16.1, direction: 'EW', floors: 6 },
+    { id: 'u-east', label: 'East Connector', x: 7.43, y: 1.83, length: 45.03, width: 16.1, direction: 'NS', floors: 6 },
   ],
   floorProgramme: {
     ground: [
@@ -371,16 +371,16 @@ const bayViewU: CuratedDesign = {
       'Staff Facilities',
     ],
     typical_yt: [
-      '34 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
-      'North wing: 10 rooms', 'East wing: 14 rooms', 'South wing: 10 rooms',
-      '102 YOTEL keys total across 3 floors',
+      '36 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
+      'South wing: 6 rooms', 'East connector: 20 rooms', 'North wing: 10 rooms',
+      '100 YOTEL keys total across 3 floors',
     ],
     typical_pad: [
-      '18 PAD units per floor (floors 5-6)',
+      '30 PAD units on floor 5',
       'Premium corner suites at U-junctions',
       'Wrap-around balconies on upper floors',
       'Mix of studios, 1-beds, and 2-beds',
-      '36 PAD keys total across 2 floors',
+      '30 PAD keys total on 1 floor',
     ],
     rooftop: [
       'Rooftop Bar & Lounge (320m2)',
@@ -443,13 +443,13 @@ const islandCloister: CuratedDesign = {
     'The Island Cloister inverts the typical resort plan: instead of opening to the ocean, it creates an internal paradise. The C-form (north wing, south wing, and a lower west connector) wraps a lush 500m2 garden courtyard with the Rixos-style pool as its centrepiece. The west connector — just 2 storeys — houses the ground-floor restaurant with ocean-terrace dining and becomes the base for the rooftop bar above. Arriving guests enter from Bay Street through the south-facing amenity pavilion into Mission Control, with grab-and-go market and Komyuniti lounge at ground level. The upper amenity floor holds the gym, recording studio, podcast studio, sim racing room, and business centre. Guests cross the garden courtyard to discover the pool and ocean beyond. Parking flanks the Bay Street entrance gate.',
   formType: 'C',
   storeys: 6,
-  yotelKeys: 102,
+  yotelKeys: 100,
   padKeys: 30,
-  totalKeys: 132,
+  totalKeys: 130,
   wings: [
-    { id: 'c-north', label: 'North Wing', x: 0, y: 34, length: 34, width: 13.5, direction: 'EW', floors: 6 },
-    { id: 'c-south', label: 'South Wing', x: 0, y: 0, length: 34, width: 13.5, direction: 'EW', floors: 6 },
-    { id: 'c-west', label: 'West Connector', x: 0, y: 0, length: 34, width: 10, direction: 'NS', floors: 2 },
+    { id: 'c-south', label: 'South Wing', x: 1.83, y: 1.83, length: 21.7, width: 16.1, direction: 'EW', floors: 6 },
+    { id: 'c-north', label: 'North Wing', x: 1.83, y: 30.76, length: 21.7, width: 16.1, direction: 'EW', floors: 6 },
+    { id: 'c-west', label: 'West Connector', x: 1.83, y: 1.83, length: 45.03, width: 16.1, direction: 'NS', floors: 6 },
   ],
   floorProgramme: {
     ground: [
@@ -472,18 +472,18 @@ const islandCloister: CuratedDesign = {
       'Staff Facilities',
     ],
     typical_yt: [
-      '34 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
-      'North wing: 17 rooms',
-      'South wing: 17 rooms',
-      'Central corridor with courtyard views',
-      '102 YOTEL keys total across 3 floors',
+      '36 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
+      'South wing: 6 rooms',
+      'North wing: 10 rooms',
+      'West connector: 20 rooms, central corridor with courtyard views',
+      '100 YOTEL keys total across 3 floors',
     ],
     typical_pad: [
-      '15 PAD units per floor (floors 5-6)',
+      '30 PAD units on floor 5',
+      'South wing: 5 units',
       'North wing: 8 units',
-      'South wing: 7 units',
-      'Ocean-corner penthouses',
-      '30 PAD keys total across 2 floors',
+      'West connector: 17 units, ocean-corner penthouses',
+      '30 PAD keys total on 1 floor',
     ],
     rooftop: [
       'Rooftop Bar on west connector (260m2)',
@@ -544,13 +544,13 @@ const twinTower: CuratedDesign = {
     'A north-south oriented bar building maximises dual-aspect rooms: west rooms face the ocean, east rooms face the sunrise and harbour. The narrow 14.5m plan ensures every room has natural cross-ventilation from the prevailing NE trade winds. A separate amenity pavilion to the south on Bay Street creates a distinct arrival identity. All rooms at 19m2 resort standard with rooftop bar, grill, and raised pool.',
   concept:
     'The Twin Tower reinterprets the classic resort slab as a slender north-south bar that turns its broad face to the ocean. At just 14.5m wide, the plan is the most efficient of all seven options — single-aspect rooms are eliminated, and every unit benefits from through-ventilation. The bar sits at the north-east of the buildable area, leaving the entire western and southern zones free for the Rixos-style pool deck and amenity pavilion. Guests arrive from Bay Street through the south-facing amenity block with Mission Control, restaurant and bar, and grab-and-go market at ground level. The upper floor houses the gym, recording and podcast studios, sim racing room, and business centre. Parking courts flank both sides of the Bay Street entrance gate.',
-  formType: 'BAR_NS',
+  formType: 'BAR',
   storeys: 6,
-  yotelKeys: 102,
-  padKeys: 30,
+  yotelKeys: 100,
+  padKeys: 32,
   totalKeys: 132,
   wings: [
-    { id: 'ns-main', label: 'Main Tower', x: 20, y: 0, length: 52, width: 14.5, direction: 'NS', floors: 6 },
+    { id: 'ns-main', label: 'Main Bar', x: 1.83, y: 1.83, length: 76.1, width: 16.1, direction: 'EW', floors: 6 },
   ],
   floorProgramme: {
     ground: [
@@ -573,16 +573,16 @@ const twinTower: CuratedDesign = {
       'Staff Facilities',
     ],
     typical_yt: [
-      '34 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
-      '17 ocean-view west rooms + 17 harbour-view east rooms',
+      '37 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
+      '19 ocean-view west rooms + 18 harbour-view east rooms',
       'Central double-loaded corridor',
-      '102 YOTEL keys total across 3 floors',
+      '100 YOTEL keys total across 3 floors',
     ],
     typical_pad: [
-      '15 PAD units per floor (floors 5-6)',
-      '8 ocean-view units + 7 harbour-view units',
+      '32 PAD units on floor 5',
+      '16 ocean-view units + 16 harbour-view units',
       'End-of-bar penthouses with dual aspect',
-      '30 PAD keys total across 2 floors',
+      '32 PAD keys total on 1 floor',
     ],
     rooftop: [
       'Rooftop Bar & Lounge (300m2)',
@@ -646,11 +646,11 @@ const sunsetTerrace: CuratedDesign = {
   formType: 'L',
   storeys: 6,
   yotelKeys: 100,
-  padKeys: 36,
-  totalKeys: 136,
+  padKeys: 32,
+  totalKeys: 132,
   wings: [
-    { id: 'st-south', label: 'South Wing (Full Height)', x: 0, y: 0, length: 46, width: 14.5, direction: 'EW', floors: 6 },
-    { id: 'st-west', label: 'West Wing (Stepped)', x: 0, y: 0, length: 36, width: 14.5, direction: 'NS', floors: 6 },
+    { id: 'st-main', label: 'Main Wing (E-W, Full Height)', x: 1.83, y: 1.83, length: 48.8, width: 16.1, direction: 'EW', floors: 6 },
+    { id: 'st-branch', label: 'Branch Wing (N-S, Stepped)', x: 34.53, y: 1.83, length: 32.5, width: 16.1, direction: 'NS', floors: 6 },
   ],
   floorProgramme: {
     ground: [
@@ -673,18 +673,18 @@ const sunsetTerrace: CuratedDesign = {
       'Staff Facilities',
     ],
     typical_yt: [
-      '34 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
-      'South wing: 20 rooms',
-      'West wing: 14 rooms (terraced floors)',
-      'Terrace-access rooms on west wing',
-      '100 YOTEL keys total (approx) across 3 floors',
+      '36 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
+      'Main wing: 22 rooms',
+      'Branch wing: 14 rooms (terraced floors)',
+      'Terrace-access rooms on branch wing',
+      '100 YOTEL keys total across 3 floors',
     ],
     typical_pad: [
-      '18 PAD units per floor (floors 5-6)',
-      'South wing: 12 units full-height',
-      'West wing: 6 units (floor 5 only, terrace above)',
+      '32 PAD units on floor 5',
+      'Main wing: 20 units full-height',
+      'Branch wing: 12 units (terrace above)',
       'Penthouse terraces with plunge pools',
-      '36 PAD keys total across 2 floors',
+      '32 PAD keys total on 1 floor',
     ],
     rooftop: [
       'Rooftop Bar & Lounge on south wing (280m2)',
@@ -751,7 +751,7 @@ const modularMicro: CuratedDesign = {
   padKeys: 32,
   totalKeys: 132,
   wings: [
-    { id: 'mod-main', label: 'Modular Bar', x: 0, y: 0, length: 54, width: 15, direction: 'EW', floors: 5 },
+    { id: 'mod-main', label: 'Modular Bar', x: 1.83, y: 1.83, length: 74.5, width: 16.1, direction: 'EW', floors: 5 },
   ],
   floorProgramme: {
     ground: [
@@ -774,18 +774,18 @@ const modularMicro: CuratedDesign = {
       'Staff Facilities',
     ],
     typical_yt: [
-      '34 YOTEL rooms per floor (floors 2-3), ~19m2 resort-sized',
+      '36 YOTEL rooms per floor (floors 2-4), ~19m2 resort-sized',
       'Standardised 3.6m module grid',
       'Pre-fitted bathroom pods',
       'Corridor modules with integrated services',
-      '100 YOTEL keys total (approx: 34 + 34 + 32 across floors)',
+      '100 YOTEL keys total across 3 floors',
     ],
     typical_pad: [
-      '16 PAD units per floor (floor 4)',
+      '32 PAD units on floor 5 (top floor)',
       'Double-width modules (7.2m)',
       'Pre-fitted kitchenette pods',
       'Balcony modules bolted on-site',
-      '32 PAD keys total (16 per floor across floors 4-5)',
+      '32 PAD keys total on 1 floor',
     ],
     rooftop: [
       'Rooftop Bar & Lounge (260m2)',
