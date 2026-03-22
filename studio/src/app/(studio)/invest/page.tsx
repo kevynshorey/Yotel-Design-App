@@ -6,6 +6,7 @@ import { HighlightsGrid } from '@/components/invest/highlights-grid'
 import { MetricsGrid } from '@/components/invest/metrics-grid'
 import { RevenueChart } from '@/components/invest/revenue-chart'
 import { Timeline } from '@/components/invest/timeline'
+import { CompAnalysis } from '@/components/invest/comp-analysis'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
 import { useDesign } from '@/context/design-context'
@@ -80,9 +81,15 @@ export default function InvestPage() {
         <h1 className="text-sm font-semibold text-slate-100">Investor Portal</h1>
         <span className="text-xs text-slate-500">—</span>
         <span className="text-xs text-slate-400">Investment Summary · YOTEL Barbados</span>
-        <span className="ml-auto rounded-full border border-sky-800/60 bg-sky-950/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-sky-400">
-          Confidential
-        </span>
+        <button
+          onClick={() => window.open('/memo', '_blank')}
+          className="ml-auto flex items-center gap-1.5 rounded-full border border-sky-800/60 bg-sky-950/60 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-sky-400 transition-colors hover:border-sky-600 hover:bg-sky-900/60 hover:text-sky-300"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3">
+            <path d="M2 4a2 2 0 0 1 2-2h4.586A2 2 0 0 1 10 2.586L13.414 6A2 2 0 0 1 14 7.414V12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Z" />
+          </svg>
+          Export Memo
+        </button>
       </div>
 
       {/* Linked-option banner */}
@@ -129,7 +136,10 @@ export default function InvestPage() {
         {/* 5. Development Timeline */}
         <Timeline />
 
-        {/* 6. Contact / Next Steps */}
+        {/* 6. Competitive Comp Set */}
+        <CompAnalysis />
+
+        {/* 7. Contact / Next Steps */}
         <div className="border-t border-slate-800/60 px-8 py-14">
           <div className="mx-auto max-w-5xl">
             <div className="rounded-2xl border border-sky-900/50 bg-gradient-to-br from-sky-950/40 to-slate-900/40 p-8 text-center">

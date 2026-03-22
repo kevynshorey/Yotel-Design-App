@@ -70,7 +70,7 @@ export function IconRail() {
 
       {/* AI Assistant toggle — hidden for viewers */}
       {showAI && (
-        <div className="group relative">
+        <div className="group relative ml-auto md:ml-0">
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('toggle-ai-chat'))}
             className="flex flex-col items-center justify-center gap-0.5 rounded-lg px-2 py-1 text-violet-400 transition-colors hover:bg-violet-500/10 hover:text-violet-300 md:h-10 md:w-10 md:flex-row md:gap-0 md:px-0 md:py-0"

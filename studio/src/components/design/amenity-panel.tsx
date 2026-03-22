@@ -20,7 +20,7 @@ export function AmenityPanel({ amenities, isOpen, onClose }: AmenityPanelProps) 
 
   if (!amenities) {
     return (
-      <div className="absolute bottom-14 left-3 z-[15] w-72 rounded-xl border border-white/10 bg-slate-900/90 px-3 py-2.5 shadow-lg backdrop-blur-xl">
+      <div className="absolute bottom-14 left-3 z-[15] w-72 rounded-xl border border-white/10 bg-slate-900/90 px-3 py-2.5 shadow-lg backdrop-blur-xl transition-all duration-150 ease-out">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-semibold text-slate-200">Amenity Programme</h3>
           <button type="button" onClick={onClose} className="rounded p-0.5 text-slate-500 hover:bg-white/10 hover:text-slate-300">
@@ -37,7 +37,7 @@ export function AmenityPanel({ amenities, isOpen, onClose }: AmenityPanelProps) 
   const scorePct = Math.round(amenities.amenityScore * 100)
 
   return (
-    <div className="absolute bottom-14 left-3 z-[15] w-72 max-h-[calc(100vh-120px)] overflow-y-auto rounded-xl border border-white/10 bg-slate-900/90 px-3 py-2.5 shadow-lg backdrop-blur-xl scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+    <div className="absolute bottom-14 left-3 z-[15] w-72 max-h-[calc(100vh-120px)] overflow-y-auto rounded-xl border border-white/10 bg-slate-900/90 px-3 py-2.5 shadow-lg backdrop-blur-xl scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent transition-all duration-150 ease-out">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-semibold text-slate-200">Amenity Programme</h3>

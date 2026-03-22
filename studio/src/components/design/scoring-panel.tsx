@@ -14,7 +14,7 @@ export function ScoringPanel({ option, isOpen, onClose }: ScoringPanelProps) {
   if (!isOpen || !option) return null
 
   return (
-    <div className="absolute right-3 top-3 z-[15] w-64 rounded-xl border border-white/10 bg-slate-900/90 shadow-lg backdrop-blur-xl">
+    <div className="absolute right-3 top-3 z-[15] w-64 rounded-xl border border-white/10 bg-slate-900/90 shadow-lg backdrop-blur-xl transition-all duration-150 ease-out">
       <div className="flex items-center justify-between px-3 py-2">
         <h3 className="text-xs font-semibold text-slate-100">
           Score: <span className="font-mono text-base text-sky-400">{option.score.toFixed(1)}</span>

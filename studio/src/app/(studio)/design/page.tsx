@@ -29,6 +29,7 @@ import { generateAll } from '@/engine/generator'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
 import { ExportDxfButton } from '@/components/design/export-dxf-button'
+import { ExportPptxButton } from '@/components/design/export-pptx-button'
 import { canEdit, canExport, canGenerate } from '@/lib/auth'
 import { useUser } from '@/lib/use-user'
 import type { DesignOption } from '@/engine/types'
@@ -341,7 +342,7 @@ function DesignPageInner() {
 
         {/* z-50: Floor Plan overlay -- replaces 3D viewport */}
         {showFloorPlan && (
-          <div className="absolute inset-0 z-50 flex flex-col bg-slate-950">
+          <div className="absolute inset-0 z-50 flex flex-col bg-slate-950 transition-all duration-150 ease-out">
             <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2">
               <h2 className="text-sm font-semibold text-slate-200">
                 Floor Plan &mdash; {selectedOption?.form ?? ''} Form
@@ -365,7 +366,7 @@ function DesignPageInner() {
 
         {/* z-50: View Analysis floating panel */}
         {showViewAnalysis && (
-          <div className="absolute bottom-0 right-0 top-0 z-50 w-full md:w-[380px] border-l border-slate-800 bg-slate-950 shadow-2xl">
+          <div className="absolute bottom-0 right-0 top-0 z-50 w-full md:w-[380px] border-l border-slate-800 bg-slate-950 shadow-2xl transition-all duration-150 ease-out">
             <div className="flex items-center justify-between border-b border-slate-800 px-4 py-2">
               <h2 className="text-sm font-semibold text-slate-200">
                 View &amp; Sun Analysis
@@ -409,7 +410,7 @@ function DesignPageInner() {
         />
 
         {/* z-30: Action buttons -- scrollable row at bottom */}
-        <div className="absolute bottom-2 right-2 left-2 md:bottom-4 md:right-4 md:left-4 z-30 flex items-center gap-1.5 md:gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+        <div className="absolute bottom-2 right-2 left-2 md:bottom-4 md:right-4 md:left-4 z-30 flex items-center gap-1.5 md:gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent [&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0 [-ms-overflow-style:none] [scrollbar-width:none]">
           {/* Table View button */}
           {options.length > 0 && (
             <button
@@ -613,6 +614,11 @@ function DesignPageInner() {
               <FileSpreadsheet size={14} />
               <span className="hidden sm:inline">Excel</span>
             </button>
+          )}
+
+          {/* PPTX Investor Deck button -- admin only */}
+          {selectedOption && allowExport && (
+            <ExportPptxButton option={selectedOption} />
           )}
 
           {/* Export Report button -- admin only */}

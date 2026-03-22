@@ -8,6 +8,7 @@ import { InvestmentMetrics } from '@/components/finance/investment-metrics'
 import { SensitivityAnalysis } from '@/components/finance/sensitivity-analysis'
 import { CostWaterfall } from '@/components/finance/cost-waterfall'
 import { CapitalStackUI } from '@/components/finance/capital-stack'
+import { DcfAnalysis } from '@/components/finance/dcf-analysis'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
 import { buildCapitalStack } from '@/engine/capital-stack'
@@ -248,6 +249,15 @@ export default function FinancePage() {
         {/* Capital Structure & Returns */}
         <div className="border-t border-slate-800/60 p-5">
           <CapitalStackUI result={capitalStack} projection={projection} />
+        </div>
+
+        {/* DCF Analysis & IRR Sensitivity */}
+        <div className="border-t border-slate-800/60 p-5">
+          <DcfAnalysis
+            tdc={cost.total}
+            projection={projection}
+            capitalStack={capitalStack}
+          />
         </div>
       </div>
     </div>

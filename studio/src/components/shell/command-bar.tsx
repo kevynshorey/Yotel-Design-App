@@ -9,10 +9,12 @@ import type { DesignOption } from '@/engine/types'
 
 export function CommandBar() {
   const [option, setOption] = useState<DesignOption | null>(null)
+  const [mounted, setMounted] = useState(false)
   const user = useUser()
   const router = useRouter()
 
   useEffect(() => {
+    setMounted(true)
     setOption(getSelectedOption())
 
     const handler = () => setOption(getSelectedOption())
@@ -20,8 +22,9 @@ export function CommandBar() {
     return () => window.removeEventListener('design-option-changed', handler)
   }, [])
 
-  const keysLabel = option ? `${option.metrics.totalKeys} keys` : '130 keys'
-  const tdcLabel = option
+  // Use stable defaults during SSR to avoid hydration mismatch
+  const keysLabel = mounted && option ? `${option.metrics.totalKeys} keys` : '130 keys'
+  const tdcLabel = mounted && option
     ? `$${(option.cost.total / 1_000_000).toFixed(1)}M TDC`
     : '$55M TDC est.'
 

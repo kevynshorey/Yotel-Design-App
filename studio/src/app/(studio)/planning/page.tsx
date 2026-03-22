@@ -24,6 +24,9 @@ import {
   Users,
   Zap,
   Droplets,
+  ChevronDown,
+  ChevronRight,
+  ClipboardCheck,
   type LucideIcon,
 } from 'lucide-react'
 import SustainabilitySection from '@/components/planning/sustainability-section'
@@ -32,6 +35,15 @@ import LEEDTracker from '@/components/sustainability/leed-tracker'
 import { calculateParking } from '@/config/parking'
 import { calculateDrainage } from '@/config/drainage'
 import { calculateLandscape } from '@/config/landscape'
+import {
+  APPROVAL_TRACKS,
+  PRECEDENT_PROJECTS,
+  EIA_ISSUES,
+  computeApprovalProgress,
+  type ApprovalStatus,
+  type ApprovalTrack,
+  type EIAAssessmentStatus,
+} from '@/config/approval-tracker'
 
 // ── Regulation check definition ─────────────────────────────────────────
 
@@ -368,6 +380,234 @@ function RegulationCard({ check }: { check: RegulationCheck }) {
   )
 }
 
+// ── Approval Status Helpers ──────────────────────────────────────────
+
+function approvalStatusBadge(status: ApprovalStatus): string {
+  switch (status) {
+    case 'COMPLETE':
+    case 'CONFIRMED':
+      return 'bg-emerald-900/40 text-emerald-400 ring-emerald-700/50'
+    case 'IN_PROGRESS':
+      return 'bg-amber-900/40 text-amber-400 ring-amber-700/50'
+    case 'PENDING':
+      return 'bg-sky-900/40 text-sky-400 ring-sky-700/50'
+    case 'NOT_DONE':
+      return 'bg-red-900/40 text-red-400 ring-red-700/50'
+  }
+}
+
+function approvalStatusLabel(status: ApprovalStatus): string {
+  switch (status) {
+    case 'COMPLETE': return 'Complete'
+    case 'CONFIRMED': return 'Confirmed'
+    case 'IN_PROGRESS': return 'In Progress'
+    case 'PENDING': return 'Pending'
+    case 'NOT_DONE': return 'Not Done'
+  }
+}
+
+function eiaStatusBadge(status: EIAAssessmentStatus): string {
+  switch (status) {
+    case 'NOT_ASSESSED': return 'bg-slate-800/60 text-slate-400 ring-slate-700/50'
+    case 'LOW_RISK': return 'bg-emerald-900/40 text-emerald-400 ring-emerald-700/50'
+    case 'MODERATE_RISK': return 'bg-amber-900/40 text-amber-400 ring-amber-700/50'
+    case 'HIGH_RISK': return 'bg-red-900/40 text-red-400 ring-red-700/50'
+    case 'MITIGATED': return 'bg-sky-900/40 text-sky-400 ring-sky-700/50'
+  }
+}
+
+function TrackCard({ track }: { track: ApprovalTrack }) {
+  const [open, setOpen] = useState(false)
+  const complete = track.steps.filter((s) => s.status === 'COMPLETE' || s.status === 'CONFIRMED').length
+  const total = track.steps.length
+  const pct = Math.round((complete / total) * 100)
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-slate-900/80">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left"
+      >
+        {open ? (
+          <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
+        ) : (
+          <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold text-slate-400">
+              {track.id}
+            </span>
+            <h3 className="text-sm font-semibold text-slate-100">{track.name}</h3>
+          </div>
+          <p className="text-[11px] text-slate-500">{track.authority} -- {track.timeline}</p>
+        </div>
+        <div className="flex shrink-0 items-center gap-3">
+          <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-800">
+            <div
+              className={`h-full rounded-full transition-all ${pct === 100 ? 'bg-emerald-500' : pct > 0 ? 'bg-amber-500' : 'bg-slate-700'}`}
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <span className="text-xs font-mono text-slate-400">{complete}/{total}</span>
+        </div>
+      </button>
+
+      {open && (
+        <div className="border-t border-slate-800/60 px-4 py-3">
+          <div className="space-y-2">
+            {track.steps.map((step) => (
+              <div key={step.id} className="flex items-start gap-3 rounded-lg bg-slate-800/30 px-3 py-2">
+                <span className="shrink-0 font-mono text-[10px] text-slate-600">{step.id}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-slate-300">{step.requirement}</p>
+                  {step.responsible && (
+                    <p className="text-[10px] text-slate-600">Responsible: {step.responsible}</p>
+                  )}
+                  {step.notes && (
+                    <p className="text-[10px] text-slate-500 italic">{step.notes}</p>
+                  )}
+                  {step.blocks && (
+                    <p className="text-[10px] text-amber-500/70">Blocks: {step.blocks}</p>
+                  )}
+                </div>
+                <span
+                  className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${approvalStatusBadge(step.status)}`}
+                >
+                  {approvalStatusLabel(step.status)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ApprovalTrackerSection() {
+  const progress = computeApprovalProgress(APPROVAL_TRACKS)
+
+  return (
+    <div className="border-b border-slate-800/60 px-5 py-5">
+      {/* Section header */}
+      <div className="mb-4 flex items-center gap-3">
+        <ClipboardCheck className="h-5 w-5 text-sky-400" />
+        <div>
+          <h2 className="text-sm font-semibold text-slate-100">Approval Tracker</h2>
+          <p className="text-[11px] text-slate-500">5 regulatory tracks -- Barbados planning process</p>
+        </div>
+      </div>
+
+      {/* Overall progress bar */}
+      <div className="mb-5 rounded-xl border border-slate-800/60 bg-slate-900/60 p-4">
+        <div className="mb-2 flex items-center justify-between text-xs">
+          <span className="text-slate-400">Overall Progress</span>
+          <span className="font-mono text-slate-300">
+            {progress.complete}/{progress.total} steps ({progress.pct}%)
+          </span>
+        </div>
+        <div className="mb-3 h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
+          <div
+            className={`h-full rounded-full transition-all ${progress.pct === 100 ? 'bg-emerald-500' : progress.pct > 0 ? 'bg-sky-500' : 'bg-slate-700'}`}
+            style={{ width: `${progress.pct}%` }}
+          />
+        </div>
+        <div className="flex flex-wrap gap-4 text-[10px]">
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="text-slate-500">Complete: {progress.complete}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-amber-500" />
+            <span className="text-slate-500">In Progress: {progress.inProgress}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-sky-500" />
+            <span className="text-slate-500">Pending: {progress.pending}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-red-500" />
+            <span className="text-slate-500">Not Done: {progress.notDone}</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Track cards (collapsible) */}
+      <div className="mb-6 space-y-3">
+        {APPROVAL_TRACKS.map((track) => (
+          <TrackCard key={track.id} track={track} />
+        ))}
+      </div>
+
+      {/* Precedent Projects table */}
+      <div className="mb-6">
+        <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+          Precedent Projects (Approved Near Site)
+        </h3>
+        <div className="overflow-hidden rounded-xl border border-slate-800/60">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-slate-700/60 bg-slate-900/80">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Project</th>
+                <th className="px-3 py-2 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-500">Status</th>
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Scale</th>
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Relevance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PRECEDENT_PROJECTS.map((p) => (
+                <tr key={p.name} className="border-b border-slate-800/40">
+                  <td className="px-3 py-2 font-semibold text-slate-300">{p.name}</td>
+                  <td className="px-3 py-2 text-center">
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${p.approved ? 'bg-emerald-900/40 text-emerald-400 ring-emerald-700/50' : 'bg-red-900/40 text-red-400 ring-red-700/50'}`}>
+                      {p.approved ? 'Approved' : 'Pending'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2 text-slate-400">{p.scale}</td>
+                  <td className="px-3 py-2 text-slate-500">{p.relevance}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* EIA Issues table */}
+      <div>
+        <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+          EIA Issues Assessment
+        </h3>
+        <div className="overflow-hidden rounded-xl border border-slate-800/60">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-slate-700/60 bg-slate-900/80">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Issue</th>
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500">Relevance</th>
+                <th className="px-3 py-2 text-center text-[10px] font-semibold uppercase tracking-wider text-slate-500">Assessment Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {EIA_ISSUES.map((eia) => (
+                <tr key={eia.issue} className="border-b border-slate-800/40">
+                  <td className="px-3 py-2 text-slate-300">{eia.issue}</td>
+                  <td className="px-3 py-2 text-slate-500">{eia.relevance}</td>
+                  <td className="px-3 py-2 text-center">
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${eiaStatusBadge(eia.status)}`}>
+                      {eia.status.replace(/_/g, ' ')}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Main Page ───────────────────────────────────────────────────────────
 
 export default function PlanningPage() {
@@ -443,6 +683,9 @@ export default function PlanningPage() {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
+        {/* Approval Tracker — above compliance checks */}
+        <ApprovalTrackerSection />
+
         {/* Violations section (if any) */}
         {violations.length > 0 && (
           <div className="border-b border-red-900/30 bg-red-950/20 px-5 py-4">
