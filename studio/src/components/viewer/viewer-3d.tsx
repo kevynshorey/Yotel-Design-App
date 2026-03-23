@@ -181,28 +181,32 @@ function buildAmenities(option: DesignOption, buildingTopY: number, buildableWid
   const bboxCenterX = (bbox.minX + bbox.maxX) / 2
   const bboxWidth = bbox.maxX - bbox.minX
 
-  // ── Layout: south-to-north order: Bay Street → Entrance → Amenity Block → Pool → Residential Block ──
+  // ── Layout: west-to-east order: Bay Street (WEST) → Entrance → Amenity Block → Pool → Residential Block ──
+  // BAY STREET IS TO THE WEST. Cars enter from the west.
+  // ALL elements must be INSIDE the blue buildable boundary.
 
   // Gap and size constants
   const poolW = 18, poolD = 9
-  const abW = 22, abD = 20, abH = 9  // amenity block width, depth, height
-  const poolGap = 3   // gap between pool and residential block / amenity block
+  const abW = 20, abD = 18, abH = 9  // amenity block: 20m E-W x 18m N-S
+  const poolGap = 2
 
-  // Pool sits between amenity block (south) and residential block (north)
-  // Pool north edge = residential block south edge + gap
-  const poolNorthZ = bbox.maxZ + poolGap
-  const poolSouthZ = poolNorthZ + poolD
-  const poolCenterZ = (poolNorthZ + poolSouthZ) / 2
-  const poolCenterX = bboxCenterX
+  // The residential block (wings) is positioned by the engine at the EAST side.
+  // Amenity block goes WEST of the residential, pool between them.
+  const bboxCenterZ_val = (bbox.minZ + bbox.maxZ) / 2
 
-  // Amenity block sits south of the pool
-  const abNorthZ = poolSouthZ + poolGap
-  const abCenterZ = abNorthZ + abD / 2
-  const abCenterX = bboxCenterX
+  // Amenity block: near the WEST edge of buildable area (Bay Street side)
+  const abCenterX_raw = buildMinX + abW / 2 + 2  // 2m from west boundary
+  const abCenterZ_raw = bboxCenterZ_val  // centered N-S with the building
 
-  // Clamp amenity block within buildable area
-  const clampedAbX = Math.max(buildMinX + abW / 2, Math.min(buildMaxX - abW / 2, abCenterX))
-  const clampedAbZ = Math.min(buildMaxZ - abD / 2, abCenterZ)
+  // Pool: between amenity block (west) and residential block (east)
+  const poolCenterX_raw = abCenterX_raw + abW / 2 + poolGap + poolD / 2
+  const poolCenterZ_raw = bboxCenterZ_val
+
+  // Clamp ALL positions within buildable area
+  const clampedAbX = Math.max(buildMinX + abW / 2 + 1, Math.min(buildMaxX - abW / 2 - 1, abCenterX_raw))
+  const clampedAbZ = Math.max(buildMinZ + abD / 2 + 1, Math.min(buildMaxZ - abD / 2 - 1, abCenterZ_raw))
+  let poolCenterX = Math.max(buildMinX + poolD / 2 + 1, Math.min(buildMaxX - poolD / 2 - 1, poolCenterX_raw))
+  let poolCenterZ = Math.max(buildMinZ + poolW / 2 + 1, Math.min(buildMaxZ - poolW / 2 - 1, poolCenterZ_raw))
 
   // ── Amenity Block (2-storey, south of pool deck) ──
   const abGeo = new THREE.BoxGeometry(abW, abH, abD)
@@ -250,8 +254,9 @@ function buildAmenities(option: DesignOption, buildingTopY: number, buildableWid
   abTitle.scale.set(10, 2.5, 1)
   group.add(abTitle)
 
-  // ── Central Pool Deck (between amenity block and residential block) ──
-  const poolGeo = new THREE.PlaneGeometry(poolW, poolD)
+  // ── Central Pool Deck (between amenity block to west and residential block to east) ──
+  // Pool oriented N-S (long axis 18m N-S, short axis 9m E-W)
+  const poolGeo = new THREE.PlaneGeometry(poolD, poolW)  // 9m E-W x 18m N-S
   const poolMat = new THREE.MeshStandardMaterial({
     color: 0x00CED1, roughness: 0.3, metalness: 0.1, transparent: true, opacity: 0.85, side: THREE.DoubleSide,
   })
@@ -289,18 +294,22 @@ function buildAmenities(option: DesignOption, buildingTopY: number, buildableWid
   swimLabel.scale.set(5, 1.2, 1)
   group.add(swimLabel)
 
-  // Cabanas (5 along east edge of pool deck, NOT south of amenity block)
+  // Cabanas (5 along south edge of pool deck, within buildable area)
   const cabanaGeo = new THREE.BoxGeometry(3, 2.8, 3)
   const cabanaMat = new THREE.MeshStandardMaterial({ color: 0x8B6914, roughness: 0.8, transparent: true, opacity: 0.7 })
-  const cabanaBaseX = poolCenterX + poolW / 2 + deckPadding + 2
+  const cabanaBaseZ = Math.min(poolCenterZ + poolW / 2 + 3, buildMaxZ - 2)  // south of pool, clamped
   for (let i = 0; i < 5; i++) {
     const cabana = new THREE.Mesh(cabanaGeo, cabanaMat)
-    cabana.position.set(cabanaBaseX, 1.4, poolCenterZ - 8 + i * 4)
-    cabana.castShadow = true
-    group.add(cabana)
+    const cx = poolCenterX - 8 + i * 4
+    // Only place if within buildable area
+    if (cx > buildMinX + 2 && cx < buildMaxX - 2) {
+      cabana.position.set(cx, 1.4, cabanaBaseZ)
+      cabana.castShadow = true
+      group.add(cabana)
+    }
   }
   const cabanaLabel = makeLabel('Cabanas', 0xfb923c, 160)
-  cabanaLabel.position.set(cabanaBaseX, 3.5, poolCenterZ)
+  cabanaLabel.position.set(poolCenterX, 3.5, cabanaBaseZ)
   cabanaLabel.scale.set(5, 1.2, 1)
   group.add(cabanaLabel)
 
@@ -387,37 +396,38 @@ function buildAmenities(option: DesignOption, buildingTopY: number, buildableWid
     group.add(lounger)
   }
 
-  // ── Bay Street Entrance (south of amenity block) ──
-  const entranceGeo = new THREE.BoxGeometry(8, 4, 2)
+  // ── Bay Street Entrance (WEST edge — Bay Street runs along the west boundary) ──
+  const entranceGeo = new THREE.BoxGeometry(2, 4, 8)  // narrow E-W, wide N-S
   const entranceMat = new THREE.MeshStandardMaterial({ color: 0xD4B896, roughness: 0.7, transparent: true, opacity: 0.8 })
   const entrance = new THREE.Mesh(entranceGeo, entranceMat)
-  const entranceZ = clampedAbZ + abD / 2 + 2
-  entrance.position.set(clampedAbX, 2, entranceZ)
+  const entranceX = buildMinX + 1  // at west edge of buildable area
+  const entranceZ = clampedAbZ  // centered on amenity block
+  entrance.position.set(entranceX, 2, entranceZ)
   entrance.castShadow = true
   group.add(entrance)
   const entrLabel = makeLabel('Bay Street Entrance', 0xfbbf24, 256)
-  entrLabel.position.set(clampedAbX, 5, entranceZ)
+  entrLabel.position.set(entranceX, 5, entranceZ)
   group.add(entrLabel)
 
-  // Parking courts flanking entrance
-  const parkGeo = new THREE.PlaneGeometry(10, 6)
+  // Parking courts flanking entrance (north and south of entrance gate, along west edge)
+  const parkGeo = new THREE.PlaneGeometry(6, 10)  // 6m E-W x 10m N-S
   const parkMat = new THREE.MeshStandardMaterial({ color: 0x4a5568, roughness: 0.95, side: THREE.DoubleSide, transparent: true, opacity: 0.6 })
-  const parkL = new THREE.Mesh(parkGeo, parkMat)
-  parkL.rotation.x = -Math.PI / 2
-  parkL.position.set(clampedAbX - 14, 0.01, entranceZ)
-  group.add(parkL)
-  const parkR = new THREE.Mesh(parkGeo, parkMat)
-  parkR.rotation.x = -Math.PI / 2
-  parkR.position.set(clampedAbX + 14, 0.01, entranceZ)
-  group.add(parkR)
-  const parkLLabel = makeLabel('Parking', 0x94a3b8, 128)
-  parkLLabel.position.set(clampedAbX - 14, 1.5, entranceZ)
-  parkLLabel.scale.set(4, 1, 1)
-  group.add(parkLLabel)
-  const parkRLabel = makeLabel('Parking', 0x94a3b8, 128)
-  parkRLabel.position.set(clampedAbX + 14, 1.5, entranceZ)
-  parkRLabel.scale.set(4, 1, 1)
-  group.add(parkRLabel)
+  const parkN = new THREE.Mesh(parkGeo, parkMat)
+  parkN.rotation.x = -Math.PI / 2
+  parkN.position.set(entranceX + 3, 0.01, entranceZ - 10)  // north of entrance
+  group.add(parkN)
+  const parkS = new THREE.Mesh(parkGeo, parkMat)
+  parkS.rotation.x = -Math.PI / 2
+  parkS.position.set(entranceX + 3, 0.01, entranceZ + 10)  // south of entrance
+  group.add(parkS)
+  const parkNLabel = makeLabel('Parking', 0x94a3b8, 128)
+  parkNLabel.position.set(entranceX + 3, 1.5, entranceZ - 10)
+  parkNLabel.scale.set(4, 1, 1)
+  group.add(parkNLabel)
+  const parkSLabel = makeLabel('Parking', 0x94a3b8, 128)
+  parkSLabel.position.set(entranceX + 3, 1.5, entranceZ + 10)
+  parkSLabel.scale.set(4, 1, 1)
+  group.add(parkSLabel)
 
   // ── Palm trees (landscaping — within buildable area, outside building footprints) ──
   const trunkGeo = new THREE.CylinderGeometry(0.2, 0.2, 5, 8)
