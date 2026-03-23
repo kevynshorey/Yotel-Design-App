@@ -144,31 +144,84 @@ function makeLabel(text: string, color: number = 0xffffff, size: number = 256): 
   return sprite
 }
 
-/** Create amenity meshes — pool deck, amenity block, rooftop bar, restaurant, cabanas, palms. */
-function buildAmenities(buildingTopY: number): THREE.Group {
+/** Compute the 3D bounding box of all wings in the option.
+ *  Returns { minX, maxX, minZ, maxZ } in Three.js world coordinates.
+ *  In Three.js: +X = east, -Z = north. */
+function computeWingBBox(wings: DesignOption['wings']): { minX: number; maxX: number; minZ: number; maxZ: number } {
+  let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity
+  for (const wing of wings) {
+    // Convert site coords to Three.js world coords
+    const wx = BUILD_X + wing.x
+    const wz = BUILD_Z - wing.y
+    const eastExtent = wing.direction === 'EW' ? wing.length : wing.width
+    const northExtent = wing.direction === 'EW' ? wing.width : wing.length
+    minX = Math.min(minX, wx)
+    maxX = Math.max(maxX, wx + eastExtent)
+    // Z decreases going north, so south edge is the larger Z, north edge is smaller Z
+    minZ = Math.min(minZ, wz - northExtent)
+    maxZ = Math.max(maxZ, wz)
+  }
+  return { minX, maxX, minZ, maxZ }
+}
+
+/** Create amenity meshes — pool deck, amenity block, rooftop bar, restaurant, cabanas, palms.
+ *  Positions are derived from the actual wing geometry of the selected option. */
+function buildAmenities(option: DesignOption, buildingTopY: number, buildableWidth: number, buildableDepth: number): THREE.Group {
   const group = new THREE.Group()
   group.name = 'amenities'
 
+  // Buildable area bounds in 3D coords
+  const buildMinX = BUILD_X
+  const buildMaxX = BUILD_X + buildableWidth
+  const buildMaxZ = BUILD_Z  // south edge (Bay Street side)
+  const buildMinZ = BUILD_Z - buildableDepth  // north edge
+
+  // Wing bounding box in 3D world coords
+  const bbox = computeWingBBox(option.wings)
+  const bboxCenterX = (bbox.minX + bbox.maxX) / 2
+  const bboxWidth = bbox.maxX - bbox.minX
+
+  // ── Layout: south-to-north order: Bay Street → Entrance → Amenity Block → Pool → Residential Block ──
+
+  // Gap and size constants
+  const poolW = 18, poolD = 9
+  const abW = 22, abD = 20, abH = 9  // amenity block width, depth, height
+  const poolGap = 3   // gap between pool and residential block / amenity block
+
+  // Pool sits between amenity block (south) and residential block (north)
+  // Pool north edge = residential block south edge + gap
+  const poolNorthZ = bbox.maxZ + poolGap
+  const poolSouthZ = poolNorthZ + poolD
+  const poolCenterZ = (poolNorthZ + poolSouthZ) / 2
+  const poolCenterX = bboxCenterX
+
+  // Amenity block sits south of the pool
+  const abNorthZ = poolSouthZ + poolGap
+  const abCenterZ = abNorthZ + abD / 2
+  const abCenterX = bboxCenterX
+
+  // Clamp amenity block within buildable area
+  const clampedAbX = Math.max(buildMinX + abW / 2, Math.min(buildMaxX - abW / 2, abCenterX))
+  const clampedAbZ = Math.min(buildMaxZ - abD / 2, abCenterZ)
+
   // ── Amenity Block (2-storey, south of pool deck) ──
-  const abW = 22, abD = 20, abH = 9  // width, depth, total height (2 floors)
-  const abX = BUILD_X - 5, abZ = BUILD_Z + 16
   const abGeo = new THREE.BoxGeometry(abW, abH, abD)
   const abMat = new THREE.MeshStandardMaterial({
     color: 0xC8B896, roughness: 0.7, metalness: 0.05, transparent: true, opacity: 0.85,
   })
   const abMesh = new THREE.Mesh(abGeo, abMat)
-  abMesh.position.set(abX, abH / 2, abZ)
+  abMesh.position.set(clampedAbX, abH / 2, clampedAbZ)
   abMesh.castShadow = true
   abMesh.receiveShadow = true
   group.add(abMesh)
 
   // Amenity block ground floor labels
   const gfLabels: Array<{ text: string; x: number; z: number; color: number }> = [
-    { text: 'Mission Control', x: abX - 6, z: abZ - 6, color: 0x38bdf8 },
-    { text: 'Restaurant & Bar', x: abX + 2, z: abZ - 6, color: 0x34d399 },
-    { text: 'Grab & Go', x: abX + 8, z: abZ - 6, color: 0xa3e635 },
-    { text: 'Komyuniti Lounge', x: abX - 6, z: abZ + 3, color: 0x38bdf8 },
-    { text: 'Gym', x: abX + 6, z: abZ + 3, color: 0xfb7185 },
+    { text: 'Mission Control', x: clampedAbX - 6, z: clampedAbZ - 6, color: 0x38bdf8 },
+    { text: 'Restaurant & Bar', x: clampedAbX + 2, z: clampedAbZ - 6, color: 0x34d399 },
+    { text: 'Grab & Go', x: clampedAbX + 8, z: clampedAbZ - 6, color: 0xa3e635 },
+    { text: 'Komyuniti Lounge', x: clampedAbX - 6, z: clampedAbZ + 3, color: 0x38bdf8 },
+    { text: 'Gym', x: clampedAbX + 6, z: clampedAbZ + 3, color: 0xfb7185 },
   ]
   for (const lbl of gfLabels) {
     const sprite = makeLabel(lbl.text, lbl.color, 192)
@@ -179,10 +232,10 @@ function buildAmenities(buildingTopY: number): THREE.Group {
 
   // Amenity block L1 labels (upper floor)
   const l1Labels: Array<{ text: string; x: number; z: number; color: number }> = [
-    { text: 'Recording Studio', x: abX - 6, z: abZ - 5, color: 0xd946ef },
-    { text: 'Podcast Studio', x: abX + 2, z: abZ - 5, color: 0xd946ef },
-    { text: 'Sim Racing', x: abX - 6, z: abZ + 4, color: 0xa78bfa },
-    { text: 'Business Centre', x: abX + 4, z: abZ + 4, color: 0x34d399 },
+    { text: 'Recording Studio', x: clampedAbX - 6, z: clampedAbZ - 5, color: 0xd946ef },
+    { text: 'Podcast Studio', x: clampedAbX + 2, z: clampedAbZ - 5, color: 0xd946ef },
+    { text: 'Sim Racing', x: clampedAbX - 6, z: clampedAbZ + 4, color: 0xa78bfa },
+    { text: 'Business Centre', x: clampedAbX + 4, z: clampedAbZ + 4, color: 0x34d399 },
   ]
   for (const lbl of l1Labels) {
     const sprite = makeLabel(lbl.text, lbl.color, 192)
@@ -193,68 +246,72 @@ function buildAmenities(buildingTopY: number): THREE.Group {
 
   // Amenity block title
   const abTitle = makeLabel('AMENITY BLOCK', 0xffffff, 256)
-  abTitle.position.set(abX, abH + 2, abZ)
+  abTitle.position.set(clampedAbX, abH + 2, clampedAbZ)
   abTitle.scale.set(10, 2.5, 1)
   group.add(abTitle)
 
   // ── Central Pool Deck (between amenity block and residential block) ──
-  const poolGeo = new THREE.PlaneGeometry(18, 9)
+  const poolGeo = new THREE.PlaneGeometry(poolW, poolD)
   const poolMat = new THREE.MeshStandardMaterial({
     color: 0x00CED1, roughness: 0.3, metalness: 0.1, transparent: true, opacity: 0.85, side: THREE.DoubleSide,
   })
   const poolMesh = new THREE.Mesh(poolGeo, poolMat)
   poolMesh.rotation.x = -Math.PI / 2
-  poolMesh.position.set(BUILD_X, 0.02, BUILD_Z + 4)
+  poolMesh.position.set(poolCenterX, 0.02, poolCenterZ)
   poolMesh.receiveShadow = true
   group.add(poolMesh)
 
   // Pool label
   const poolLabel = makeLabel('CENTRAL POOL', 0x00CED1, 192)
-  poolLabel.position.set(BUILD_X, 2, BUILD_Z + 4)
+  poolLabel.position.set(poolCenterX, 2, poolCenterZ)
   group.add(poolLabel)
 
-  // Pool deck surround
-  const deckGeo = new THREE.PlaneGeometry(26, 17)
+  // Pool deck surround (slightly larger than pool)
+  const deckPadding = 4
+  const deckGeo = new THREE.PlaneGeometry(poolW + deckPadding * 2, poolD + deckPadding * 2)
   const deckMat = new THREE.MeshStandardMaterial({
     color: 0xD4C8A8, roughness: 0.9, metalness: 0, transparent: true, opacity: 0.6, side: THREE.DoubleSide,
   })
   const deckMesh = new THREE.Mesh(deckGeo, deckMat)
   deckMesh.rotation.x = -Math.PI / 2
-  deckMesh.position.set(BUILD_X, 0.01, BUILD_Z + 4)
+  deckMesh.position.set(poolCenterX, 0.01, poolCenterZ)
   deckMesh.receiveShadow = true
   group.add(deckMesh)
 
-  // Swim-up bar
+  // Swim-up bar (west side of pool)
   const swimBarGeo = new THREE.BoxGeometry(6, 1.2, 2)
   const swimBarMat = new THREE.MeshStandardMaterial({ color: 0x8B6914, roughness: 0.6, transparent: true, opacity: 0.8 })
   const swimBar = new THREE.Mesh(swimBarGeo, swimBarMat)
-  swimBar.position.set(BUILD_X - 7, 0.6, BUILD_Z + 4)
+  swimBar.position.set(poolCenterX - poolW / 2 - 3, 0.6, poolCenterZ)
   group.add(swimBar)
   const swimLabel = makeLabel('Swim-up Bar', 0xfbbf24, 160)
-  swimLabel.position.set(BUILD_X - 7, 2, BUILD_Z + 4)
+  swimLabel.position.set(poolCenterX - poolW / 2 - 3, 2, poolCenterZ)
   swimLabel.scale.set(5, 1.2, 1)
   group.add(swimLabel)
 
-  // Cabanas (5 along south edge of pool)
+  // Cabanas (5 along east edge of pool deck, NOT south of amenity block)
   const cabanaGeo = new THREE.BoxGeometry(3, 2.8, 3)
   const cabanaMat = new THREE.MeshStandardMaterial({ color: 0x8B6914, roughness: 0.8, transparent: true, opacity: 0.7 })
+  const cabanaBaseX = poolCenterX + poolW / 2 + deckPadding + 2
   for (let i = 0; i < 5; i++) {
     const cabana = new THREE.Mesh(cabanaGeo, cabanaMat)
-    cabana.position.set(BUILD_X - 8 + i * 4.5, 1.4, BUILD_Z + 13)
+    cabana.position.set(cabanaBaseX, 1.4, poolCenterZ - 8 + i * 4)
     cabana.castShadow = true
     group.add(cabana)
   }
   const cabanaLabel = makeLabel('Cabanas', 0xfb923c, 160)
-  cabanaLabel.position.set(BUILD_X, 3.5, BUILD_Z + 13)
+  cabanaLabel.position.set(cabanaBaseX, 3.5, poolCenterZ)
   cabanaLabel.scale.set(5, 1.2, 1)
   group.add(cabanaLabel)
 
-  // Sun loungers (around pool)
+  // Sun loungers (around pool, east and west sides)
   const loungerGeo = new THREE.BoxGeometry(2, 0.15, 0.7)
   const loungerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
+  const loungerWestX = poolCenterX - poolW / 2 - 2
+  const loungerEastX = poolCenterX + poolW / 2 + 2
   const loungerPositions = [
-    [BUILD_X + 10, BUILD_Z + 1], [BUILD_X + 10, BUILD_Z + 3], [BUILD_X + 10, BUILD_Z + 5], [BUILD_X + 10, BUILD_Z + 7],
-    [BUILD_X - 10, BUILD_Z + 1], [BUILD_X - 10, BUILD_Z + 3], [BUILD_X - 10, BUILD_Z + 5], [BUILD_X - 10, BUILD_Z + 7],
+    [loungerEastX, poolCenterZ - 3], [loungerEastX, poolCenterZ - 1], [loungerEastX, poolCenterZ + 1], [loungerEastX, poolCenterZ + 3],
+    [loungerWestX, poolCenterZ - 3], [loungerWestX, poolCenterZ - 1], [loungerWestX, poolCenterZ + 1], [loungerWestX, poolCenterZ + 3],
   ]
   for (const [lx, lz] of loungerPositions) {
     const lounger = new THREE.Mesh(loungerGeo, loungerMat)
@@ -263,59 +320,65 @@ function buildAmenities(buildingTopY: number): THREE.Group {
     group.add(lounger)
   }
 
-  // ── Rooftop Bar & Lounge ──
+  // ── Rooftop amenities — placed WITHIN the wing footprint bounding box ──
+  const roofCenterX = bboxCenterX
+  const roofCenterZ = (bbox.minZ + bbox.maxZ) / 2
+  const roofW = bbox.maxX - bbox.minX
+  const roofD = bbox.maxZ - bbox.minZ
+
+  // Rooftop Bar & Lounge (west edge for sunset views)
   const barGeo = new THREE.BoxGeometry(8, 3, 4)
   const barMat = new THREE.MeshStandardMaterial({ color: 0xD4A050, roughness: 0.5, metalness: 0.1, transparent: true, opacity: 0.85 })
   const barMesh = new THREE.Mesh(barGeo, barMat)
-  barMesh.position.set(BUILD_X + 3, buildingTopY + 1.5, BUILD_Z - 2)
+  barMesh.position.set(bbox.minX + 5, buildingTopY + 1.5, roofCenterZ)
   barMesh.castShadow = true
   group.add(barMesh)
-
-  // Rooftop bar label
   const roofBarLabel = makeLabel('Rooftop Bar & Lounge', 0xfbbf24, 256)
-  roofBarLabel.position.set(BUILD_X + 3, buildingTopY + 4, BUILD_Z - 2)
+  roofBarLabel.position.set(bbox.minX + 5, buildingTopY + 4, roofCenterZ)
   group.add(roofBarLabel)
 
-  // Rooftop DJ booth
+  // Rooftop DJ booth (center of roof)
   const djGeo = new THREE.BoxGeometry(3, 2.5, 3)
   const djMat = new THREE.MeshStandardMaterial({ color: 0x6B21A8, roughness: 0.4, transparent: true, opacity: 0.8 })
   const djMesh = new THREE.Mesh(djGeo, djMat)
-  djMesh.position.set(BUILD_X - 6, buildingTopY + 1.25, BUILD_Z - 8)
+  djMesh.position.set(roofCenterX, buildingTopY + 1.25, roofCenterZ)
   group.add(djMesh)
   const djLabel = makeLabel('DJ Booth', 0xa78bfa, 160)
-  djLabel.position.set(BUILD_X - 6, buildingTopY + 3.5, BUILD_Z - 8)
+  djLabel.position.set(roofCenterX, buildingTopY + 3.5, roofCenterZ)
   djLabel.scale.set(5, 1.2, 1)
   group.add(djLabel)
 
-  // Rooftop grill kitchen
+  // Rooftop grill kitchen (east side of roof)
   const grillGeo = new THREE.BoxGeometry(5, 2.8, 4)
   const grillMat = new THREE.MeshStandardMaterial({ color: 0x7C3AED, roughness: 0.5, transparent: true, opacity: 0.7 })
   const grillMesh = new THREE.Mesh(grillGeo, grillMat)
-  grillMesh.position.set(BUILD_X + 12, buildingTopY + 1.4, BUILD_Z - 2)
+  grillMesh.position.set(bbox.maxX - 4, buildingTopY + 1.4, roofCenterZ)
   group.add(grillMesh)
   const grillLabel = makeLabel('Grill Kitchen', 0xfbbf24, 160)
-  grillLabel.position.set(BUILD_X + 12, buildingTopY + 3.5, BUILD_Z - 2)
+  grillLabel.position.set(bbox.maxX - 4, buildingTopY + 3.5, roofCenterZ)
   grillLabel.scale.set(5, 1.2, 1)
   group.add(grillLabel)
 
-  // Rooftop raised pool (6m x 3m)
+  // Rooftop raised pool (6m x 3m, within wing footprint)
   const roofPoolGeo = new THREE.PlaneGeometry(6, 3)
   const roofPoolMat = new THREE.MeshStandardMaterial({
     color: 0x00CED1, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.85, side: THREE.DoubleSide,
   })
   const roofPoolMesh = new THREE.Mesh(roofPoolGeo, roofPoolMat)
   roofPoolMesh.rotation.x = -Math.PI / 2
-  roofPoolMesh.position.set(BUILD_X + 6, buildingTopY + 0.02, BUILD_Z - 10)
+  roofPoolMesh.position.set(roofCenterX, buildingTopY + 0.02, bbox.minZ + roofD * 0.3)
   group.add(roofPoolMesh)
   const rpLabel = makeLabel('Raised Pool', 0x00CED1, 160)
-  rpLabel.position.set(BUILD_X + 6, buildingTopY + 1.5, BUILD_Z - 10)
+  rpLabel.position.set(roofCenterX, buildingTopY + 1.5, bbox.minZ + roofD * 0.3)
   rpLabel.scale.set(5, 1.2, 1)
   group.add(rpLabel)
 
-  // Rooftop loungers
+  // Rooftop loungers (east side of roof, near raised pool)
+  const roofLoungerBaseX = bbox.maxX - 3
+  const roofLoungerBaseZ = bbox.minZ + roofD * 0.3
   const roofLoungerPositions = [
-    [BUILD_X + 12, BUILD_Z - 8], [BUILD_X + 12, BUILD_Z - 10], [BUILD_X + 12, BUILD_Z - 12],
-    [BUILD_X + 15, BUILD_Z - 8], [BUILD_X + 15, BUILD_Z - 10], [BUILD_X + 15, BUILD_Z - 12],
+    [roofLoungerBaseX, roofLoungerBaseZ - 2], [roofLoungerBaseX, roofLoungerBaseZ], [roofLoungerBaseX, roofLoungerBaseZ + 2],
+    [roofLoungerBaseX - 3, roofLoungerBaseZ - 2], [roofLoungerBaseX - 3, roofLoungerBaseZ], [roofLoungerBaseX - 3, roofLoungerBaseZ + 2],
   ]
   for (const [lx, lz] of roofLoungerPositions) {
     const lounger = new THREE.Mesh(loungerGeo, loungerMat)
@@ -324,15 +387,16 @@ function buildAmenities(buildingTopY: number): THREE.Group {
     group.add(lounger)
   }
 
-  // ── Bay Street Entrance (south edge) ──
+  // ── Bay Street Entrance (south of amenity block) ──
   const entranceGeo = new THREE.BoxGeometry(8, 4, 2)
   const entranceMat = new THREE.MeshStandardMaterial({ color: 0xD4B896, roughness: 0.7, transparent: true, opacity: 0.8 })
   const entrance = new THREE.Mesh(entranceGeo, entranceMat)
-  entrance.position.set(abX, 2, abZ + abD / 2 + 2)
+  const entranceZ = clampedAbZ + abD / 2 + 2
+  entrance.position.set(clampedAbX, 2, entranceZ)
   entrance.castShadow = true
   group.add(entrance)
   const entrLabel = makeLabel('Bay Street Entrance', 0xfbbf24, 256)
-  entrLabel.position.set(abX, 5, abZ + abD / 2 + 2)
+  entrLabel.position.set(clampedAbX, 5, entranceZ)
   group.add(entrLabel)
 
   // Parking courts flanking entrance
@@ -340,38 +404,46 @@ function buildAmenities(buildingTopY: number): THREE.Group {
   const parkMat = new THREE.MeshStandardMaterial({ color: 0x4a5568, roughness: 0.95, side: THREE.DoubleSide, transparent: true, opacity: 0.6 })
   const parkL = new THREE.Mesh(parkGeo, parkMat)
   parkL.rotation.x = -Math.PI / 2
-  parkL.position.set(abX - 14, 0.01, abZ + abD / 2 + 2)
+  parkL.position.set(clampedAbX - 14, 0.01, entranceZ)
   group.add(parkL)
   const parkR = new THREE.Mesh(parkGeo, parkMat)
   parkR.rotation.x = -Math.PI / 2
-  parkR.position.set(abX + 14, 0.01, abZ + abD / 2 + 2)
+  parkR.position.set(clampedAbX + 14, 0.01, entranceZ)
   group.add(parkR)
   const parkLLabel = makeLabel('Parking', 0x94a3b8, 128)
-  parkLLabel.position.set(abX - 14, 1.5, abZ + abD / 2 + 2)
+  parkLLabel.position.set(clampedAbX - 14, 1.5, entranceZ)
   parkLLabel.scale.set(4, 1, 1)
   group.add(parkLLabel)
   const parkRLabel = makeLabel('Parking', 0x94a3b8, 128)
-  parkRLabel.position.set(abX + 14, 1.5, abZ + abD / 2 + 2)
+  parkRLabel.position.set(clampedAbX + 14, 1.5, entranceZ)
   parkRLabel.scale.set(4, 1, 1)
   group.add(parkRLabel)
 
-  // ── Palm trees (landscaping) ──
+  // ── Palm trees (landscaping — within buildable area, outside building footprints) ──
   const trunkGeo = new THREE.CylinderGeometry(0.2, 0.2, 5, 8)
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.9 })
   const canopyGeo = new THREE.ConeGeometry(1, 8, 8)
   const canopyMat = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.7 })
 
+  // Place trees along boundaries and between buildings, within buildable area
   const treePositions = [
-    [BUILD_X - 25, BUILD_Z + 2], [BUILD_X - 22, BUILD_Z - 14],
-    [BUILD_X - 18, BUILD_Z + 4], [BUILD_X - 28, BUILD_Z - 6],
-    [BUILD_X - 20, BUILD_Z - 20], [BUILD_X - 26, BUILD_Z - 18],
-    [BUILD_X - 15, BUILD_Z - 22], [BUILD_X - 30, BUILD_Z - 10],
-    // Landscaping around pool deck and amenity block
-    [BUILD_X + 14, BUILD_Z + 10], [BUILD_X - 14, BUILD_Z + 10],
-    [BUILD_X + 14, BUILD_Z - 2], [BUILD_X - 14, BUILD_Z - 2],
-    [abX - 12, abZ + 8], [abX + 12, abZ + 8],
+    // West boundary line
+    [buildMinX + 2, buildMaxZ - 5], [buildMinX + 2, buildMaxZ - 15],
+    [buildMinX + 2, buildMinZ + 10], [buildMinX + 2, buildMinZ + 20],
+    // East boundary line
+    [buildMaxX - 2, buildMaxZ - 5], [buildMaxX - 2, buildMaxZ - 15],
+    [buildMaxX - 2, buildMinZ + 10], [buildMaxX - 2, buildMinZ + 20],
+    // North boundary line
+    [bboxCenterX - 15, buildMinZ + 2], [bboxCenterX + 15, buildMinZ + 2],
+    // Around pool deck and amenity block
+    [poolCenterX + poolW / 2 + deckPadding + 6, poolCenterZ - 4],
+    [poolCenterX + poolW / 2 + deckPadding + 6, poolCenterZ + 4],
+    [poolCenterX - poolW / 2 - deckPadding - 6, poolCenterZ - 4],
+    [poolCenterX - poolW / 2 - deckPadding - 6, poolCenterZ + 4],
   ]
   for (const [tx, tz] of treePositions) {
+    // Skip trees outside buildable area
+    if (tx < buildMinX || tx > buildMaxX || tz < buildMinZ || tz > buildMaxZ) continue
     const trunk = new THREE.Mesh(trunkGeo, trunkMat)
     trunk.position.set(tx, 2.5, tz)
     trunk.castShadow = true
@@ -709,8 +781,8 @@ export function Viewer3D({
       if (currentY > maxBuildingY) maxBuildingY = currentY
     }
 
-    // Add amenities positioned relative to the building height
-    const amenities = buildAmenities(maxBuildingY)
+    // Add amenities positioned relative to actual wing geometry and building height
+    const amenities = buildAmenities(selectedOption, maxBuildingY, 79.84, 48.69)
     amenityGroup.add(amenities)
 
     // Re-apply amenity visibility
