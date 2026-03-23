@@ -94,13 +94,14 @@ function EdgeTimeline({ steps }: { steps: TimelineStep[] }) {
 // ── Main Component ───────────────────────────────────────────────────────
 
 interface SustainabilitySectionProps {
-  option: DesignOption
+  option: DesignOption | null
 }
 
 export default function SustainabilitySection({ option }: SustainabilitySectionProps) {
+  const defaultMetrics = { totalKeys: 130, yotelKeys: 100, padUnits: 30, gia: 6000, coverage: 0.30, buildingHeight: 20.5, seaViewPercentage: 0.60, outdoorAmenityArea: 600, costPerKey: 360000, daylightFactor: 0.65, formSimplicity: 0.75 }
   const sustainability = useMemo(
-    () => calculateSustainability(option.metrics),
-    [option.metrics]
+    () => calculateSustainability(option?.metrics ?? defaultMetrics as any),
+    [option?.metrics]
   )
 
   const s = sustainability

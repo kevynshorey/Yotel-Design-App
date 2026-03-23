@@ -633,16 +633,31 @@ export default function PlanningPage() {
   const warnings = checks.filter((c) => c.status === 'warning')
   const isCompliant = violations.length === 0
 
-  // ── No option selected ──────────────────────────────────────────────
+  // ── No option selected — show project-level info (LEED, approvals) ──
   if (!selectedOption) {
     return (
-      <div className="flex h-full flex-col items-center justify-center bg-slate-950 text-slate-100">
-        <TreePalm className="mb-4 h-10 w-10 text-slate-600" />
-        <h2 className="mb-1 text-lg font-semibold text-slate-300">No Design Option Selected</h2>
-        <p className="max-w-sm text-center text-sm text-slate-500">
-          Select a design option from the Design tab first, then return here to run planning
-          compliance checks against Barbados regulations.
-        </p>
+      <div className="flex h-full flex-col overflow-y-auto bg-slate-950 text-slate-100">
+        <div className="border-b border-slate-800/60 px-5 py-3">
+          <h1 className="text-sm font-semibold text-slate-100">Planning & Sustainability</h1>
+          <p className="mt-1 text-xs text-slate-500">
+            Project-level compliance data. Select a design option in the Design tab for option-specific checks.
+          </p>
+        </div>
+        <div className="px-5 py-5 space-y-6">
+          {/* Approval Tracker — always visible */}
+          <ApprovalTrackerSection />
+
+          {/* LEED Tracker — project-level, not option-specific */}
+          <div>
+            <h2 className="mb-4 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              LEED v4.1 BD+C: Hospitality
+            </h2>
+            <LEEDTracker />
+          </div>
+
+          {/* Sustainability — show without option using defaults */}
+          <SustainabilitySection option={null} />
+        </div>
       </div>
     )
   }
