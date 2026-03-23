@@ -531,6 +531,7 @@ export function InteractivePlanner({
   const [editLabel, setEditLabel] = useState('')
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
   const [stageSize, setStageSize] = useState({ width: 1200, height: 800 })
+  const [showSaved, setShowSaved] = useState(false)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const transformerRef = useRef<Konva.Transformer>(null)
@@ -777,6 +778,8 @@ export function InteractivePlanner({
 
   const handleSave = useCallback(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(components))
+    setShowSaved(true)
+    setTimeout(() => setShowSaved(false), 2000)
   }, [components])
 
   // ---- render grid lines ----
@@ -888,8 +891,17 @@ export function InteractivePlanner({
               className="flex items-center gap-1 rounded px-2 py-1 text-xs text-emerald-400 hover:bg-slate-800 hover:text-emerald-300"
               title="Save Layout"
             >
-              <Save size={12} />
-              Save
+              {showSaved ? (
+                <>
+                  <CheckCircle2 size={12} />
+                  <span className="animate-pulse">Saved!</span>
+                </>
+              ) : (
+                <>
+                  <Save size={12} />
+                  Save
+                </>
+              )}
             </button>
             <button
               onClick={onClose}

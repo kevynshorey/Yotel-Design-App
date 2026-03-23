@@ -1,13 +1,12 @@
 /**
  * DXF Export — Foster+Partners-grade design documentation
  *
- * Generates DXF files with architectural standard layer naming,
- * proper title blocks, dimension strings, and per-floor drawings.
+ * Generates DXF R12 files using pure string concatenation.
+ * No external libraries — runs in the browser without Node.js APIs.
  *
  * Units: metres | Scale: 1:100
  */
 
-import Drawing from 'dxf-writer'
 import type { DesignOption, Wing, Floor } from '@/engine/types'
 
 // ── ACI colour codes ──────────────────────────────────────────────
@@ -78,27 +77,131 @@ const TEXT_HEIGHT = {
   room: 1.4,
 } as const
 
-// ── Core drawing routines ─────────────────────────────────────────
+// ── DXF R12 string builder ────────────────────────────────────────
 
-function setupDrawing(): Drawing {
-  const d = new Drawing()
-  d.setUnits('Meters')
+/** Minimal DXF R12 writer using pure string concatenation. */
+class DxfWriter {
+  private activeLayer = '0'
+  private entities = ''
 
-  // Register line types
-  d.addLineType('DASHED', 'Dashed __ __ __', [5, -3])
-  d.addLineType('CENTER', 'Center ____ _ ____', [12.7, -6.35, 6.35, -6.35])
-  d.addLineType('CONTINUOUS', 'Solid', [])
-
-  // Register all layers
-  for (const layer of LAYERS) {
-    d.addLayer(layer.name, layer.color, layer.lineType)
+  setActiveLayer(name: string): void {
+    this.activeLayer = name
   }
 
-  return d
+  drawLine(x1: number, y1: number, x2: number, y2: number): void {
+    this.entities +=
+      `0\nLINE\n8\n${this.activeLayer}\n` +
+      `10\n${x1}\n20\n${y1}\n30\n0\n` +
+      `11\n${x2}\n21\n${y2}\n31\n0\n`
+  }
+
+  drawPolyline(pts: [number, number][], closed: boolean): void {
+    const flag = closed ? 1 : 0
+    this.entities += `0\nPOLYLINE\n8\n${this.activeLayer}\n66\n1\n70\n${flag}\n`
+    for (const [px, py] of pts) {
+      this.entities += `0\nVERTEX\n8\n${this.activeLayer}\n10\n${px}\n20\n${py}\n30\n0\n`
+    }
+    this.entities += `0\nSEQEND\n8\n${this.activeLayer}\n`
+  }
+
+  drawRect(x1: number, y1: number, x2: number, y2: number): void {
+    this.drawPolyline(
+      [
+        [x1, y1],
+        [x2, y1],
+        [x2, y2],
+        [x1, y2],
+        [x1, y1],
+      ],
+      true,
+    )
+  }
+
+  drawCircle(cx: number, cy: number, r: number): void {
+    this.entities +=
+      `0\nCIRCLE\n8\n${this.activeLayer}\n` +
+      `10\n${cx}\n20\n${cy}\n30\n0\n40\n${r}\n`
+  }
+
+  /** Draw text. halign/valign are ignored in R12 — we offset manually. */
+  drawText(
+    x: number,
+    y: number,
+    height: number,
+    rotation: number,
+    text: string,
+    _halign?: string,
+    _valign?: string,
+  ): void {
+    this.entities +=
+      `0\nTEXT\n8\n${this.activeLayer}\n` +
+      `10\n${x}\n20\n${y}\n30\n0\n` +
+      `40\n${height}\n50\n${rotation}\n1\n${text}\n` +
+      `72\n1\n11\n${x}\n21\n${y}\n31\n0\n`
+    // group 72=1 centres horizontally via alignment point (11,21,31)
+  }
+
+  /** Produce the full DXF R12 string. */
+  toDxfString(): string {
+    let dxf = ''
+
+    // ── HEADER section ──
+    dxf += '0\nSECTION\n2\nHEADER\n'
+    dxf += '9\n$ACADVER\n1\nAC1009\n'       // R12
+    dxf += '9\n$INSUNITS\n70\n6\n'           // 6 = metres
+    dxf += '9\n$LUNITS\n70\n2\n'             // decimal
+    dxf += '9\n$LUPREC\n70\n4\n'             // 4 decimal places
+    dxf += '0\nENDSEC\n'
+
+    // ── TABLES section ──
+    dxf += '0\nSECTION\n2\nTABLES\n'
+
+    // Line type table
+    dxf += '0\nTABLE\n2\nLTYPE\n70\n3\n'
+    // CONTINUOUS
+    dxf += '0\nLTYPE\n2\nCONTINUOUS\n70\n0\n3\nSolid\n72\n65\n73\n0\n40\n0.0\n'
+    // DASHED
+    dxf += '0\nLTYPE\n2\nDASHED\n70\n0\n3\nDashed __ __ __\n72\n65\n73\n2\n40\n8.0\n49\n5.0\n49\n-3.0\n'
+    // CENTER
+    dxf += '0\nLTYPE\n2\nCENTER\n70\n0\n3\nCenter ____ _ ____\n72\n65\n73\n4\n40\n31.75\n49\n12.7\n49\n-6.35\n49\n6.35\n49\n-6.35\n'
+    dxf += '0\nENDTAB\n'
+
+    // Layer table
+    dxf += `0\nTABLE\n2\nLAYER\n70\n${LAYERS.length}\n`
+    for (const layer of LAYERS) {
+      dxf +=
+        `0\nLAYER\n2\n${layer.name}\n70\n0\n` +
+        `62\n${layer.color}\n6\n${layer.lineType}\n`
+    }
+    dxf += '0\nENDTAB\n'
+
+    // Style table (default text style)
+    dxf += '0\nTABLE\n2\nSTYLE\n70\n1\n'
+    dxf += '0\nSTYLE\n2\nSTANDARD\n70\n0\n40\n0.0\n41\n1.0\n50\n0.0\n71\n0\n42\n2.5\n3\ntxt\n4\n\n'
+    dxf += '0\nENDTAB\n'
+
+    dxf += '0\nENDSEC\n'
+
+    // ── ENTITIES section ──
+    dxf += '0\nSECTION\n2\nENTITIES\n'
+    dxf += this.entities
+    dxf += '0\nENDSEC\n'
+
+    // ── EOF ──
+    dxf += '0\nEOF\n'
+
+    return dxf
+  }
+}
+
+// ── Core drawing routines ─────────────────────────────────────────
+
+function setupDrawing(): DxfWriter {
+  return new DxfWriter()
 }
 
 function drawWingOutline(
-  d: Drawing,
+  d: DxfWriter,
   wing: Wing,
   offsetX: number,
   offsetY: number,
@@ -108,7 +211,6 @@ function drawWingOutline(
   const w = wing.direction === 'EW' ? wing.length : wing.width
   const h = wing.direction === 'EW' ? wing.width : wing.length
 
-  // Wall outlines
   d.setActiveLayer('A-WALL')
   d.drawPolyline(
     [
@@ -123,7 +225,7 @@ function drawWingOutline(
 }
 
 function drawCorridorCenterline(
-  d: Drawing,
+  d: DxfWriter,
   wing: Wing,
   corridorType: string,
   offsetX: number,
@@ -137,7 +239,6 @@ function drawCorridorCenterline(
   d.setActiveLayer('A-ANNO')
 
   if (corridorType === 'double_loaded') {
-    // Centerline along the long axis
     if (wing.direction === 'EW') {
       const cy = y + h / 2
       d.drawLine(x, cy, x + w, cy)
@@ -146,9 +247,8 @@ function drawCorridorCenterline(
       d.drawLine(cx, y, cx, y + h)
     }
   } else {
-    // Single-loaded: corridor on one side (north or east)
     if (wing.direction === 'EW') {
-      const cy = y + h - 1.8 // corridor on north edge
+      const cy = y + h - 1.8
       d.drawLine(x, cy, x + w, cy)
     } else {
       const cx = x + w - 1.8
@@ -158,7 +258,7 @@ function drawCorridorCenterline(
 }
 
 function drawRoomDivisions(
-  d: Drawing,
+  d: DxfWriter,
   wing: Wing,
   floor: Floor,
   corridorType: string,
@@ -173,10 +273,8 @@ function drawRoomDivisions(
   const totalRooms = floor.rooms.reduce((sum, r) => sum + r.count, 0)
   if (totalRooms === 0) return
 
-  // Estimate rooms per wing (divide evenly across wings)
   const wingRoomCount = Math.max(1, Math.ceil(totalRooms / 2))
 
-  // Room bay width
   const corridorWidth = 1.8
   const longDim = wing.direction === 'EW' ? w : h
   const shortDim = wing.direction === 'EW' ? h : w
@@ -187,12 +285,10 @@ function drawRoomDivisions(
 
   d.setActiveLayer('A-WALL')
 
-  // Draw room partition lines
   for (let i = 1; i < wingRoomCount; i++) {
     if (wing.direction === 'EW') {
       const rx = x + i * bayWidth
       if (corridorType === 'double_loaded') {
-        // Both sides
         d.drawLine(rx, y, rx, y + roomDepthDouble)
         d.drawLine(rx, y + roomDepthDouble + corridorWidth, rx, y + h)
       } else {
@@ -209,7 +305,6 @@ function drawRoomDivisions(
     }
   }
 
-  // Room labels
   d.setActiveLayer('A-FLOR-IDEN')
   let roomIdx = 0
   for (const alloc of floor.rooms) {
@@ -242,7 +337,7 @@ function drawRoomDivisions(
 }
 
 function drawCoreArea(
-  d: Drawing,
+  d: DxfWriter,
   wing: Wing,
   offsetX: number,
   offsetY: number,
@@ -252,7 +347,6 @@ function drawCoreArea(
   const w = wing.direction === 'EW' ? wing.length : wing.width
   const h = wing.direction === 'EW' ? wing.width : wing.length
 
-  // Core at the end of the wing (stairs + lifts)
   const coreW = 6
   const coreH = h
   const coreX = x + w - coreW
@@ -282,14 +376,13 @@ function drawCoreArea(
 }
 
 function drawStructuralGrid(
-  d: Drawing,
+  d: DxfWriter,
   wings: Wing[],
   offsetX: number,
   offsetY: number,
 ) {
   d.setActiveLayer('S-GRID')
 
-  // Find bounding box
   let minX = Infinity,
     minY = Infinity,
     maxX = -Infinity,
@@ -303,14 +396,13 @@ function drawStructuralGrid(
     maxY = Math.max(maxY, wing.y + offsetY + h)
   }
 
-  const gridSpacing = 8 // metres
+  const gridSpacing = 8
   const overhang = 2
 
   // Vertical grid lines
   let gridLabel = 1
   for (let gx = minX; gx <= maxX; gx += gridSpacing) {
     d.drawLine(gx, minY - overhang, gx, maxY + overhang)
-    // Grid bubble
     d.drawCircle(gx, minY - overhang - 1.5, 1.2)
     d.setActiveLayer('A-ANNO')
     d.drawText(gx, minY - overhang - 1.5, TEXT_HEIGHT.dim, 0, String(gridLabel), 'center', 'middle')
@@ -322,7 +414,6 @@ function drawStructuralGrid(
   let gridLetter = 'A'
   for (let gy = minY; gy <= maxY; gy += gridSpacing) {
     d.drawLine(minX - overhang, gy, maxX + overhang, gy)
-    // Grid bubble
     d.drawCircle(minX - overhang - 1.5, gy, 1.2)
     d.setActiveLayer('A-ANNO')
     d.drawText(minX - overhang - 1.5, gy, TEXT_HEIGHT.dim, 0, gridLetter, 'center', 'middle')
@@ -332,7 +423,7 @@ function drawStructuralGrid(
 }
 
 function drawDimensions(
-  d: Drawing,
+  d: DxfWriter,
   wings: Wing[],
   offsetX: number,
   offsetY: number,
@@ -345,18 +436,15 @@ function drawDimensions(
     const w = wing.direction === 'EW' ? wing.length : wing.width
     const h = wing.direction === 'EW' ? wing.width : wing.length
 
-    const dimOffset = 3 // distance from wall for dimension line
+    const dimOffset = 3
 
     // Bottom dimension (length)
     const dy = y - dimOffset
     d.drawLine(x, dy, x + w, dy)
-    // Tick marks
     d.drawLine(x, dy - 0.5, x, dy + 0.5)
     d.drawLine(x + w, dy - 0.5, x + w, dy + 0.5)
-    // Extension lines
     d.drawLine(x, y, x, dy - 0.3)
     d.drawLine(x + w, y, x + w, dy - 0.3)
-    // Dimension text
     d.drawText(x + w / 2, dy - 1.2, TEXT_HEIGHT.dim, 0, `${w.toFixed(1)}`, 'center', 'top')
 
     // Left dimension (width)
@@ -370,7 +458,7 @@ function drawDimensions(
   }
 }
 
-function drawSiteBoundary(d: Drawing, offsetX: number, offsetY: number) {
+function drawSiteBoundary(d: DxfWriter, offsetX: number, offsetY: number) {
   d.setActiveLayer('A-SITE-BNDY')
   const pts: [number, number][] = SITE_BOUNDARY.map(([bx, by]) => [
     bx + offsetX,
@@ -378,7 +466,6 @@ function drawSiteBoundary(d: Drawing, offsetX: number, offsetY: number) {
   ])
   d.drawPolyline(pts, true)
 
-  // Setback lines
   d.setActiveLayer('A-SITE-STBK')
   const setbackPts: [number, number][] = [
     [SETBACK + offsetX, SETBACK + offsetY],
@@ -389,14 +476,13 @@ function drawSiteBoundary(d: Drawing, offsetX: number, offsetY: number) {
   ]
   d.drawPolyline(setbackPts, true)
 
-  // Labels
   d.setActiveLayer('A-ANNO')
   d.drawText(40 + offsetX, -3 + offsetY, TEXT_HEIGHT.label, 0, 'CARLISLE BAY (WEST)', 'center', 'top')
   d.drawText(40 + offsetX, 58 + offsetY, TEXT_HEIGHT.label, 0, 'BAY STREET', 'center', 'bottom')
 }
 
 function drawTitleBlock(
-  d: Drawing,
+  d: DxfWriter,
   option: DesignOption,
   floorLbl: string,
   floorNum: number,
@@ -405,8 +491,8 @@ function drawTitleBlock(
 ) {
   const tbW = 60
   const tbH = 20
-  const tbX = offsetX + 80 - tbW // right-aligned with site
-  const tbY = offsetY - 30 // below site boundary
+  const tbX = offsetX + 80 - tbW
+  const tbY = offsetY - 30
 
   d.setActiveLayer('A-ANNO')
 
@@ -454,7 +540,7 @@ function drawTitleBlock(
     'middle',
   )
 
-  // Dwg number
+  // Drawing number
   const dwgNum = `YBB-A-${String(floorNum).padStart(2, '0')}-001`
   d.drawText(tbX + tbW / 4, tbY + 2, TEXT_HEIGHT.label, 0, `Dwg: ${dwgNum}`, 'center', 'middle')
 
@@ -494,7 +580,7 @@ function drawTitleBlock(
 }
 
 function drawColumnGrid(
-  d: Drawing,
+  d: DxfWriter,
   wing: Wing,
   offsetX: number,
   offsetY: number,
@@ -505,7 +591,7 @@ function drawColumnGrid(
   const w = wing.direction === 'EW' ? wing.length : wing.width
   const h = wing.direction === 'EW' ? wing.width : wing.length
 
-  const colSpacing = 8 // metres
+  const colSpacing = 8
   const colRadius = 0.2
 
   for (let cx = x; cx <= x + w; cx += colSpacing) {
@@ -516,7 +602,7 @@ function drawColumnGrid(
 }
 
 function drawGlazing(
-  d: Drawing,
+  d: DxfWriter,
   wing: Wing,
   offsetX: number,
   offsetY: number,
@@ -527,16 +613,13 @@ function drawGlazing(
   const w = wing.direction === 'EW' ? wing.length : wing.width
   const h = wing.direction === 'EW' ? wing.width : wing.length
 
-  // Glazing on the west (bottom) facade for EW wings, or west side for NS wings
   const glazeGap = 0.8
   const glazeLen = 2.4
   if (wing.direction === 'EW') {
-    // South facade (sea-facing at Carlisle Bay)
     for (let gx = x + 1; gx + glazeLen < x + w - 1; gx += glazeLen + glazeGap) {
       d.drawLine(gx, y, gx + glazeLen, y)
     }
   } else {
-    // West facade
     for (let gy = y + 1; gy + glazeLen < y + h - 1; gy += glazeLen + glazeGap) {
       d.drawLine(x, gy, x, gy + glazeLen)
     }
@@ -544,7 +627,7 @@ function drawGlazing(
 }
 
 function drawMepIndicators(
-  d: Drawing,
+  d: DxfWriter,
   wing: Wing,
   offsetX: number,
   offsetY: number,
@@ -554,14 +637,12 @@ function drawMepIndicators(
   const w = wing.direction === 'EW' ? wing.length : wing.width
   const h = wing.direction === 'EW' ? wing.width : wing.length
 
-  // HVAC diffuser symbols along corridor
   d.setActiveLayer('M-HVAC')
   const corridorY = wing.direction === 'EW' ? y + h / 2 : y
   const corridorX = wing.direction === 'EW' ? x : x + w / 2
   const spacing = 6
   if (wing.direction === 'EW') {
     for (let mx = x + 3; mx < x + w - 3; mx += spacing) {
-      // Small X for diffuser
       d.drawLine(mx - 0.3, corridorY - 0.3, mx + 0.3, corridorY + 0.3)
       d.drawLine(mx - 0.3, corridorY + 0.3, mx + 0.3, corridorY - 0.3)
     }
@@ -576,7 +657,7 @@ function drawMepIndicators(
 // ── Single floor drawing ──────────────────────────────────────────
 
 function drawFloor(
-  d: Drawing,
+  d: DxfWriter,
   option: DesignOption,
   floorIdx: number,
   offsetX: number,
@@ -588,15 +669,12 @@ function drawFloor(
   const label = floorLabel(floorIdx, option)
   const corridorType = option.metrics.corridorType
 
-  // Site boundary only on ground floor
   if (floorIdx === 0) {
     drawSiteBoundary(d, offsetX, offsetY)
   }
 
-  // Structural grid
   drawStructuralGrid(d, option.wings, offsetX, offsetY)
 
-  // Per-wing elements
   for (const wing of option.wings) {
     drawWingOutline(d, wing, offsetX, offsetY)
     drawCorridorCenterline(d, wing, corridorType, offsetX, offsetY)
@@ -607,10 +685,8 @@ function drawFloor(
     drawMepIndicators(d, wing, offsetX, offsetY)
   }
 
-  // Dimensions
   drawDimensions(d, option.wings, offsetX, offsetY)
 
-  // Floor label
   d.setActiveLayer('A-ANNO')
   const labelX = option.wings[0]
     ? option.wings[0].x + offsetX - 8
@@ -620,7 +696,6 @@ function drawFloor(
     : offsetY + 30
   d.drawText(labelX, labelY, TEXT_HEIGHT.title, 0, label.toUpperCase(), 'left', 'bottom')
 
-  // Title block
   drawTitleBlock(d, option, label, floorIdx, offsetX, offsetY)
 }
 
@@ -642,7 +717,6 @@ export function exportToDXF(
   const d = setupDrawing()
 
   if (floorSelection === 'all') {
-    // Draw each floor offset vertically by 100m
     const floorSpacing = 100
     for (let i = 0; i < option.floors.length; i++) {
       drawFloor(d, option, i, 0, i * floorSpacing)
