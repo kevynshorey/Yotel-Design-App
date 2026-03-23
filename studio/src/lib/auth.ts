@@ -17,7 +17,6 @@ export const USERS: { password: string; user: AppUser }[] = [
   { password: 'kevyn2026', user: { name: 'Kevyn', role: 'admin' } },
   { password: 'caro2026', user: { name: 'Caro', role: 'admin' } },
   { password: 'guest', user: { name: 'Guest', role: 'viewer' } },
-  // backward compat: legacy password "aces" → guest
   { password: 'aces', user: { name: 'Guest', role: 'viewer' } },
 ]
 
