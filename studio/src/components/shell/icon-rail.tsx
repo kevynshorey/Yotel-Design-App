@@ -2,9 +2,9 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Box, FileCheck, BarChart3, FolderOpen, Users, Brain } from 'lucide-react'
+import { LayoutDashboard, Box, FileCheck, BarChart3, FolderOpen, Users, Brain, ScrollText } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { canUseAI } from '@/lib/auth'
+import { canEdit, canUseAI } from '@/lib/auth'
 import { useUser } from '@/lib/use-user'
 
 const modules = [
@@ -20,6 +20,7 @@ export function IconRail() {
   const pathname = usePathname()
   const user = useUser()
   const showAI = canUseAI(user)
+  const isAdmin = canEdit(user)
 
   return (
     <nav
@@ -65,8 +66,24 @@ export function IconRail() {
         )
       })}
 
-      {/* Spacer pushes AI button to bottom on desktop */}
+      {/* Spacer pushes utility buttons to bottom on desktop */}
       <div className="hidden md:mt-auto md:block" />
+
+      {/* Audit Trail toggle — admin only */}
+      {isAdmin && (
+        <div className="group relative">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-audit-panel'))}
+            className="flex flex-col items-center justify-center gap-0.5 rounded-lg px-2 py-1 text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-200 md:h-10 md:w-10 md:flex-row md:gap-0 md:px-0 md:py-0"
+          >
+            <ScrollText className="h-5 w-5" />
+            <span className="text-[9px] leading-tight md:hidden">Audit</span>
+          </button>
+          <div className="pointer-events-none absolute left-14 top-1/2 -translate-y-1/2 rounded bg-slate-800 px-2 py-1 text-[10px] text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 whitespace-nowrap z-50 hidden md:block">
+            Audit Trail
+          </div>
+        </div>
+      )}
 
       {/* AI Assistant toggle — hidden for viewers */}
       {showAI && (

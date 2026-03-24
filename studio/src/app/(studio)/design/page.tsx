@@ -32,6 +32,7 @@ import { ExportDxfButton } from '@/components/design/export-dxf-button'
 import { ExportPptxButton } from '@/components/design/export-pptx-button'
 import { canEdit, canExport, canGenerate } from '@/lib/auth'
 import { useUser } from '@/lib/use-user'
+import { logAudit } from '@/store/audit-store'
 import type { DesignOption } from '@/engine/types'
 
 const MODULE_ROUTES = ['/design', '/planning', '/finance', '/dataroom', '/invest'] as const
@@ -118,19 +119,40 @@ function DesignPageInner() {
       // Reset compare state on new generation
       setCompareMode(false)
       setCompareOption(null)
+      logAudit({
+        userId: user?.name ?? 'unknown',
+        userName: user?.name ?? 'Unknown',
+        action: 'option_generated',
+        target: `Generated ${generated.length} design options`,
+        metadata: { count: String(generated.length) },
+      })
     })
-  }, [setOptions, selectOption])
+  }, [setOptions, selectOption, user])
 
   const handleExportReport = useCallback(() => {
     if (!selectedOption) return
     localStorage.setItem('yotel-selected-option', JSON.stringify(selectedOption))
     window.open('/report', '_blank')
-  }, [selectedOption])
+    logAudit({
+      userId: user?.name ?? 'unknown',
+      userName: user?.name ?? 'Unknown',
+      action: 'report_generated',
+      target: selectedOption.curatedName ?? `Option ${selectedOption.id.slice(0, 8)}`,
+      metadata: { format: 'PDF', form: selectedOption.form },
+    })
+  }, [selectedOption, user])
 
   const handleExportExcel = useCallback(() => {
     if (!selectedOption) return
     exportToExcel(selectedOption)
-  }, [selectedOption])
+    logAudit({
+      userId: user?.name ?? 'unknown',
+      userName: user?.name ?? 'Unknown',
+      action: 'design_exported',
+      target: selectedOption.curatedName ?? `Option ${selectedOption.id.slice(0, 8)}`,
+      metadata: { format: 'Excel', form: selectedOption.form },
+    })
+  }, [selectedOption, user])
 
   const handleLoadVersion = useCallback(
     (option: DesignOption) => {
@@ -150,10 +172,18 @@ function DesignPageInner() {
       if (prev) {
         // Turning off -- clear compare option
         setCompareOption(null)
+      } else if (selectedOption) {
+        logAudit({
+          userId: user?.name ?? 'unknown',
+          userName: user?.name ?? 'Unknown',
+          action: 'comparison_made',
+          target: `Entered compare mode from ${selectedOption.curatedName ?? `Option ${selectedOption.id.slice(0, 8)}`}`,
+          metadata: { primaryOption: selectedOption.id },
+        })
       }
       return !prev
     })
-  }, [])
+  }, [selectedOption, user])
 
   // Handle option selection -- in compare mode, second click sets compare target
   const handleOptionSelect = useCallback(

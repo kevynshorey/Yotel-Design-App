@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import type { DesignOption } from '@/engine/types'
 import { SITE, PLANNING_REGS } from '@/config/site'
 import { FINANCIALS } from '@/config/financials'
@@ -48,6 +48,7 @@ function today(): string {
 export default function ReportPage() {
   const [option, setOption] = useState<DesignOption | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [pdfLoading, setPdfLoading] = useState(false)
 
   useEffect(() => {
     try {
@@ -67,13 +68,44 @@ export default function ReportPage() {
     }
   }, [])
 
-  // Auto-trigger print after render
+  // Auto-trigger print after render (fallback HTML version)
   useEffect(() => {
     if (!option) return
     const timer = setTimeout(() => {
       window.print()
     }, 600)
     return () => clearTimeout(timer)
+  }, [option])
+
+  // Download branded PDF via API route
+  const handleDownloadPdf = useCallback(async () => {
+    if (!option) return
+    setPdfLoading(true)
+    try {
+      const res = await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(option),
+      })
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errData.error ?? `HTTP ${res.status}`)
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `YOTEL-Barbados-Feasibility-${option.id}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('PDF download failed:', err)
+      alert('Failed to generate PDF. Please try again or use the print fallback.')
+    } finally {
+      setPdfLoading(false)
+    }
   }, [option])
 
   if (error) {
@@ -119,6 +151,38 @@ export default function ReportPage() {
           .report-container { max-width: 210mm; margin: 0 auto; padding: 20mm; }
         }
       `}</style>
+
+      {/* ── Download PDF bar (hidden in print) ── */}
+      <div className="no-print fixed right-6 top-6 z-50 flex gap-3">
+        <button
+          onClick={handleDownloadPdf}
+          disabled={pdfLoading}
+          className="flex items-center gap-2 rounded-lg bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-sky-600 disabled:cursor-wait disabled:opacity-60"
+        >
+          {pdfLoading ? (
+            <>
+              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Generating PDF...
+            </>
+          ) : (
+            <>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download PDF
+            </>
+          )}
+        </button>
+        <button
+          onClick={() => window.print()}
+          className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-lg transition-colors hover:bg-slate-50"
+        >
+          Print
+        </button>
+      </div>
 
       <div className="report-container bg-white font-sans text-slate-900">
         {/* ═══ PAGE 1: Cover ═══ */}

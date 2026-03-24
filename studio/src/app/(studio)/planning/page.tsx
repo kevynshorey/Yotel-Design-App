@@ -1,11 +1,12 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useDesign } from '@/context/design-context'
 import { getSelectedOption } from '@/store/design-store'
 import { validate } from '@/engine/validator'
 import { RULES } from '@/config/rules'
 import { SITE, PLANNING_REGS } from '@/config/site'
+import { getJurisdiction, type Jurisdiction } from '@/config/jurisdictions'
 import type { DesignOption } from '@/engine/types'
 import {
   CheckCircle2,
@@ -32,6 +33,7 @@ import {
 import SustainabilitySection from '@/components/planning/sustainability-section'
 import InfrastructureSection from '@/components/planning/infrastructure-section'
 import LEEDTracker from '@/components/sustainability/leed-tracker'
+import JurisdictionSelector from '@/components/project/jurisdiction-selector'
 import { calculateParking } from '@/config/parking'
 import { calculateDrainage } from '@/config/drainage'
 import { calculateLandscape } from '@/config/landscape'
@@ -61,22 +63,33 @@ interface RegulationCheck {
   detail?: string
 }
 
-function computeChecks(option: DesignOption): RegulationCheck[] {
+function computeChecks(option: DesignOption, jurisdictionId?: string): RegulationCheck[] {
   const m = option.metrics
   const totalKeys = m.totalKeys
 
+  // Resolve jurisdiction-specific limits (fall back to Barbados defaults)
+  const jur = jurisdictionId ? getJurisdiction(jurisdictionId) : undefined
+  const effMaxCoverage = jur?.maxCoverage ?? RULES.planning.maxCoverage
+  const effMaxHeight = jur?.maxHeight ?? RULES.planning.maxHeight
+  const effSetback = jur?.minSetback ?? RULES.planning.boundarySetback
+  const effCoastalSetback = jur?.coastalSetback ?? PLANNING_REGS.coastalSetback
+  const effParkingRatio = jur?.parkingRatio ?? PLANNING_REGS.parkingRatioMin
+  const effAccessiblePct = jur?.accessiblePercent ?? RULES.brand.minAccessiblePct
+  const effLandscapePct = jur?.landscapePercent ?? 0.15
+  const effEiaThreshold = jur?.eiaThreshold ?? RULES.planning.eiaThreshold
+
   // 1. Site Coverage
-  const coverageRatio = m.coverage / RULES.planning.maxCoverage
+  const coverageRatio = m.coverage / effMaxCoverage
   const coverageStatus: CheckStatus =
-    m.coverage > RULES.planning.maxCoverage ? 'fail' : coverageRatio > 0.95 ? 'warning' : 'pass'
+    m.coverage > effMaxCoverage ? 'fail' : coverageRatio > 0.95 ? 'warning' : 'pass'
 
   // 2. Building Height
-  const heightRatio = m.buildingHeight / RULES.planning.maxHeight
+  const heightRatio = m.buildingHeight / effMaxHeight
   const heightStatus: CheckStatus =
-    m.buildingHeight > RULES.planning.maxHeight ? 'fail' : heightRatio > 0.95 ? 'warning' : 'pass'
+    m.buildingHeight > effMaxHeight ? 'fail' : heightRatio > 0.95 ? 'warning' : 'pass'
 
   // 3. Boundary Setback — re-run validator to get specifics
-  const validation = validate(m, option.wings)
+  const validation = validate(m, option.wings, jurisdictionId)
   const boundaryViolation = validation.violations.find(
     (v) => v.rule.includes('Boundary setback') || v.rule.includes('outside buildable')
   )
@@ -101,8 +114,8 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
   const giaRange = 48 - 25
   const giaDeviation = Math.abs(m.giaPerKey - giaMid) / (giaRange / 2)
 
-  // 8. Accessible Rooms — 5% minimum
-  const accessibleMin = Math.ceil(totalKeys * RULES.brand.minAccessiblePct)
+  // 8. Accessible Rooms — jurisdiction-aware minimum
+  const accessibleMin = Math.ceil(totalKeys * effAccessiblePct)
   // We flag if total keys exist but can't know exact accessible count from metrics;
   // we just check if the percentage requirement is calculable
   const accessibleStatus: CheckStatus = totalKeys > 0 ? 'pass' : 'warning'
@@ -114,8 +127,8 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
 
   // 10. Parking (calculated)
   const parkingResult = calculateParking(totalKeys)
-  const parkingMin = Math.ceil(totalKeys * PLANNING_REGS.parkingRatioMin)
-  const parkingMax = Math.ceil(totalKeys * PLANNING_REGS.parkingRatioMax)
+  const parkingMin = Math.ceil(totalKeys * effParkingRatio)
+  const parkingMax = Math.ceil(totalKeys * (PLANNING_REGS.parkingRatioMax ?? effParkingRatio * 2))
 
   // 10b. Stormwater (calculated)
   const poolTotalArea = option.amenities?.pool.totalArea ?? 0
@@ -124,7 +137,7 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
   const drainageResult = calculateDrainage(m.footprint, landscapeResult.hardscapeArea, permeableArea, landscapeResult.softscapeArea)
 
   // 11. EIA
-  const eiaRequired = totalKeys > RULES.planning.eiaThreshold
+  const eiaRequired = totalKeys > effEiaThreshold
 
   // 12. Heritage Zone
   const heritageApplies = PLANNING_REGS.heritageZoneProximity
@@ -132,42 +145,42 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
   return [
     {
       name: 'Site Coverage',
-      statute: 'PDP 2017, s.4.2 — 50% max for tourism/commercial',
+      statute: `${jur?.name ?? 'Barbados'} planning — ${(effMaxCoverage * 100).toFixed(0)}% max`,
       icon: LayoutGrid,
       status: coverageStatus,
       currentValue: `${(m.coverage * 100).toFixed(1)}%`,
-      limit: `${(RULES.planning.maxCoverage * 100).toFixed(0)}%`,
+      limit: `${(effMaxCoverage * 100).toFixed(0)}%`,
       ratio: Math.min(coverageRatio, 1.2),
     },
     {
       name: 'Building Height',
-      statute: 'PDP 2017 + Heritage Zone — 25m discretionary max',
+      statute: `${jur?.name ?? 'Barbados'} planning — ${effMaxHeight}m max`,
       icon: Building2,
       status: heightStatus,
       currentValue: `${m.buildingHeight.toFixed(1)}m`,
-      limit: `${RULES.planning.maxHeight}m`,
+      limit: `${effMaxHeight}m`,
       ratio: Math.min(heightRatio, 1.2),
     },
     {
       name: 'Boundary Setback',
-      statute: 'Planning & Development Act — 6ft (1.83m) minimum',
+      statute: `${jur?.name ?? 'Barbados'} planning — ${effSetback}m minimum`,
       icon: Ruler,
       status: boundaryStatus,
       currentValue: boundaryViolation
         ? String(boundaryViolation.actual)
-        : `All corners ≥${RULES.planning.boundarySetback}m`,
-      limit: `${RULES.planning.boundarySetback}m from all boundaries`,
+        : `All corners ≥${effSetback}m`,
+      limit: `${effSetback}m from all boundaries`,
       ratio: boundaryStatus === 'pass' ? 0.5 : 1.0,
     },
     {
       name: 'Coastal Setback',
-      statute: 'CZMU Act — 30m from High Water Mark',
+      statute: `Coastal zone — ${effCoastalSetback}m from High Water Mark`,
       icon: Waves,
       status: 'info',
       currentValue: 'Accounted for in offset boundary',
-      limit: `${PLANNING_REGS.coastalSetback}m from HWM`,
+      limit: `${effCoastalSetback}m from HWM`,
       ratio: null,
-      detail: 'The buildable zone already incorporates the 30m CZMU coastal setback on the west (beach) side.',
+      detail: `The buildable zone already incorporates the ${effCoastalSetback}m coastal setback on the west (beach) side.`,
     },
     {
       name: 'Wing Width (YOTEL)',
@@ -199,13 +212,13 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
     },
     {
       name: 'Accessible Rooms',
-      statute: 'Building Regs + YOTEL C08 — min 5% overall',
+      statute: `Building Regs + YOTEL C08 — min ${(effAccessiblePct * 100).toFixed(0)}% overall`,
       icon: Users,
       status: accessibleStatus,
-      currentValue: `${accessibleMin} rooms required (5% of ${totalKeys})`,
-      limit: `≥${(RULES.brand.minAccessiblePct * 100).toFixed(0)}% of total keys`,
+      currentValue: `${accessibleMin} rooms required (${(effAccessiblePct * 100).toFixed(0)}% of ${totalKeys})`,
+      limit: `≥${(effAccessiblePct * 100).toFixed(0)}% of total keys`,
       ratio: null,
-      detail: 'Accessible allocation is enforced at detailed design stage. Minimum 5% overall, 10% YOTEL, 7% PAD.',
+      detail: 'Accessible allocation is enforced at detailed design stage.',
     },
     {
       name: 'Maximum Footprint',
@@ -238,13 +251,13 @@ function computeChecks(option: DesignOption): RegulationCheck[] {
     },
     {
       name: 'EIA Requirement',
-      statute: 'Environmental Protection Act — mandatory for 50+ key hotels',
+      statute: `Environmental Protection — mandatory for ${effEiaThreshold}+ key hotels`,
       icon: FileSearch,
       status: eiaRequired ? 'warning' : 'pass',
       currentValue: eiaRequired
         ? `${totalKeys} keys — EIA mandatory`
         : `${totalKeys} keys — below threshold`,
-      limit: `>${RULES.planning.eiaThreshold} keys triggers EIA`,
+      limit: `>${effEiaThreshold} keys triggers EIA`,
       ratio: null,
       detail: eiaRequired
         ? 'Environmental Impact Assessment is mandatory and must be submitted with planning application.'
@@ -613,6 +626,13 @@ function ApprovalTrackerSection() {
 export default function PlanningPage() {
   const { selectedOption: contextOption } = useDesign()
   const [storedOption, setStoredOption] = useState<DesignOption | null>(null)
+  const [jurisdictionId, setJurisdictionId] = useState('bb')
+
+  const handleJurisdictionChange = useCallback((id: string) => {
+    setJurisdictionId(id)
+  }, [])
+
+  const currentJurisdiction = getJurisdiction(jurisdictionId)
 
   // Hydrate from localStorage on mount + listen for cross-page changes
   useEffect(() => {
@@ -626,8 +646,8 @@ export default function PlanningPage() {
 
   const checks = useMemo(() => {
     if (!selectedOption) return []
-    return computeChecks(selectedOption)
-  }, [selectedOption])
+    return computeChecks(selectedOption, jurisdictionId)
+  }, [selectedOption, jurisdictionId])
 
   const violations = checks.filter((c) => c.status === 'fail')
   const warnings = checks.filter((c) => c.status === 'warning')
@@ -644,6 +664,9 @@ export default function PlanningPage() {
           </p>
         </div>
         <div className="px-5 py-5 space-y-6">
+          {/* Jurisdiction selector */}
+          <JurisdictionSelector value={jurisdictionId} onSelect={handleJurisdictionChange} />
+
           {/* Approval Tracker — always visible */}
           <ApprovalTrackerSection />
 
@@ -668,9 +691,22 @@ export default function PlanningPage() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-slate-950 text-slate-100">
+      {/* Jurisdiction selector */}
+      <div className="border-b border-slate-800/60 px-5 py-3">
+        <JurisdictionSelector value={jurisdictionId} onSelect={handleJurisdictionChange} />
+      </div>
+
       {/* Header */}
       <div className="flex flex-wrap items-center gap-3 border-b border-slate-800/60 px-5 py-3">
         <h1 className="text-sm font-semibold text-slate-100">Planning Compliance</h1>
+        {currentJurisdiction && (
+          <>
+            <span className="text-xs text-slate-500">--</span>
+            <span className="text-xs text-slate-400">
+              {currentJurisdiction.name} / {currentJurisdiction.planningAuthority}
+            </span>
+          </>
+        )}
         <span className="text-xs text-slate-500">--</span>
 
         {/* Overall status badge */}

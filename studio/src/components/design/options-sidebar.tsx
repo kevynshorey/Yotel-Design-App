@@ -6,6 +6,8 @@ import { useState, useEffect, useCallback } from 'react'
 import type { DesignOption, FormType } from '@/engine/types'
 import { OptionCard } from './option-card'
 import { cn } from '@/lib/utils'
+import { logAudit } from '@/store/audit-store'
+import { getUserFromCookie } from '@/lib/auth'
 
 const FAVOURITES_KEY = 'yotel-favourites'
 
@@ -72,14 +74,26 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
   const toggleFavourite = useCallback((id: string) => {
     setFavourites(prev => {
       const next = new Set(prev)
-      if (next.has(id)) {
+      const wasFavourite = next.has(id)
+      if (wasFavourite) {
         next.delete(id)
       } else {
         next.add(id)
       }
+      const opt = options.find(o => o.id === id)
+      const user = getUserFromCookie()
+      logAudit({
+        userId: user?.name ?? 'unknown',
+        userName: user?.name ?? 'Unknown',
+        action: 'option_favourited',
+        target: opt?.curatedName ?? `Option ${id.slice(0, 8)}`,
+        before: wasFavourite ? 'favourited' : 'not favourited',
+        after: wasFavourite ? 'not favourited' : 'favourited',
+        metadata: { optionId: id },
+      })
       return next
     })
-  }, [])
+  }, [options])
 
   // Filter + sort logic
   const filtered = options

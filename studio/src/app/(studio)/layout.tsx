@@ -2,6 +2,7 @@ import { IconRail } from '@/components/shell/icon-rail'
 import { CommandBar } from '@/components/shell/command-bar'
 import { KeyboardNav } from '@/components/shell/keyboard-nav'
 import { ChatPanel } from '@/components/ai/chat-panel'
+import { AuditPanelWrapper } from '@/components/audit/audit-panel-wrapper'
 import { DesignProvider } from '@/context/design-context'
 
 export default function StudioLayout({ children }: { children: React.ReactNode }) {
@@ -18,6 +19,7 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
         </div>
       </div>
       <ChatPanel />
+      <AuditPanelWrapper />
     </DesignProvider>
   )
 }

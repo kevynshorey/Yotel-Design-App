@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 import { getSelectedOption } from '@/store/design-store'
 import { useUser } from '@/lib/use-user'
+import { ProjectSwitcher } from '@/components/project/project-switcher'
 import type { DesignOption } from '@/engine/types'
 
 export function CommandBar() {
@@ -38,19 +39,18 @@ export function CommandBar() {
   return (
     <div className="flex h-10 items-center justify-between border-b border-[rgba(0,0,0,0.08)] bg-white/80 px-2 md:px-4 backdrop-blur-sm">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-sm font-semibold text-slate-900 truncate">YOTEL Barbados</span>
-        <span className="hidden md:inline text-xs text-slate-500 truncate">Carlisle Bay, Bridgetown</span>
+        <ProjectSwitcher />
       </div>
       <div className="flex items-center gap-2 text-xs text-slate-500 flex-shrink-0">
         {/* Project stats — hidden on small screens */}
         <span className="hidden sm:inline font-mono">{keysLabel}</span>
-        <span className="hidden sm:inline">·</span>
+        <span className="hidden sm:inline">&middot;</span>
         <span className="hidden sm:inline font-mono">{tdcLabel}</span>
 
         {/* User info + logout */}
         {user && (
           <>
-            <span className="hidden sm:inline">·</span>
+            <span className="hidden sm:inline">&middot;</span>
             <span className="inline-flex items-center gap-1.5">
               <span className="font-medium text-slate-700">{user.name}</span>
               <span

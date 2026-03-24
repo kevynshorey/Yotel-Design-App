@@ -11,10 +11,16 @@ import {
   Users,
   ArrowRight,
   LayoutList,
+  Plus,
+  MapPin,
+  Building2,
 } from 'lucide-react'
 import { getSelectedOption } from '@/store/design-store'
+import { getActiveProject, getProjects } from '@/store/project-store'
+import type { Project } from '@/store/project-store'
 import { CONSTRUCTION_PROGRAMME } from '@/config/schedule'
 import { SUSTAINABILITY } from '@/config/sustainability'
+import { ProjectWizard } from '@/components/project/project-wizard'
 import type { DesignOption } from '@/engine/types'
 
 function formatCurrency(n: number): string {
@@ -34,16 +40,34 @@ function formatPct(n: number): string {
 export default function DashboardPage() {
   const [option, setOption] = useState<DesignOption | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [activeProject, setActiveProject] = useState<Project | null>(null)
+  const [projectCount, setProjectCount] = useState(0)
+  const [wizardOpen, setWizardOpen] = useState(false)
+
+  function refreshProject() {
+    setActiveProject(getActiveProject())
+    setProjectCount(getProjects().length)
+  }
 
   useEffect(() => {
     setMounted(true)
     setOption(getSelectedOption())
+    refreshProject()
 
-    function onChanged() {
+    function onDesignChanged() {
       setOption(getSelectedOption())
     }
-    window.addEventListener('design-option-changed', onChanged)
-    return () => window.removeEventListener('design-option-changed', onChanged)
+    function onProjectChanged() {
+      refreshProject()
+    }
+    window.addEventListener('design-option-changed', onDesignChanged)
+    window.addEventListener('active-project-changed', onProjectChanged)
+    window.addEventListener('projects-changed', onProjectChanged)
+    return () => {
+      window.removeEventListener('design-option-changed', onDesignChanged)
+      window.removeEventListener('active-project-changed', onProjectChanged)
+      window.removeEventListener('projects-changed', onProjectChanged)
+    }
   }, [])
 
   const today = new Date().toLocaleDateString('en-GB', {
@@ -81,6 +105,13 @@ export default function DashboardPage() {
   const violationCount = option
     ? option.validation.violations.length
     : 0
+
+  // Project display values
+  const projectName = activeProject?.name ?? 'No Project'
+  const projectLocation = activeProject?.location ?? ''
+  const projectDesc = activeProject
+    ? `${activeProject.totalKeys}-key ${activeProject.brandConfig.secondary ? 'dual-brand ' : ''}${activeProject.brandConfig.primary}${activeProject.brandConfig.secondary ? ` & ${activeProject.brandConfig.secondary}` : ''}`
+    : ''
 
   const cards = [
     {
@@ -195,19 +226,66 @@ export default function DashboardPage() {
   return (
     <div className="h-full overflow-y-auto bg-slate-950 text-slate-100">
       <div className="mx-auto max-w-6xl px-6 py-10">
-        {/* Hero */}
+        {/* Hero — dynamic per project */}
         <div
           className={`mb-10 transition-all duration-700 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
         >
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            YOTEL Barbados{' '}
-            <span className="text-sky-400">&middot; Carlisle Bay</span>
+            {projectName}{' '}
+            {projectLocation && (
+              <span className="text-sky-400">&middot; {projectLocation}</span>
+            )}
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            130-key dual-brand hotel &amp; residences
+            {projectDesc || 'Development project'}
           </p>
           <p className="mt-0.5 text-xs text-slate-500">{today}</p>
+
+          {/* Active project quick stats */}
+          {activeProject && (
+            <div className="mt-4 flex flex-wrap gap-3">
+              <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900/60 px-3 py-1.5">
+                <Building2 className="h-3.5 w-3.5 text-sky-400" />
+                <span className="text-xs text-slate-300">{activeProject.totalKeys} keys</span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900/60 px-3 py-1.5">
+                <MapPin className="h-3.5 w-3.5 text-sky-400" />
+                <span className="text-xs text-slate-300">{activeProject.planningRules.jurisdiction}</span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900/60 px-3 py-1.5">
+                <span className="text-xs text-slate-300">
+                  Site: {formatNumber(activeProject.siteConfig.grossArea)} m&sup2;
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-slate-900/60 px-3 py-1.5">
+                <span className="text-xs text-slate-300">
+                  Buildable: {formatNumber(activeProject.siteConfig.buildableAreaSqm)} m&sup2;
+                </span>
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Empty state — prompt to create project */}
+        {projectCount === 0 && (
+          <div className="mb-10">
+            <button
+              onClick={() => setWizardOpen(true)}
+              className="group flex w-full items-center gap-4 rounded-xl border-2 border-dashed border-white/10 bg-slate-900/40 p-8 transition-colors hover:border-sky-500/30 hover:bg-slate-900/60"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10">
+                <Plus className="h-6 w-6 text-sky-400" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-white">Create Your First Project</p>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Set up a new development project with site boundary, programme, and planning rules
+                </p>
+              </div>
+              <ArrowRight className="ml-auto h-5 w-5 text-slate-600 transition-transform group-hover:translate-x-1 group-hover:text-sky-400" />
+            </button>
+          </div>
+        )}
 
         {/* Summary cards 3x2 */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -289,8 +367,23 @@ export default function DashboardPage() {
           >
             View Compliance
           </Link>
+          <button
+            onClick={() => setWizardOpen(true)}
+            className="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-900/80 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-sky-500/30 hover:text-white"
+          >
+            <Plus className="h-4 w-4" />
+            New Project
+          </button>
         </div>
       </div>
+
+      {/* Wizard modal */}
+      {wizardOpen && (
+        <ProjectWizard
+          onClose={() => setWizardOpen(false)}
+          onCreated={() => refreshProject()}
+        />
+      )}
     </div>
   )
 }

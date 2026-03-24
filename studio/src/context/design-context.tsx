@@ -3,6 +3,8 @@
 import { createContext, useCallback, useContext, useState } from 'react'
 import type { DesignOption } from '@/engine/types'
 import { setSelectedOption as persistOption, clearSelectedOption } from '@/store/design-store'
+import { logAudit } from '@/store/audit-store'
+import { getUserFromCookie } from '@/lib/auth'
 
 interface DesignContextValue {
   options: DesignOption[]
@@ -21,15 +23,28 @@ export function DesignProvider({ children }: { children: React.ReactNode }) {
 
   const selectOption = useCallback(
     (id: string | null) => {
+      const prevId = selectedId
       setSelectedId(id)
       if (id) {
         const opt = options.find(o => o.id === id)
-        if (opt) persistOption(opt)
+        if (opt) {
+          persistOption(opt)
+          const user = getUserFromCookie()
+          logAudit({
+            userId: user?.name ?? 'unknown',
+            userName: user?.name ?? 'Unknown',
+            action: 'option_selected',
+            target: opt.curatedName ?? `Option ${opt.id.slice(0, 8)}`,
+            before: prevId ? `Option ${prevId.slice(0, 8)}` : undefined,
+            after: `Option ${id.slice(0, 8)}`,
+            metadata: { form: opt.form, score: opt.score.toFixed(1), keys: String(opt.metrics.totalKeys) },
+          })
+        }
       } else {
         clearSelectedOption()
       }
     },
-    [options],
+    [options, selectedId],
   )
 
   return (

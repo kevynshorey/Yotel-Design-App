@@ -9,6 +9,8 @@ import {
   saveVersion,
   type SavedVersion,
 } from '@/store/version-store'
+import { logAudit } from '@/store/audit-store'
+import { getUserFromCookie } from '@/lib/auth'
 
 interface VersionPanelProps {
   isOpen: boolean
@@ -37,6 +39,14 @@ export function VersionPanel({
   const handleSave = useCallback(() => {
     if (!currentOption) return
     saveVersion(currentOption)
+    const user = getUserFromCookie()
+    logAudit({
+      userId: user?.name ?? 'unknown',
+      userName: user?.name ?? 'Unknown',
+      action: 'version_saved',
+      target: currentOption.curatedName ?? `Option ${currentOption.id.slice(0, 8)}`,
+      metadata: { form: currentOption.form, score: currentOption.score.toFixed(1) },
+    })
     refresh()
   }, [currentOption, refresh])
 
