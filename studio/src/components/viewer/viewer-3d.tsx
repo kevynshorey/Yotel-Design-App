@@ -400,7 +400,7 @@ function buildAmenities(option: DesignOption, buildingTopY: number, buildableWid
   const entranceGeo = new THREE.BoxGeometry(2, 4, 8)  // narrow E-W, wide N-S
   const entranceMat = new THREE.MeshStandardMaterial({ color: 0xD4B896, roughness: 0.7, transparent: true, opacity: 0.8 })
   const entrance = new THREE.Mesh(entranceGeo, entranceMat)
-  const entranceX = buildMinX + 1  // at west edge of buildable area
+  const entranceX = buildMinX - 4  // WEST of blue buildable line, in the setback strip
   const entranceZ = clampedAbZ  // centered on amenity block
   entrance.position.set(entranceX, 2, entranceZ)
   entrance.castShadow = true
@@ -409,23 +409,25 @@ function buildAmenities(option: DesignOption, buildingTopY: number, buildableWid
   entrLabel.position.set(entranceX, 5, entranceZ)
   group.add(entrLabel)
 
-  // Parking courts flanking entrance (north and south of entrance gate, along west edge)
-  const parkGeo = new THREE.PlaneGeometry(6, 10)  // 6m E-W x 10m N-S
+  // Parking courts OUTSIDE buildable area but INSIDE site boundary (red line)
+  // Parking sits west of the blue buildable boundary, flanking the Bay Street entrance
+  const parkingX = buildMinX - 8  // 8m west of blue boundary (in the setback strip)
+  const parkGeo = new THREE.PlaneGeometry(12, 10)  // 12m E-W x 10m N-S
   const parkMat = new THREE.MeshStandardMaterial({ color: 0x4a5568, roughness: 0.95, side: THREE.DoubleSide, transparent: true, opacity: 0.6 })
   const parkN = new THREE.Mesh(parkGeo, parkMat)
   parkN.rotation.x = -Math.PI / 2
-  parkN.position.set(entranceX + 3, 0.01, entranceZ - 10)  // north of entrance
+  parkN.position.set(parkingX, 0.01, entranceZ - 10)  // north of entrance, outside blue
   group.add(parkN)
   const parkS = new THREE.Mesh(parkGeo, parkMat)
   parkS.rotation.x = -Math.PI / 2
-  parkS.position.set(entranceX + 3, 0.01, entranceZ + 10)  // south of entrance
+  parkS.position.set(parkingX, 0.01, entranceZ + 10)  // south of entrance, outside blue
   group.add(parkS)
   const parkNLabel = makeLabel('Parking', 0x94a3b8, 128)
-  parkNLabel.position.set(entranceX + 3, 1.5, entranceZ - 10)
+  parkNLabel.position.set(parkingX, 1.5, entranceZ - 10)
   parkNLabel.scale.set(4, 1, 1)
   group.add(parkNLabel)
   const parkSLabel = makeLabel('Parking', 0x94a3b8, 128)
-  parkSLabel.position.set(entranceX + 3, 1.5, entranceZ + 10)
+  parkSLabel.position.set(parkingX, 1.5, entranceZ + 10)
   parkSLabel.scale.set(4, 1, 1)
   group.add(parkSLabel)
 

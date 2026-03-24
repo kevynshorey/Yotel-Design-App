@@ -77,6 +77,10 @@ export const PLANNING_RULES = {
   parkingRatioRestaurant: 1, // per 4 seats (0.25 per seat)
   accessibleParkingMin: 0.05, // 5% of total spaces
   cycleParking: 0.10, // 10% of car spaces
+  // IMMUTABLE RULE: Parking must be OUTSIDE the buildable area (blue boundary)
+  // but INSIDE the site boundary (red boundary). Parking areas do NOT count
+  // toward site coverage. They sit in the setback strip between boundaries.
+  parkingZone: 'outside_buildable_inside_site' as const,
 
   // ── ACCESSIBILITY ────────────────────────────────────────────────────
   accessibleRoomRatio: 0.05, // 5% of rooms — minimum
