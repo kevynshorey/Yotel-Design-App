@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, useCallback, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { DesignOption } from '@/engine/types'
-import { setSelectedOption as persistOption, clearSelectedOption } from '@/store/design-store'
+import { setSelectedOption as persistOption, clearSelectedOption, getSelectedOption } from '@/store/design-store'
 import { logAudit } from '@/store/audit-store'
 import { getUserFromCookie } from '@/lib/auth'
 
@@ -18,8 +18,24 @@ const DesignContext = createContext<DesignContextValue | null>(null)
 export function DesignProvider({ children }: { children: React.ReactNode }) {
   const [options, setOptions] = useState<DesignOption[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  // Standalone stored option — hydrated from localStorage so it's available
+  // on ALL pages immediately, even when options[] is empty (e.g. /finance, /planning)
+  const [storedOption, setStoredOption] = useState<DesignOption | null>(null)
 
-  const selectedOption = options.find(o => o.id === selectedId) ?? null
+  // Hydrate from localStorage on mount + listen for cross-tab changes
+  useEffect(() => {
+    setStoredOption(getSelectedOption())
+    const handler = () => setStoredOption(getSelectedOption())
+    window.addEventListener('design-option-changed', handler)
+    window.addEventListener('storage', handler)
+    return () => {
+      window.removeEventListener('design-option-changed', handler)
+      window.removeEventListener('storage', handler)
+    }
+  }, [])
+
+  // Prefer in-memory option (from generator) over stored option (from localStorage)
+  const selectedOption = options.find(o => o.id === selectedId) ?? storedOption
 
   const selectOption = useCallback(
     (id: string | null) => {
@@ -29,6 +45,7 @@ export function DesignProvider({ children }: { children: React.ReactNode }) {
         const opt = options.find(o => o.id === id)
         if (opt) {
           persistOption(opt)
+          setStoredOption(opt) // update in-memory immediately for other pages
           const user = getUserFromCookie()
           logAudit({
             userId: user?.name ?? 'unknown',
@@ -42,6 +59,7 @@ export function DesignProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         clearSelectedOption()
+        setStoredOption(null)
       }
     },
     [options, selectedId],

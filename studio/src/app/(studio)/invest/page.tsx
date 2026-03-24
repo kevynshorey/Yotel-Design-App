@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect, useCallback } from 'react'
+import { useMemo } from 'react'
 import { HeroSection } from '@/components/invest/hero-section'
 import { HighlightsGrid } from '@/components/invest/highlights-grid'
 import { MetricsGrid } from '@/components/invest/metrics-grid'
@@ -10,8 +10,7 @@ import { CompAnalysis } from '@/components/invest/comp-analysis'
 import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
 import { useDesign } from '@/context/design-context'
-import { getSelectedOption } from '@/store/design-store'
-import type { DesignOption, OptionMetrics } from '@/engine/types'
+import type { OptionMetrics } from '@/engine/types'
 
 const DEFAULT_YT_ROOMS = 100
 const DEFAULT_PAD_UNITS = 30
@@ -40,24 +39,7 @@ function buildDefaultMetrics(): OptionMetrics {
 }
 
 export default function InvestPage() {
-  const { selectedOption: contextOption } = useDesign()
-
-  // Persisted option from localStorage (for when context is empty on page load)
-  const [storedOption, setStoredOption] = useState<DesignOption | null>(null)
-
-  const loadStored = useCallback(() => {
-    setStoredOption(getSelectedOption())
-  }, [])
-
-  useEffect(() => {
-    loadStored()
-    const handler = () => loadStored()
-    window.addEventListener('design-option-changed', handler)
-    return () => window.removeEventListener('design-option-changed', handler)
-  }, [loadStored])
-
-  // Prefer context (live from Design page) over localStorage
-  const selectedOption = contextOption ?? storedOption
+  const { selectedOption } = useDesign()
 
   const ytRooms = selectedOption?.metrics.yotelKeys ?? DEFAULT_YT_ROOMS
   const padUnits = selectedOption?.metrics.padUnits ?? DEFAULT_PAD_UNITS

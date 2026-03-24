@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { FinanceControls } from '@/components/finance/finance-controls'
 import { RevenueTable } from '@/components/finance/revenue-table'
 import { CostBreakdown } from '@/components/finance/cost-breakdown'
@@ -13,8 +13,7 @@ import { estimateCost } from '@/engine/cost'
 import { projectRevenue } from '@/engine/revenue'
 import { buildCapitalStack } from '@/engine/capital-stack'
 import { useDesign } from '@/context/design-context'
-import { getSelectedOption } from '@/store/design-store'
-import type { DesignOption, OptionMetrics } from '@/engine/types'
+import type { OptionMetrics } from '@/engine/types'
 
 /** Build a minimal OptionMetrics from room counts for standalone finance use. */
 function buildMetrics(ytRooms: number, padUnits: number): OptionMetrics {
@@ -40,24 +39,8 @@ function buildMetrics(ytRooms: number, padUnits: number): OptionMetrics {
 }
 
 export default function FinancePage() {
-  const { selectedOption: contextOption, selectOption } = useDesign()
-
-  // Persisted option from localStorage (for when context is empty on page load)
-  const [storedOption, setStoredOption] = useState<DesignOption | null>(null)
-
-  const loadStored = useCallback(() => {
-    setStoredOption(getSelectedOption())
-  }, [])
-
-  useEffect(() => {
-    loadStored()
-    const handler = () => loadStored()
-    window.addEventListener('design-option-changed', handler)
-    return () => window.removeEventListener('design-option-changed', handler)
-  }, [loadStored])
-
-  // Prefer context (live from Design page) over localStorage
-  const selectedOption = contextOption ?? storedOption
+  // Context now hydrates from localStorage on mount — works on all pages
+  const { selectedOption, selectOption } = useDesign()
 
   const [ytRooms, setYtRooms] = useState(100)
   const [padUnits, setPadUnits] = useState(30)
