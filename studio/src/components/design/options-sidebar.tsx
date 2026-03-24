@@ -236,7 +236,7 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
     <>
       {/* Desktop sidebar (md+) */}
       <div className={cn(
-        'relative hidden md:flex h-full min-h-0 flex-col border-l border-slate-700/50 bg-slate-900/90 backdrop-blur-sm transition-all',
+        'relative hidden md:flex h-full min-h-0 flex-col overflow-hidden border-l border-slate-700/50 bg-slate-900/90 backdrop-blur-sm transition-all',
         isOpen ? 'w-60' : 'w-0',
       )}>
         <Button

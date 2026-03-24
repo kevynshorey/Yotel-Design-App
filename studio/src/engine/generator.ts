@@ -181,11 +181,12 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
       opt.curatedId = cfg.id
       opt.curatedName = cfg.name
       opt.curatedConcept = cfg.concept
-      if (opt.validation.isValid) {
-        curated.push(opt)
-      }
+      // Always include curated designs — they're architect-approved.
+      // Warnings are acceptable; only skip if buildOption() throws (fatal constraint violation).
+      curated.push(opt)
     } catch {
-      // Skip curated options that fail generation
+      // Skip curated options that fail generation (e.g. below 130-key minimum)
+      console.warn(`Curated design "${cfg.name}" (${cfg.id}) failed generation`)
     }
   }
 
