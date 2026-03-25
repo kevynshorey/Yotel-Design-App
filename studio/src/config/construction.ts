@@ -184,8 +184,8 @@ export const FOUNDATION = {
 
 /** Barbados-specific cost adjustment factors */
 export const ISLAND_COST_FACTORS = {
-  importDuty: 0.12,             // 12% avg (some duty-free under TDA)
-  shippingFreight: 0.10,        // 10% FOB to island
-  hurricaneScheduling: 0.08,    // 8% programme extension (Jun-Nov)
+  importDuty: 0.05,             // 5% avg with TDA duty-free concessions (Cap 341)
+  shippingFreight: 0.07,        // 7% FOB to island (modular = fewer shipments)
+  hurricaneScheduling: 0.06,    // 6% programme extension (modular reduces exposure)
   labourEscalation: 0.043,      // 4.3% annual (BCQS 2025)
 } as const

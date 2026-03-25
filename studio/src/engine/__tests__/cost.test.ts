@@ -13,10 +13,10 @@ describe('estimateCost', () => {
     amenityScore: 0,
   }
 
-  it('estimates total cost near $45-55M for 130-key BAR with full Barbados model', () => {
+  it('estimates total cost near $35-45M for 130-key BAR with TDA concessions', () => {
     const cost = estimateCost(baseMetrics)
-    expect(cost.total).toBeGreaterThan(40_000_000)
-    expect(cost.total).toBeLessThan(55_000_000)
+    expect(cost.total).toBeGreaterThan(30_000_000)
+    expect(cost.total).toBeLessThan(45_000_000)
   })
 
   it('includes land at $3.5M', () => {
@@ -56,16 +56,16 @@ describe('estimateCost', () => {
 
   it('includes hurricane resilience uplift', () => {
     const cost = estimateCost(baseMetrics)
-    // 15% hurricane + 8% seismic on base construction (~$15.7M) = ~$3.6M
-    expect(cost.breakdown.hurricaneUplift).toBeGreaterThan(3_000_000)
-    expect(cost.breakdown.hurricaneUplift).toBeLessThan(4_000_000)
+    // 15% hurricane + 8% seismic on base construction (~$13.4M) = ~$3.1M
+    expect(cost.breakdown.hurricaneUplift).toBeGreaterThan(2_500_000)
+    expect(cost.breakdown.hurricaneUplift).toBeLessThan(3_500_000)
   })
 
-  it('includes island cost factors (import duty + shipping)', () => {
+  it('includes island cost factors (import duty + shipping with TDA)', () => {
     const cost = estimateCost(baseMetrics)
-    // 22% of material-heavy hard costs
-    expect(cost.breakdown.islandFactors).toBeGreaterThan(3_000_000)
-    expect(cost.breakdown.islandFactors).toBeLessThan(7_000_000)
+    // 12% of material-heavy hard costs (5% duty + 7% shipping with TDA)
+    expect(cost.breakdown.islandFactors).toBeGreaterThan(1_500_000)
+    expect(cost.breakdown.islandFactors).toBeLessThan(4_000_000)
   })
 
   it('includes EIA and permits at $130k', () => {

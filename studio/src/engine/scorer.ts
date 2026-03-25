@@ -43,9 +43,9 @@ export function scoreOption(
 
   // 6. Cost per key — v3 RECALIBRATED for expanded cost model (MEP, hurricane, foundation, island factors)
   const cpk = metrics.costPerKey
-  if (cpk <= 370_000) { s = 1.0; r = `$${(cpk / 1000).toFixed(0)}k/key — excellent` }
-  else if (cpk <= 410_000) { s = 0.75; r = `$${(cpk / 1000).toFixed(0)}k/key — on budget` }
-  else if (cpk <= 460_000) { s = 0.5; r = `$${(cpk / 1000).toFixed(0)}k/key — above target` }
+  if (cpk <= 290_000) { s = 1.0; r = `$${(cpk / 1000).toFixed(0)}k/key — excellent` }
+  else if (cpk <= 320_000) { s = 0.75; r = `$${(cpk / 1000).toFixed(0)}k/key — on budget` }
+  else if (cpk <= 360_000) { s = 0.5; r = `$${(cpk / 1000).toFixed(0)}k/key — above target` }
   else { s = 0.2; r = `$${(cpk / 1000).toFixed(0)}k/key — review scope` }
   bd.cost_per_key = { raw: round(s), weighted: round(s * weights.cost_per_key), reason: r }
 

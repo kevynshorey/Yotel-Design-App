@@ -4,13 +4,13 @@ import { HURRICANE_DESIGN, SEISMIC_DESIGN, FOUNDATION, ISLAND_COST_FACTORS } fro
 import { calculateMepTotal } from '@/config/mep'
 
 const RATES = {
-  modularPerM2: 3400,
-  facadePerM2: 450,
-  ffePerKey: { yotel: 22000, pad: 28000 },
-  techPerKey: 8000,
-  outdoorPerM2: 800,
-  siteWorks: 2_200_000,
-  contingencyPct: 0.08,
+  modularPerM2: 2900, // recalibrated: modular YOTEL build, TDA concessions applied
+  facadePerM2: 400,   // reduced: modular prefab facade panels
+  ffePerKey: { yotel: 18000, pad: 25000 }, // YOTEL standardised FF&E packages
+  techPerKey: 7000,
+  outdoorPerM2: 700,
+  siteWorks: 1_800_000,
+  contingencyPct: 0.07, // 7% — lower risk with modular construction
 } as const
 
 /** Itemized professional fees (replaces flat 12%) */
