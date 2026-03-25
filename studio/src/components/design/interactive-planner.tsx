@@ -40,6 +40,8 @@ import {
 import type { DesignOption } from '@/engine/types'
 import { computeSiteLayout } from '@/engine/site-layout'
 import type { PlacedElement, SiteLayout, SiteConfig } from '@/engine/site-layout'
+import { saveLayoutOverrides, clearLayoutOverrides } from '@/store/layout-store'
+import type { LayoutOverridePayload } from '@/store/layout-store'
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -584,6 +586,89 @@ function engineElementToCanvasItem(el: PlacedElement): CanvasItem {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Sync planner state -> layout store (for 3D viewer)                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Convert the current planner canvas state into a LayoutOverridePayload
+ * and publish it through the shared layout store so the 3D viewer updates.
+ *
+ * Canvas items use WORLD coordinates (origin at site SW corner).
+ * PlacedElement uses ENGINE coordinates (origin at buildable SW corner).
+ * Conversion: engineX = worldX - SITE.buildableMinX, engineY = worldY - SITE.buildableMinY
+ */
+function publishToLayoutStore(
+  currentItems: CanvasItem[],
+  engineLayout: SiteLayout | null,
+): void {
+  // Collect the IDs of all engine elements the reasoning engine produced
+  const engineIds = new Set(
+    (engineLayout?.elements ?? []).map((el) => `engine-${el.id}`),
+  )
+
+  const modified: PlacedElement[] = []
+  const added: PlacedElement[] = []
+  const presentEngineIds = new Set<string>()
+
+  for (const item of currentItems) {
+    // Skip wing items — they are not part of the amenity layer
+    if (item.id.startsWith('engine-wing-')) continue
+
+    if (item.source === 'engine' && engineIds.has(item.id)) {
+      // Engine item — check if its position/size was overridden
+      const originalId = item.id.replace(/^engine-/, '')
+      const original = engineLayout?.elements.find((el) => el.id === originalId)
+      presentEngineIds.add(item.id)
+
+      if (original) {
+        const origWx = original.x + SITE.buildableMinX
+        const origWy = original.y + SITE.buildableMinY
+        const moved =
+          Math.abs(item.x - origWx) > 0.01 ||
+          Math.abs(item.y - origWy) > 0.01 ||
+          Math.abs(item.width - original.width) > 0.01 ||
+          Math.abs(item.height - original.depth) > 0.01 ||
+          Math.abs((item.rotation ?? 0) - (original.rotation ?? 0)) > 0.01
+
+        if (moved) {
+          modified.push(canvasItemToPlacedElement(item))
+        }
+      }
+    } else if (item.source === 'user') {
+      // User-added element
+      added.push(canvasItemToPlacedElement(item))
+    }
+  }
+
+  // Removed = engine IDs not present in current items
+  const removedIds: string[] = []
+  for (const eid of engineIds) {
+    if (!presentEngineIds.has(eid)) {
+      removedIds.push(eid.replace(/^engine-/, ''))
+    }
+  }
+
+  saveLayoutOverrides({ modified, added, removedIds })
+}
+
+/** Convert a CanvasItem back to a PlacedElement (engine coordinate system). */
+function canvasItemToPlacedElement(item: CanvasItem): PlacedElement {
+  return {
+    id: item.id.replace(/^engine-/, ''),
+    type: (item.type as PlacedElement['type']) || 'amenity_block',
+    label: item.label,
+    x: item.x - SITE.buildableMinX,
+    y: item.y - SITE.buildableMinY,
+    width: item.width,
+    depth: item.height,
+    height: item.storeys > 1 ? item.storeys * 3.2 : (item.type === 'tree' ? 8 : 0),
+    rotation: item.rotation || undefined,
+    floor: item.floor === 'roof' ? 'roof' : (item.floor === 'ground' ? 'ground' : Number(item.floor) || 'ground'),
+    rationale: item.rationale || 'User-placed element',
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /*  Position override storage                                          */
 /* ------------------------------------------------------------------ */
 
@@ -667,6 +752,13 @@ export function InteractivePlanner({
     }
     return localChecks
   }, [items, engineLayout])
+
+  // ---- publish changes to the shared layout store (drives 3D viewer) ----
+  useEffect(() => {
+    // Only publish when planner is open and has items
+    if (!isOpen || items.length === 0) return
+    publishToLayoutStore(items, engineLayout)
+  }, [isOpen, items, engineLayout])
 
   // ---- run engine when selectedOption changes ----
   const prevOptionRef = useRef<string | null>(null)
@@ -1160,6 +1252,7 @@ export function InteractivePlanner({
   const resetToEngine = useCallback(() => {
     setOverrides({})
     saveOverrides({})
+    clearLayoutOverrides()
     setItems([])
     if (selectedOption) {
       prevOptionRef.current = null // force re-run

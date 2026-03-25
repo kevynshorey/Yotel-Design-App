@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { createRenderer, createCamera, createLights } from './scene-setup'
@@ -12,6 +12,7 @@ import type { DesignOption, BasemapType } from '@/engine/types'
 import { computeSiteLayout } from '@/engine/site-layout'
 import type { PlacedElement, SiteConfig } from '@/engine/site-layout'
 import { SITE } from '@/config/site'
+import { getLayoutOverrides, LAYOUT_CHANGED_EVENT } from '@/store/layout-store'
 
 // ── Time-of-day types and presets ──────────────────────────────────
 export type TimeOfDay = 'morning' | 'midday' | 'sunset' | 'night'
@@ -255,14 +256,45 @@ function siteToWorld(engineX: number, engineY: number): { wx: number; wz: number
   }
 }
 
+/**
+ * Apply layout overrides from the interactive planner to the engine layout.
+ * - Modified elements replace engine elements with matching IDs
+ * - Added elements are appended
+ * - Removed elements are filtered out
+ */
+function applyOverridesToLayout(engineElements: PlacedElement[]): PlacedElement[] {
+  const overrides = getLayoutOverrides()
+  const { modified, added, removedIds } = overrides
+
+  // Nothing to do if there are no overrides
+  if (modified.length === 0 && added.length === 0 && removedIds.length === 0) {
+    return engineElements
+  }
+
+  const removedSet = new Set(removedIds)
+  const modifiedMap = new Map(modified.map((el) => [el.id, el]))
+
+  // Filter out removed, replace modified
+  const merged = engineElements
+    .filter((el) => !removedSet.has(el.id))
+    .map((el) => modifiedMap.get(el.id) ?? el)
+
+  // Append user-added elements
+  return [...merged, ...added]
+}
+
 /** Create amenity meshes from the architectural reasoning engine.
- *  ALL placement decisions come from computeSiteLayout — no hardcoded positions. */
+ *  ALL placement decisions come from computeSiteLayout — no hardcoded positions.
+ *  If layout overrides exist (from the interactive planner), they are merged in. */
 function buildAmenitiesFromLayout(option: DesignOption, buildingTopY: number): THREE.Group {
   const group = new THREE.Group()
   group.name = 'amenities'
 
   const siteConfig = buildSiteConfig()
   const layout = computeSiteLayout(option, siteConfig)
+
+  // Merge in any overrides from the interactive planner
+  layout.elements = applyOverridesToLayout(layout.elements)
 
   // Shared geometries for trees
   const trunkGeo = new THREE.CylinderGeometry(0.2, 0.2, 5, 8)
@@ -392,6 +424,8 @@ export function Viewer3D({
 }: Viewer3DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sceneRef = useRef<THREE.Scene | null>(null)
+  // Bump this counter to force amenity rebuild when layout overrides change
+  const [layoutRevision, setLayoutRevision] = useState(0)
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
   const controlsRef = useRef<OrbitControls | null>(null)
@@ -639,6 +673,13 @@ export function Viewer3D({
     }
   }, [timeOfDay])
 
+  // ── Listen for layout-overrides-changed from the interactive planner ──
+  useEffect(() => {
+    const handler = () => setLayoutRevision((r) => r + 1)
+    window.addEventListener(LAYOUT_CHANGED_EVENT, handler)
+    return () => window.removeEventListener(LAYOUT_CHANGED_EVENT, handler)
+  }, [])
+
   // ── Rebuild building geometry when selectedOption changes ──
   useEffect(() => {
     const group = buildingGroupRef.current
@@ -705,7 +746,8 @@ export function Viewer3D({
 
     // Re-apply amenity visibility
     amenityGroup.visible = showAmenities
-  }, [selectedOption, showAmenities])
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- layoutRevision forces amenity rebuild
+  }, [selectedOption, showAmenities, layoutRevision])
 
   return (
     <canvas
