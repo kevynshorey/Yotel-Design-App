@@ -273,31 +273,38 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
     rationale: RATIONALES.entrance,
   })
 
-  // Parking — flanking the entrance drive at the SW tip, outside buildable area
-  // One bay north of entrance, one bay south/east, both within site boundary
-  const parkingY = entranceY + ENTRANCE_DRIVE_D + 1  // just north of entrance drive
+  // Parking — parallel bays on BOTH SIDES of the entrance drive, running from
+  // the SW tip up toward the buildable area boundary. Like a corridor of cars
+  // flanking the driveway. Each bay is 2.5m wide x 5m deep (standard parallel).
+  // The bays run along the same axis as the entrance drive (SW→NE).
+  const PARALLEL_BAY_W = 2.5   // width of one parallel bay
+  const PARALLEL_BAY_D = 5.0   // depth (length of car)
+  const NUM_BAYS_PER_SIDE = 8  // 8 parallel bays per side = 16 total spaces
+  const parkingStripLength = NUM_BAYS_PER_SIDE * PARALLEL_BAY_D  // 40m
 
+  // East side parking strip — runs parallel to entrance drive, east of it
   elements.push({
     id: 'parking-east',
     type: 'parking',
-    label: 'Parking (East of Entrance)',
-    x: entranceX + ENTRANCE_DRIVE_W + 1,
-    y: parkingY,
-    width: PARKING_BAY_D * 4,
-    depth: PARKING_BAY_W * 2,
+    label: `Parking East (${NUM_BAYS_PER_SIDE} bays)`,
+    x: entranceX + ENTRANCE_DRIVE_W + 0.5,  // just east of driveway
+    y: entranceY,                             // starts at entrance
+    width: PARALLEL_BAY_W,                    // narrow strip
+    depth: parkingStripLength,                // runs up toward buildable area
     height: 0,
     floor: 'ground',
     rationale: RATIONALES.parking,
   })
 
+  // West side parking strip — runs parallel to entrance drive, west of it
   elements.push({
     id: 'parking-west',
     type: 'parking',
-    label: 'Parking (West of Entrance)',
-    x: entranceX - PARKING_BAY_D * 4 - 1,
-    y: parkingY,
-    width: PARKING_BAY_D * 4,
-    depth: PARKING_BAY_W * 2,
+    label: `Parking West (${NUM_BAYS_PER_SIDE} bays)`,
+    x: entranceX - PARALLEL_BAY_W - 0.5,    // just west of driveway
+    y: entranceY,                             // starts at entrance
+    width: PARALLEL_BAY_W,                    // narrow strip
+    depth: parkingStripLength,                // runs up toward buildable area
     height: 0,
     floor: 'ground',
     rationale: RATIONALES.parking,
@@ -651,7 +658,7 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
   })
 
   // 12b. Parking outside buildable, inside site
-  const parkingOutsideBuildable = parkingY < 0 || parkingY < SETBACK
+  const parkingOutsideBuildable = entranceY < 0 || entranceY < SETBACK
   compliance.push({
     rule: 'Parking outside buildable area but inside site boundary',
     status: parkingOutsideBuildable ? 'pass' : 'fail',
