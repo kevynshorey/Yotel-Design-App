@@ -249,14 +249,16 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
   })
 
   // ── 2.  Entrance & Parking ──────────────────────────────────────────────
-  // Bay Street runs along the SOUTH edge. Entrance is on the south edge
-  // of the site boundary (outside buildable area, inside site boundary).
-  // The south edge of the buildable area is at y=0 in local coords.
-  // The site boundary extends further south (negative y in local coords).
-  const southSetbackToSite = SITE.buildableMinY - Math.min(...ORIGINAL_BOUNDARY.map(p => p.y))  // ~8.7m
-  const entranceCentreX = amenityX + amenityW / 2  // aligned with amenity block centre
-  const entranceX = entranceCentreX - ENTRANCE_DRIVE_W / 2
-  const entranceY = -southSetbackToSite + SETBACK   // south of buildable, inside site boundary
+  // From the plot plan: Bay Street access is from the SOUTHWEST corner —
+  // the narrow pointed tip of the site. Beckles Rd connects to Bay Street
+  // at this point. The entrance faces Carlisle Bay (west).
+  // In site coordinates, the SW corner is near x=1, y=0 (ORIGINAL_BOUNDARY[0]).
+  // In buildable-local coords, this is at x ≈ 1 - buildableMinX = -34.6, y ≈ -8.4
+  const swCorner = ORIGINAL_BOUNDARY[0]  // { x: 1.009, y: -0.301 } — SW tip
+  const entranceWorldX = swCorner.x + 5  // 5m east of SW corner for entrance drive
+  const entranceWorldY = swCorner.y       // at the SW tip
+  const entranceX = entranceWorldX - SITE.buildableMinX  // convert to buildable-local
+  const entranceY = entranceWorldY - SITE.buildableMinY  // will be negative (south of buildable)
 
   elements.push({
     id: 'main-entrance',
@@ -271,8 +273,9 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
     rationale: RATIONALES.entrance,
   })
 
-  // Parking — east and west of driveway, outside buildable area on the south edge
-  const parkingY = entranceY  // same y as entrance (south of buildable)
+  // Parking — flanking the entrance drive at the SW tip, outside buildable area
+  // One bay north of entrance, one bay south/east, both within site boundary
+  const parkingY = entranceY + ENTRANCE_DRIVE_D + 1  // just north of entrance drive
 
   elements.push({
     id: 'parking-east',
