@@ -6,10 +6,12 @@
  * engine elements, it writes the canonical override list here.  The 3D viewer
  * listens for the `layout-overrides-changed` CustomEvent and re-renders.
  *
- * Data is persisted to localStorage so overrides survive page refreshes.
+ * Data is persisted to localStorage (sync, immediate reads) AND IndexedDB
+ * (async, larger quota) so overrides survive page refreshes.
  */
 
 import type { PlacedElement } from '@/engine/site-layout'
+import { storage } from '@/store/persistence'
 
 // ── Storage key ──────────────────────────────────────────────────────────────
 const STORAGE_KEY = 'yotel-layout-overrides-v2'
@@ -38,9 +40,15 @@ function emptyPayload(): LayoutOverridePayload {
 /** Persist layout overrides and notify listeners. */
 export function saveLayoutOverrides(payload: LayoutOverridePayload): void {
   if (typeof window === 'undefined') return
+
+  // Synchronous localStorage write for immediate UI reads
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
   } catch { /* quota exceeded — silently ignore */ }
+
+  // Async IndexedDB write (non-blocking background task)
+  void storage.set(STORAGE_KEY, payload)
+
   window.dispatchEvent(new CustomEvent(LAYOUT_CHANGED_EVENT))
 }
 
@@ -64,6 +72,11 @@ export function getLayoutOverrides(): LayoutOverridePayload {
 /** Clear all layout overrides and notify listeners. */
 export function clearLayoutOverrides(): void {
   if (typeof window === 'undefined') return
+
   localStorage.removeItem(STORAGE_KEY)
+
+  // Async IndexedDB delete (non-blocking)
+  void storage.delete(STORAGE_KEY)
+
   window.dispatchEvent(new CustomEvent(LAYOUT_CHANGED_EVENT))
 }
