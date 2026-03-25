@@ -9,8 +9,9 @@
  *   x = metres east of origin (along EW axis)
  *   y = metres north of origin (along NS axis)
  *
- * Bay Street is to the WEST.  The entrance sits on the WEST edge of the
- * *site* boundary (not the buildable boundary).
+ * Bay Street runs along the SOUTH edge of the site (the narrow end).
+ * The entrance sits on the SOUTH edge of the *site* boundary.
+ * The beach/ocean is to the WEST. The site widens as you go north.
  */
 
 import type { DesignOption, FormType, Wing } from './types'
@@ -229,8 +230,10 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
   // Inside buildable area, near west edge, centred N-S.
   const amenityW = AMENITY_BLOCK.targetWidth   // 22 m EW
   const amenityD = AMENITY_BLOCK.targetDepth   // 20 m NS
-  const amenityX = SETBACK                     // as far west as setback allows
-  const amenityY = (B_NS - amenityD) / 2       // centred N-S
+  // Amenity block at SOUTH edge of buildable area (nearest to Bay Street entrance)
+  // Centred E-W within the buildable area
+  const amenityX = (B_EW - amenityW) / 2       // centred E-W
+  const amenityY = SETBACK                     // at south edge, just inside setback
 
   elements.push({
     id: 'amenity-block',
@@ -246,13 +249,14 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
   })
 
   // ── 2.  Entrance & Parking ──────────────────────────────────────────────
-  // Entrance is on the WEST edge of the SITE boundary (outside buildable).
-  // In local buildable coords that means negative-x (west of the buildable origin).
-  // We express it as metres west of buildable origin — caller can add buildableMinX.
-  const westSetbackToSite = SITE.buildableMinX - ORIGINAL_BOUNDARY[0].x  // ~34.6 m
-  const entranceCentreY = amenityY + amenityD / 2  // aligned with amenity block centre
-  const entranceX = -westSetbackToSite + SETBACK   // within site boundary
-  const entranceY = entranceCentreY - ENTRANCE_DRIVE_D / 2
+  // Bay Street runs along the SOUTH edge. Entrance is on the south edge
+  // of the site boundary (outside buildable area, inside site boundary).
+  // The south edge of the buildable area is at y=0 in local coords.
+  // The site boundary extends further south (negative y in local coords).
+  const southSetbackToSite = SITE.buildableMinY - Math.min(...ORIGINAL_BOUNDARY.map(p => p.y))  // ~8.7m
+  const entranceCentreX = amenityX + amenityW / 2  // aligned with amenity block centre
+  const entranceX = entranceCentreX - ENTRANCE_DRIVE_W / 2
+  const entranceY = -southSetbackToSite + SETBACK   // south of buildable, inside site boundary
 
   elements.push({
     id: 'main-entrance',
@@ -267,57 +271,52 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
     rationale: RATIONALES.entrance,
   })
 
-  // Parking — north and south of driveway, outside buildable
-  const parkingX = entranceX + ENTRANCE_DRIVE_W
-  const parkingRowsNorth = 2  // 2 rows of parking north of drive
-  const parkingRowsSouth = 2
+  // Parking — east and west of driveway, outside buildable area on the south edge
+  const parkingY = entranceY  // same y as entrance (south of buildable)
 
   elements.push({
-    id: 'parking-north',
+    id: 'parking-east',
     type: 'parking',
-    label: 'Parking (North of Entrance)',
-    x: parkingX,
-    y: entranceY + ENTRANCE_DRIVE_D + 1,
-    width: PARKING_BAY_W * parkingRowsNorth,
-    depth: PARKING_BAY_D * 4,
+    label: 'Parking (East of Entrance)',
+    x: entranceX + ENTRANCE_DRIVE_W + 1,
+    y: parkingY,
+    width: PARKING_BAY_D * 4,
+    depth: PARKING_BAY_W * 2,
     height: 0,
     floor: 'ground',
     rationale: RATIONALES.parking,
   })
 
   elements.push({
-    id: 'parking-south',
+    id: 'parking-west',
     type: 'parking',
-    label: 'Parking (South of Entrance)',
-    x: parkingX,
-    y: entranceY - PARKING_BAY_D * 4 - 1,
-    width: PARKING_BAY_W * parkingRowsSouth,
-    depth: PARKING_BAY_D * 4,
+    label: 'Parking (West of Entrance)',
+    x: entranceX - PARKING_BAY_D * 4 - 1,
+    y: parkingY,
+    width: PARKING_BAY_D * 4,
+    depth: PARKING_BAY_W * 2,
     height: 0,
     floor: 'ground',
     rationale: RATIONALES.parking,
   })
 
   // ── 3.  Residential block position ──────────────────────────────────────
-  // Residential block is defined by the DesignOption wings. We compute
-  // an offset so the residential block sits east of the amenity block with
-  // the pool deck in between.
+  // South-to-North layout: Bay Street → Entrance → Amenity Block → Pool → Residential
+  // Residential block sits in the NORTH half of the buildable area.
 
   const poolGap = BUILDING_SEP + POOL_BUILDING_MIN  // min gap for pool
-  const resBlockOriginX = computeResidentialX(form, amenityX, amenityW, poolGap, wings, B_EW)
-  const resBlockOriginY = computeResidentialY(form, wings, B_NS)
-
-  // We don't place the residential block as a PlacedElement (it is the wing
-  // geometry itself), but we use its position for pool + service yard.
+  // For the S→N layout, residential block goes to the north
+  const resBlockOriginX = (B_EW - (wings[0]?.direction === 'EW' ? wings[0].length : wings[0]?.width ?? 50)) / 2
+  const resBlockOriginY = amenityY + amenityD + poolGap + POOL_DECK.poolLength + poolGap
 
   // ── 4.  Pool Deck ───────────────────────────────────────────────────────
-  // Between amenity block (west) and residential block (east), centred N-S.
-  // Pool long axis N-S.
-  const poolDeckX = amenityX + amenityW + POOL_BUILDING_MIN
-  const poolDeckEndX = resBlockOriginX - POOL_BUILDING_MIN
-  const poolDeckW = Math.max(poolDeckEndX - poolDeckX, 14)  // at least 14 m
-  const poolDeckD = Math.min(B_NS - 2 * SETBACK, 40)        // cap at reasonable courtyard
-  const poolDeckY = (B_NS - poolDeckD) / 2
+  // Between amenity block (south) and residential block (north), centred E-W.
+  // Pool long axis E-W (oriented to catch western sun for afternoon swimming).
+  const poolDeckY = amenityY + amenityD + POOL_BUILDING_MIN
+  const poolDeckEndY = resBlockOriginY - POOL_BUILDING_MIN
+  const poolDeckD = Math.max(poolDeckEndY - poolDeckY, 12)
+  const poolDeckW = Math.min(B_EW - 2 * SETBACK, 40)
+  const poolDeckX = (B_EW - poolDeckW) / 2
 
   elements.push({
     id: 'pool-deck',
@@ -649,7 +648,7 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
   })
 
   // 12b. Parking outside buildable, inside site
-  const parkingOutsideBuildable = parkingX < 0 || parkingX < SETBACK
+  const parkingOutsideBuildable = parkingY < 0 || parkingY < SETBACK
   compliance.push({
     rule: 'Parking outside buildable area but inside site boundary',
     status: parkingOutsideBuildable ? 'pass' : 'fail',

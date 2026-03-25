@@ -49,7 +49,7 @@ export const SITE = {
   buildableMaxX: 115.434,
   buildableMinY: 8.403,
   buildableMaxY: 57.088,
-  beachSide: 'W' as const,
+  beachSide: 'W' as const, // beach is west; Bay Street runs along south edge
   centroidX: 75.52,
   centroidY: 32.75,
 } as const
