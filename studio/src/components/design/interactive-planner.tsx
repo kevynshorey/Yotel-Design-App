@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Stage, Layer, Rect, Line, Text, Group, Circle, Transformer } from 'react-konva'
+import { Stage, Layer, Rect, Line, Text, Group, Circle, Transformer, Image as KonvaImage } from 'react-konva'
 import type Konva from 'konva'
 import {
   X,
@@ -30,6 +30,7 @@ import {
   EyeOff,
   Info,
   RefreshCcw,
+  Satellite,
 } from 'lucide-react'
 import {
   ORIGINAL_BOUNDARY,
@@ -739,6 +740,10 @@ export function InteractivePlanner({
   const [showSaved, setShowSaved] = useState(false)
   const [sidebarTab, setSidebarTab] = useState<'engine' | 'custom' | 'tools'>('engine')
 
+  const [showSatellite, setShowSatellite] = useState(false)
+  const [showLabels, setShowLabels] = useState(true)
+  const [satelliteTiles, setSatelliteTiles] = useState<{ img: HTMLImageElement; cx: number; cy: number; size: number }[]>([])
+
   const containerRef = useRef<HTMLDivElement>(null)
   const transformerRef = useRef<Konva.Transformer>(null)
   const shapeRefs = useRef<Map<string, Konva.Rect>>(new Map())
@@ -931,12 +936,20 @@ export function InteractivePlanner({
   /** Clamp position to within the OFFSET_BOUNDARY for non-parking items */
   const clampToBoundary = useCallback((wx: number, wy: number, w: number, h: number, isParking: boolean): { wx: number; wy: number } => {
     if (isParking) {
-      // Parking: must be inside ORIGINAL but outside OFFSET (between red and blue)
-      // Simple approach: just ensure it's inside ORIGINAL_BOUNDARY
-      const inOriginal = pointInPolygon(wx + w / 2, wy + h / 2, ORIGINAL_BOUNDARY)
+      // Parking: must be inside ORIGINAL_BOUNDARY but OUTSIDE OFFSET_BOUNDARY
+      // (between the red site boundary and the blue buildable boundary)
+      const centre = { x: wx + w / 2, y: wy + h / 2 }
+      const inOriginal = pointInPolygon(centre.x, centre.y, ORIGINAL_BOUNDARY)
+      const inBuildable = pointInPolygon(centre.x, centre.y, OFFSET_BOUNDARY)
+
       if (!inOriginal) {
-        // Push it back toward centroid
-        return { wx: SITE.centroidX - w / 2, wy: SITE.centroidY - h / 2 }
+        // Outside site entirely — push to south edge (Bay Street side, between boundaries)
+        return { wx: SITE.centroidX - w / 2, wy: Math.max(0, SITE.buildableMinY - h - 2) }
+      }
+      if (inBuildable) {
+        // Inside buildable area — push south outside buildable but inside site
+        const pushedY = Math.max(0, SITE.buildableMinY - h - 1)
+        return { wx, wy: pushedY }
       }
       return { wx, wy }
     }
@@ -1575,6 +1588,24 @@ export function InteractivePlanner({
                 </>
               )}
             </button>
+            {/* Toggle labels */}
+            <button
+              onClick={() => setShowLabels((v) => !v)}
+              className={`flex items-center gap-1 rounded px-2 py-1 text-xs ${showLabels ? 'text-sky-400 hover:text-sky-300' : 'text-slate-500 hover:text-slate-400'} hover:bg-slate-800`}
+              title={showLabels ? 'Hide Labels' : 'Show Labels'}
+            >
+              {showLabels ? <Eye size={12} /> : <EyeOff size={12} />}
+              Labels
+            </button>
+            {/* Toggle satellite */}
+            <button
+              onClick={() => setShowSatellite((v) => !v)}
+              className={`flex items-center gap-1 rounded px-2 py-1 text-xs ${showSatellite ? 'text-sky-400 hover:text-sky-300' : 'text-slate-500 hover:text-slate-400'} hover:bg-slate-800`}
+              title={showSatellite ? 'Hide Satellite' : 'Show Satellite'}
+            >
+              <Satellite size={12} />
+              Satellite
+            </button>
             <button
               onClick={onClose}
               className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
@@ -1696,7 +1727,7 @@ export function InteractivePlanner({
                         const midIdx = Math.floor(item.pathPoints.length / 2)
                         const midPt = item.pathPoints[midIdx]
                         const { cx, cy } = toCanvas(midPt.x, midPt.y)
-                        return (
+                        return showLabels ? (
                           <Text
                             x={cx - 20}
                             y={cy - 14}
@@ -1705,7 +1736,7 @@ export function InteractivePlanner({
                             fontSize={9}
                             listening={false}
                           />
-                        )
+                        ) : null
                       })()}
                     </Group>
                   )
@@ -1785,21 +1816,23 @@ export function InteractivePlanner({
                         listening={false}
                       />
                     )}
-                    {/* Label text */}
-                    <Text
-                      x={cx + (item.rotation === 0 ? pw / 2 : 0)}
-                      y={cy + (item.rotation === 0 ? ph / 2 - 8 : 0)}
-                      text={item.label}
-                      fill="#ffffff"
-                      fontSize={pw > 60 ? 11 : pw > 30 ? 9 : 7}
-                      fontStyle="bold"
-                      align="center"
-                      width={pw}
-                      listening={false}
-                      rotation={item.rotation}
-                    />
-                    {/* Dimension text */}
-                    {pw > 20 && (
+                    {/* Label text (toggleable) */}
+                    {showLabels && (
+                      <Text
+                        x={cx + (item.rotation === 0 ? pw / 2 : 0)}
+                        y={cy + (item.rotation === 0 ? ph / 2 - 8 : 0)}
+                        text={item.label}
+                        fill="#ffffff"
+                        fontSize={pw > 60 ? 11 : pw > 30 ? 9 : 7}
+                        fontStyle="bold"
+                        align="center"
+                        width={pw}
+                        listening={false}
+                        rotation={item.rotation}
+                      />
+                    )}
+                    {/* Dimension text (toggleable) */}
+                    {showLabels && pw > 20 && (
                       <Text
                         x={cx + (item.rotation === 0 ? pw / 2 : 0)}
                         y={cy + (item.rotation === 0 ? ph / 2 + 4 : 16)}
