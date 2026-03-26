@@ -7,7 +7,8 @@ import type { DesignOption, FormType } from '@/engine/types'
 import { OptionCard } from './option-card'
 import { cn } from '@/lib/utils'
 import { logAudit } from '@/store/audit-store'
-import { getUserFromCookie } from '@/lib/auth'
+import { getUserFromCookie, canEdit } from '@/lib/auth'
+import { useUser } from '@/lib/use-user'
 
 const FAVOURITES_KEY = 'yotel-favourites'
 
@@ -60,6 +61,8 @@ const FORM_FILTERS: { key: string; label: string }[] = [
 ]
 
 export function OptionsSidebar({ options, selectedId, onSelect, compareMode, compareTargetId }: OptionsSidebarProps) {
+  const user = useUser()
+  const isViewer = !canEdit(user)
   const [isOpen, setIsOpen] = useState(true)
   const [mobileExpanded, setMobileExpanded] = useState(false)
   const [sortBy, setSortBy] = useState<SortKey>('score')
@@ -134,6 +137,39 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
     if (aRec !== bRec) return bRec - aRec
     return sortWithFavourites(a, b)
   })
+
+  // For investors: show only curated/named designs; fall back to top-5 by score
+  const investorOptions = curatedOptions.length > 0
+    ? curatedOptions
+    : [...options].sort((a, b) => b.score - a.score).slice(0, 5)
+
+  const investorSidebarContent = (
+    <>
+      <div className="border-b border-slate-700/50 px-3 py-3">
+        <p className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Design Proposals</p>
+        <h3 className="mt-0.5 text-sm font-semibold text-slate-100">YOTEL Barbados</h3>
+        <p className="mt-1 text-[10px] text-slate-400">
+          {investorOptions.length} scenario{investorOptions.length !== 1 ? 's' : ''} available
+        </p>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2">
+        <div className="flex flex-col gap-2">
+          {investorOptions.map((opt) => (
+            <OptionCard
+              key={opt.id}
+              option={opt}
+              isSelected={opt.id === selectedId}
+              onSelect={onSelect}
+              compareMode={compareMode}
+              isCompareTarget={opt.id === compareTargetId}
+              isFavourite={favourites.has(opt.id)}
+              onToggleFavourite={() => toggleFavourite(opt.id)}
+            />
+          ))}
+        </div>
+      </div>
+    </>
+  )
 
   const sidebarContent = (
     <>
@@ -232,6 +268,9 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
     </>
   )
 
+  const activeContent = isViewer ? investorSidebarContent : sidebarContent
+  const mobileCount = isViewer ? investorOptions.length : filtered.length
+
   return (
     <>
       {/* Desktop sidebar (md+) */}
@@ -239,15 +278,18 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
         'relative hidden md:flex h-full min-h-0 flex-col overflow-hidden border-l border-slate-700/50 bg-slate-900/90 backdrop-blur-sm transition-all',
         isOpen ? 'w-60' : 'w-0',
       )}>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute -left-8 top-3 z-10 h-6 w-6 rounded-full border border-slate-700 bg-slate-800 text-slate-300 shadow-sm hover:bg-slate-700"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
-        </Button>
-        {isOpen && sidebarContent}
+        {/* Only show toggle for admins — for viewers the ghost button over the 3D view is confusing */}
+        {!isViewer && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute -left-8 top-3 z-10 h-6 w-6 rounded-full border border-slate-700 bg-slate-800 text-slate-300 shadow-sm hover:bg-slate-700"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+          </Button>
+        )}
+        {isOpen && activeContent}
       </div>
 
       {/* Mobile bottom sheet (< md) */}
@@ -263,13 +305,13 @@ export function OptionsSidebar({ options, selectedId, onSelect, compareMode, com
         >
           <div className="h-1 w-8 rounded-full bg-slate-600" />
           <span className="text-[10px] font-semibold text-slate-300">
-            {filtered.length} Options
+            {mobileCount} {isViewer ? 'Proposal' : 'Option'}{mobileCount !== 1 ? 's' : ''}
           </span>
           <ChevronRight className={cn('h-3 w-3 text-slate-400 transition-transform', mobileExpanded ? 'rotate-[-90deg]' : 'rotate-90')} />
         </button>
         {mobileExpanded && (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            {sidebarContent}
+            {activeContent}
           </div>
         )}
       </div>

@@ -292,10 +292,25 @@ function DesignPageInner() {
 
   return (
     <div className="flex h-full flex-col md:flex-row">
-      {/* Viewer banner for guests */}
+      {/* Investor portal header — shown instead of amber warning */}
       {user && !isAdmin && (
-        <div className="flex items-center justify-center gap-2 bg-amber-500/10 border-b border-amber-500/20 px-4 py-1.5 text-xs text-amber-400 flex-shrink-0">
-          <span>Viewing as {user.name} — contact admin for edit access</span>
+        <div className="flex items-center justify-between border-b border-slate-700/60 bg-slate-950/90 px-4 py-2.5 flex-shrink-0 backdrop-blur-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <div>
+              <span className="text-xs font-semibold text-slate-100">YOTEL Barbados</span>
+              <span className="ml-2 text-[10px] text-slate-500">Investor Design Review</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-slate-500">Viewing as</span>
+            <span className="rounded-md bg-emerald-950/60 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 ring-1 ring-emerald-800/50">
+              {user.name}
+            </span>
+          </div>
         </div>
       )}
       {/* Main viewport + panels wrapper -- scrollable on mobile */}
