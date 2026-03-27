@@ -24,10 +24,10 @@ export function CommandBar() {
   }, [])
 
   // Use stable defaults during SSR to avoid hydration mismatch
-  const keysLabel = mounted && option ? `${option.metrics.totalKeys} keys` : '130 keys'
+  const keysLabel = mounted && option ? `${option.metrics.totalKeys} keys` : ''
   const tdcLabel = mounted && option
     ? `$${(option.cost.total / 1_000_000).toFixed(1)}M TDC`
-    : '$55M TDC est.'
+    : ''
 
   async function handleLogout() {
     await fetch('/api/logout', { method: 'POST' })

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { KeyRound, ArrowRight, Shield, Building2, MapPin, Palmtree, Waves, CheckCircle2 } from 'lucide-react'
+import { KeyRound, ArrowRight, Shield, CheckCircle2 } from 'lucide-react'
 import type { AppUser } from '@/lib/auth'
 
 export default function LoginPage() {
@@ -94,16 +94,16 @@ export default function LoginPage() {
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-400/20 font-mono text-sm font-bold text-sky-400">
-                YB
+                CD
               </div>
               <div>
-                <p className="text-sm font-semibold tracking-wide text-white">YOTEL BARBADOS</p>
+                <p className="text-sm font-semibold tracking-wide text-white">CORUSCANT DEVELOPMENTS</p>
                 <p className="text-[10px] tracking-[0.2em] text-slate-500">DEVELOPMENT STUDIO</p>
               </div>
             </div>
           </div>
 
-          {/* Centre: Project hero */}
+          {/* Centre: Platform branding */}
           <div
             className={`space-y-6 py-8 transition-all duration-1000 delay-200 lg:py-0 ${
               mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
@@ -111,52 +111,20 @@ export default function LoginPage() {
           >
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-sky-400">
-                Dual-Brand Hotel &amp; Residences
+                Hotel Development Platform
               </p>
               <h1 className="text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
-                Carlisle Bay
+                Development
                 <br />
-                <span className="text-sky-400">Bridgetown</span>
+                <span className="text-sky-400">Studio</span>
               </h1>
             </div>
 
             <p className="max-w-md text-sm leading-relaxed text-slate-400">
-              130-key mixed-use development combining YOTEL&apos;s tech-forward hospitality
-              with YOTELPAD branded residences on Barbados&apos; premier beachfront.
+              Design, plan, and manage hospitality development projects.
+              Parametric massing, financial modelling, and planning compliance
+              across your entire portfolio.
             </p>
-
-            {/* Project stats */}
-            <div className="grid grid-cols-3 gap-3 pt-2 sm:gap-4">
-              {[
-                { value: '130', label: 'Total Keys' },
-                { value: '5,965', label: 'Site m\u00B2' },
-                { value: '$47M', label: 'TDC' },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="rounded-lg border border-slate-800/60 bg-slate-900/40 p-3 backdrop-blur-sm"
-                >
-                  <p className="font-mono text-lg font-bold text-white">{stat.value}</p>
-                  <p className="text-[10px] text-slate-500">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Feature highlights — hidden on mobile for compactness */}
-            <div className="hidden space-y-2.5 pt-2 sm:block">
-              {[
-                { icon: Building2, text: '100 YOTEL rooms + 30 YOTELPAD residences' },
-                { icon: MapPin, text: 'Carlisle Bay beachfront, Bridgetown' },
-                { icon: Palmtree, text: 'Pool deck, rooftop bar, infinity edge pool' },
-                { icon: Waves, text: 'Caribbean beachfront with direct ocean access' },
-                { icon: Shield, text: 'Category 4+ hurricane resilient design' },
-              ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-2.5">
-                  <Icon className="h-3.5 w-3.5 shrink-0 text-sky-400/60" />
-                  <span className="text-xs text-slate-400">{text}</span>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Bottom: Company credit */}
@@ -167,7 +135,7 @@ export default function LoginPage() {
           >
             <div className="space-y-1">
               <p className="text-[11px] font-medium text-slate-500">Coruscant Developments Ltd</p>
-              <p className="text-[10px] text-slate-600">Barbados &middot; Development Sponsor</p>
+              <p className="text-[10px] text-slate-600">Barbados</p>
             </div>
           </div>
         </div>
