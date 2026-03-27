@@ -219,20 +219,24 @@ function optimizeUnitMix(
 export function generateAll(maxOptions: number = 50, projectId?: ProjectId): DesignOption[] {
   optionCounter = 0
 
-  // ── Phase 1: Generate 5 curated Architect's Options ─────────────────
+  // ── Phase 1: Generate curated Architect's Options (Carlisle Bay only) ──────
+  // CURATED_OPTIONS are calibrated specifically for the Carlisle Bay hotel site.
+  // Skip entirely for Abbeville and Mt Brevitor — they get parametric-only results.
   const curated: DesignOption[] = []
-  for (const cfg of CURATED_OPTIONS) {
-    try {
-      const opt = buildOption(cfg.params, projectId)
-      opt.curatedId = cfg.id
-      opt.curatedName = cfg.name
-      opt.curatedConcept = cfg.concept
-      // Always include curated designs — they're architect-approved.
-      // Warnings are acceptable; only skip if buildOption() throws (fatal constraint violation).
-      curated.push(opt)
-    } catch {
-      // Skip curated options that fail generation (e.g. below 130-key minimum)
-      console.warn(`Curated design "${cfg.name}" (${cfg.id}) failed generation`)
+  if (!projectId || projectId === 'carlisle-bay') {
+    for (const cfg of CURATED_OPTIONS) {
+      try {
+        const opt = buildOption(cfg.params, projectId)
+        opt.curatedId = cfg.id
+        opt.curatedName = cfg.name
+        opt.curatedConcept = cfg.concept
+        // Always include curated designs — they're architect-approved.
+        // Warnings are acceptable; only skip if buildOption() throws (fatal constraint violation).
+        curated.push(opt)
+      } catch {
+        // Skip curated options that fail generation (e.g. below 130-key minimum)
+        console.warn(`Curated design "${cfg.name}" (${cfg.id}) failed generation`)
+      }
     }
   }
 
