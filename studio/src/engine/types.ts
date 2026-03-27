@@ -54,7 +54,7 @@ export interface RoomAllocation {
 }
 
 // Floor programming
-export type FloorUse = 'FOH_BOH' | 'YOTEL' | 'YOTELPAD' | 'ROOFTOP'
+export type FloorUse = 'FOH_BOH' | 'YOTEL' | 'YOTELPAD' | 'ROOFTOP' | 'RESIDENTIAL'
 
 export interface Floor {
   level: number

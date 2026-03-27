@@ -62,8 +62,16 @@ export function buildFloorProgramme(params: {
   ytFloors: number[]
   padFloors: number[]
   footprint: number
+  /** Override room types for the YT floors (defaults to YOTEL_ROOMS) */
+  ytRoomTypes?: Record<string, RoomType>
+  /** Override room types for the PAD floors (defaults to YOTELPAD_UNITS) */
+  padRoomTypes?: Record<string, RoomType>
+  /** When true, YT floors are labelled RESIDENTIAL instead of YOTEL */
+  residential?: boolean
 }): Floor[] {
   const floors: Floor[] = []
+  const ytTypes = params.ytRoomTypes ?? YOTEL_ROOMS
+  const padTypes = params.padRoomTypes ?? YOTELPAD_UNITS
 
   // Ground floor (level 0)
   floors.push({
@@ -73,12 +81,12 @@ export function buildFloorProgramme(params: {
     gia: params.footprint,
   })
 
-  // YOTEL floors
+  // YT / Residential floors
   for (const level of params.ytFloors) {
     floors.push({
       level,
-      use: 'YOTEL',
-      rooms: makeFloorMix(params.ytPerFloor, YOTEL_ROOMS),
+      use: params.residential ? 'RESIDENTIAL' : 'YOTEL',
+      rooms: makeFloorMix(params.ytPerFloor, ytTypes),
       gia: params.footprint,
     })
   }
@@ -88,7 +96,7 @@ export function buildFloorProgramme(params: {
     floors.push({
       level,
       use: 'YOTELPAD',
-      rooms: makeFloorMix(params.padPerFloor, YOTELPAD_UNITS),
+      rooms: makeFloorMix(params.padPerFloor, padTypes),
       gia: params.footprint,
     })
   }

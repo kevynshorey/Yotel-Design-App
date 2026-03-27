@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import type { DesignOption, Wing, Floor, FloorUse } from '@/engine/types'
 import { CONSTRUCTION, CORE, FOH, BOH } from '@/config/construction'
 import { YOTEL_ROOMS, YOTELPAD_UNITS } from '@/config/programme'
+import { MBE_UNITS } from '@/config/mt-brevitor/programme'
 
 interface FloorPlanProps {
   option: DesignOption | null
@@ -33,8 +34,8 @@ const COLORS = {
   wing: '#1e293b',       // slate-800
 } as const
 
-// Legend items
-const LEGEND_ITEMS = [
+// Legend items — hotel projects
+const LEGEND_ITEMS_HOTEL = [
   { label: 'YOTEL Room', color: COLORS.yotel },
   { label: 'PAD Unit', color: COLORS.pad },
   { label: 'Accessible', color: COLORS.accessible },
@@ -45,6 +46,20 @@ const LEGEND_ITEMS = [
   { label: 'Studio', color: '#d946ef' },
   { label: 'Entertainment', color: '#a78bfa' },
   { label: 'Retail', color: '#a3e635' },
+]
+
+// Legend items — residential estate (Mt Brevitor)
+const LEGEND_ITEMS_RESIDENTIAL = [
+  { label: '1-Bed Condo', color: '#3b82f6' },
+  { label: '2-Bed Townhouse', color: '#6366f1' },
+  { label: '3-Bed Townhouse', color: '#8b5cf6' },
+  { label: '4-Bed Home', color: '#a855f7' },
+  { label: '5-Bed Estate', color: '#d946ef' },
+  { label: 'Accessible', color: COLORS.accessible },
+  { label: 'Corridor', color: COLORS.corridor },
+  { label: 'Core', color: COLORS.core },
+  { label: 'FOH', color: COLORS.foh },
+  { label: 'BOH', color: COLORS.boh },
 ]
 
 // FOH zones for ground floor — residential block
@@ -168,7 +183,7 @@ function renderWingRooms(
     // Rooms on each side
     const usableLen = wLen - 2 * EXT_WALL - CORE_SIDE - 1
     const sides = corridorType === 'double_loaded' ? 2 : 1
-    const roomTypes = floor.use === 'YOTEL' ? YOTEL_ROOMS : YOTELPAD_UNITS
+    const roomTypes = getRoomTypes(floor.use)
 
     const avgBayWidth = Object.values(roomTypes).reduce((s, r) => s + r.bayWidth * r.pct, 0)
     const roomCount = Math.floor(usableLen / avgBayWidth)
@@ -235,7 +250,7 @@ function renderWingRooms(
 
     const usableLen = wLen - 2 * EXT_WALL - CORE_SIDE - 1
     const sides = corridorType === 'double_loaded' ? 2 : 1
-    const roomTypes = floor.use === 'YOTEL' ? YOTEL_ROOMS : YOTELPAD_UNITS
+    const roomTypes = getRoomTypes(floor.use)
     const avgBayWidth = Object.values(roomTypes).reduce((s, r) => s + r.bayWidth * r.pct, 0)
     const roomCount = Math.floor(usableLen / avgBayWidth)
 
@@ -288,12 +303,23 @@ function renderWingRooms(
   return elements
 }
 
+/** MBE unit type colours — matches MBE_UNITS color fields, cycles by position */
+const MBE_COLORS = ['#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef']
+
 /** Get room colour based on position in the mix */
 function getRoomColor(index: number, total: number, use: FloorUse): string {
   // Accessible rooms at ~9% = last 9% of rooms
   const accessibleStart = Math.floor(total * 0.91)
   if (index >= accessibleStart) return COLORS.accessible
+  if (use === 'RESIDENTIAL') return MBE_COLORS[index % MBE_COLORS.length]
   return use === 'YOTEL' ? COLORS.yotel : COLORS.pad
+}
+
+/** Select the correct room type config for a given floor use */
+function getRoomTypes(use: FloorUse): Record<string, { bayWidth: number; pct: number }> {
+  if (use === 'RESIDENTIAL') return MBE_UNITS
+  if (use === 'YOTELPAD') return YOTELPAD_UNITS
+  return YOTEL_ROOMS
 }
 
 /** Render ground floor FOH/BOH zones */
@@ -728,14 +754,20 @@ export function FloorPlan({ option, floorIndex, onFloorChange }: FloorPlanProps)
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-3 border-t border-slate-800 px-4 py-2">
-        {LEGEND_ITEMS.map((item) => (
-          <div key={item.label} className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: item.color }} />
-            <span className="text-[10px] text-slate-400">{item.label}</span>
+      {(() => {
+        const isResidential = floors.some(f => f.use === 'RESIDENTIAL')
+        const legendItems = isResidential ? LEGEND_ITEMS_RESIDENTIAL : LEGEND_ITEMS_HOTEL
+        return (
+          <div className="flex flex-wrap items-center gap-3 border-t border-slate-800 px-4 py-2">
+            {legendItems.map((item) => (
+              <div key={item.label} className="flex items-center gap-1.5">
+                <div className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: item.color }} />
+                <span className="text-[10px] text-slate-400">{item.label}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        )
+      })()}
 
       {/* Floor selector */}
       <div className="flex items-center gap-1 border-t border-slate-800 px-4 py-2">

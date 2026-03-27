@@ -56,8 +56,10 @@ function getProjectConfig(projectId?: ProjectId): ProjectConfig {
 }
 
 const GROUND_H = 4.5
+const GROUND_H_RESIDENTIAL = 3.0  // lower ground floor for residential (no hotel lobby)
 const FLOOR_H = 3.2
 
+/** Hotel design space — Carlisle Bay and Abbeville */
 const DESIGN_SPACE = {
   forms: ['BAR', 'BAR_NS', 'L', 'U', 'C'] as FormType[],
   floorAreas: [650, 770, 900, 1050],
@@ -67,6 +69,38 @@ const DESIGN_SPACE = {
   ytRooms: [95, 100, 105, 110],
   padUnits: [30, 35, 40],
   outdoor: ['WEST'] as OutdoorPosition[],
+}
+
+/**
+ * Mt Brevitor Estates design space — 2-3 storey residential clusters.
+ *
+ * Planning envelope: max 3 storeys / 12m height (inland Barbados).
+ * Single-loaded corridor = open balcony access (standard residential terrace).
+ * Floor areas and wing widths sized for residential cluster blocks, not hotel.
+ *
+ * Heights produced:
+ *   2 storeys: 3.0 + (2-1)×3.2 = 6.2 m  ✓ (<12 m)
+ *   3 storeys: 3.0 + (3-1)×3.2 = 9.4 m  ✓ (<12 m)
+ */
+const DESIGN_SPACE_MBE = {
+  forms: ['BAR', 'L', 'U'] as FormType[],
+  floorAreas: [300, 450, 600, 750],        // cluster floor plates (m²)
+  wingWidths: [8.0, 10.0, 12.0],           // single-loaded residential widths (m)
+  storeys: [2, 3],
+  corridors: ['single_loaded'] as CorridorType[],
+  ytRooms: [10, 15, 20, 25, 30],           // units per cluster
+  padUnits: [0],                            // no PAD split — pure residential sale
+  outdoor: ['WEST'] as OutdoorPosition[],
+}
+
+function getDesignSpace(projectId?: ProjectId) {
+  if (projectId === 'mt-brevitor') return DESIGN_SPACE_MBE
+  return DESIGN_SPACE
+}
+
+function getGroundHeight(projectId?: ProjectId): number {
+  if (projectId === 'mt-brevitor') return GROUND_H_RESIDENTIAL
+  return GROUND_H
 }
 
 let optionCounter = 0
@@ -108,6 +142,9 @@ export function buildOption(params: GenerationParams, projectId?: ProjectId): De
     ytFloors,
     padFloors: actualPadFloors,
     footprint: formResult.footprint,
+    ytRoomTypes: ytRooms,
+    padRoomTypes: padUnits,
+    residential: projectId === 'mt-brevitor',
   })
 
   // Calculate metrics
@@ -117,7 +154,8 @@ export function buildOption(params: GenerationParams, projectId?: ProjectId): De
   if (projectId !== 'mt-brevitor' && totalKeys < 130) {
     throw new Error(`Below 130-key minimum (got ${totalKeys})`)
   }
-  const height = GROUND_H + (params.storeys - 1) * FLOOR_H
+  // Use project-specific ground floor height (residential = 3.0m, hotel = 4.5m)
+  const height = getGroundHeight(projectId) + (params.storeys - 1) * FLOOR_H
   const coverage = formResult.footprint / site.buildableArea
   const outdoorTotal = params.outdoorPosition === 'BOTH' ? 660 + 80 :
                        params.outdoorPosition === 'ROOFTOP' ? 80 : 660
@@ -159,8 +197,8 @@ export function buildOption(params: GenerationParams, projectId?: ProjectId): De
   )
   metrics.amenityScore = amenities.amenityScore
 
-  // Validate
-  const validation = validate(metrics, wings)
+  // Validate against project-specific site constraints
+  const validation = validate(metrics, wings, undefined, projectId)
 
   // Score
   const [score, scoringBreakdown] = scoreOption(metrics, DEFAULT_WEIGHTS)
@@ -171,12 +209,20 @@ export function buildOption(params: GenerationParams, projectId?: ProjectId): De
   }
 }
 
-/** Find optimal YT/PAD split for a given form configuration.
- *  Tests splits from 60% to 85% YOTEL (in 5% steps) and picks
- *  the one with highest yield on cost. */
+/**
+ * Find optimal YT/PAD split for a given form configuration.
+ * Tests splits from 60% to 85% YOTEL (in 5% steps) and picks
+ * the one with highest yield on cost.
+ *
+ * Not applicable to Mt Brevitor — it is a pure residential sale estate
+ * with no YOTEL/PAD split to optimise (returns null immediately).
+ */
 function optimizeUnitMix(
   form: FormType, area: number, width: number, storeys: number, projectId?: ProjectId
 ): { ytRooms: number; padUnits: number; yieldOnCost: number } | null {
+  // Residential estates have no hotel YT/PAD mix to optimise
+  if (projectId === 'mt-brevitor') return null
+
   let bestYield = -1
   let bestSplit = { ytRooms: 100, padUnits: 30, yieldOnCost: 0 }
   const { ytRooms: ytRoomConfig } = getProjectConfig(projectId)
@@ -219,6 +265,9 @@ function optimizeUnitMix(
 export function generateAll(maxOptions: number = 50, projectId?: ProjectId): DesignOption[] {
   optionCounter = 0
 
+  // Select the design space for this project
+  const ds = getDesignSpace(projectId)
+
   // ── Phase 1: Generate curated Architect's Options (Carlisle Bay only) ──────
   // CURATED_OPTIONS are calibrated specifically for the Carlisle Bay hotel site.
   // Skip entirely for Abbeville and Mt Brevitor — they get parametric-only results.
@@ -253,22 +302,24 @@ export function generateAll(maxOptions: number = 50, projectId?: ProjectId): Des
   // ── Phase 2: Parametric sweep ───────────────────────────────────────
   const sweepOptions: DesignOption[] = []
 
-  for (const form of DESIGN_SPACE.forms) {
-    for (const area of DESIGN_SPACE.floorAreas) {
-      for (const width of DESIGN_SPACE.wingWidths) {
-        for (const storeys of DESIGN_SPACE.storeys) {
-          for (const yt of DESIGN_SPACE.ytRooms) {
-            for (const pad of DESIGN_SPACE.padUnits) {
-              const params: GenerationParams = {
-                form, targetFloorArea: area, wingWidth: width,
-                storeys, corridorType: 'double_loaded',
-                ytRooms: yt, padUnits: pad, outdoorPosition: 'WEST',
-              }
-              try {
-                const opt = buildOption(params, projectId)
-                if (opt.validation.isValid) sweepOptions.push(opt)
-              } catch {
-                // Skip invalid parameter combinations
+  for (const form of ds.forms) {
+    for (const area of ds.floorAreas) {
+      for (const width of ds.wingWidths) {
+        for (const storeys of ds.storeys) {
+          for (const corridor of ds.corridors) {
+            for (const yt of ds.ytRooms) {
+              for (const pad of ds.padUnits) {
+                const params: GenerationParams = {
+                  form, targetFloorArea: area, wingWidth: width,
+                  storeys, corridorType: corridor,
+                  ytRooms: yt, padUnits: pad, outdoorPosition: 'WEST',
+                }
+                try {
+                  const opt = buildOption(params, projectId)
+                  if (opt.validation.isValid) sweepOptions.push(opt)
+                } catch {
+                  // Skip invalid parameter combinations
+                }
               }
             }
           }
@@ -277,17 +328,17 @@ export function generateAll(maxOptions: number = 50, projectId?: ProjectId): Des
     }
   }
 
-  // Add optimized unit mix options for each form/area/width/storey combo
-  for (const form of DESIGN_SPACE.forms) {
-    for (const area of DESIGN_SPACE.floorAreas) {
-      for (const width of DESIGN_SPACE.wingWidths) {
-        for (const storeys of DESIGN_SPACE.storeys) {
+  // Add optimized unit mix options for hotel projects (not residential estates)
+  for (const form of ds.forms) {
+    for (const area of ds.floorAreas) {
+      for (const width of ds.wingWidths) {
+        for (const storeys of ds.storeys) {
           const optimal = optimizeUnitMix(form, area, width, storeys, projectId)
           if (optimal) {
             try {
               const params: GenerationParams = {
                 form, targetFloorArea: area, wingWidth: width,
-                storeys, corridorType: 'double_loaded' as const,
+                storeys, corridorType: ds.corridors[0],
                 ytRooms: optimal.ytRooms, padUnits: optimal.padUnits,
                 outdoorPosition: 'WEST' as const,
               }
@@ -327,13 +378,13 @@ export function generateAll(maxOptions: number = 50, projectId?: ProjectId): Des
 
   const sweepResult: DesignOption[] = []
   const formIndices = new Map<string, number>()
-  for (const form of DESIGN_SPACE.forms) formIndices.set(form, 0)
+  for (const form of ds.forms) formIndices.set(form, 0)
 
   const sweepLimit = maxOptions - curated.length
   let added = true
   while (sweepResult.length < sweepLimit && added) {
     added = false
-    for (const form of DESIGN_SPACE.forms) {
+    for (const form of ds.forms) {
       if (sweepResult.length >= sweepLimit) break
       const idx = formIndices.get(form)!
       const formOpts = byForm.get(form) ?? []
