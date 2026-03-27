@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { ChevronDown, Plus, Trash2, FolderOpen, LayoutGrid } from 'lucide-react'
 import {
@@ -20,6 +21,7 @@ export function ProjectSwitcher() {
   const [mounted, setMounted] = useState(false)
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 })
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const portalRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   function refresh() {
@@ -42,11 +44,14 @@ export function ProjectSwitcher() {
     }
   }, [])
 
-  // Close dropdown on outside click
+  // Close dropdown on outside click — checks both trigger and portaled dropdown
   useEffect(() => {
     if (!open) return
     function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      const target = e.target as Node
+      const insideTrigger = dropdownRef.current?.contains(target)
+      const insidePortal = portalRef.current?.contains(target)
+      if (!insideTrigger && !insidePortal) {
         setOpen(false)
       }
     }
@@ -98,11 +103,12 @@ export function ProjectSwitcher() {
           <ChevronDown className="h-3 w-3 text-slate-400 flex-shrink-0" />
         </button>
 
-        {/* Dropdown — fixed to escape overflow-hidden shell container */}
-        {open && (
+        {/* Dropdown — portaled to document.body to escape WebGL canvas stacking */}
+        {open && createPortal(
           <div
+            ref={portalRef}
             style={{ top: dropdownPos.top, left: dropdownPos.left }}
-            className="fixed z-[200] w-72 rounded-xl border border-slate-200 bg-white shadow-lg"
+            className="fixed z-[9999] w-72 rounded-xl border border-slate-200 bg-white shadow-lg"
           >
             <div className="px-3 py-2 border-b border-slate-100">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
@@ -165,7 +171,8 @@ export function ProjectSwitcher() {
                 New Project
               </button>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
 
