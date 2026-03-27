@@ -1,6 +1,7 @@
 import type { OptionMetrics, CostEstimate, FormType, ProjectId } from './types'
 import { FINANCIALS } from '@/config/financials'
 import { FINANCIALS as ABBEVILLE_FINANCIALS } from '@/config/abbeville/programme'
+import { FINANCIALS as MBE_FINANCIALS } from '@/config/mt-brevitor/programme'
 import { HURRICANE_DESIGN, SEISMIC_DESIGN, FOUNDATION, ISLAND_COST_FACTORS } from '@/config/construction'
 import { calculateMepTotal } from '@/config/mep'
 
@@ -70,6 +71,67 @@ export function estimateCost(metrics: OptionMetrics, projectId: ProjectId = 'car
 
     const softCosts = hardSubtotal * ABBEVILLE_FINANCIALS.softCostPct
     const contingency = hardSubtotal * ABBEVILLE_FINANCIALS.contingencyPct
+
+    const total = land + hardSubtotal + softCosts + contingency
+    const perKey = total / Math.max(1, metrics.totalKeys)
+
+    return {
+      total: Math.round(total),
+      perKey: Math.round(perKey),
+      breakdown: {
+        construction: Math.round(construction),
+        facade: Math.round(facade),
+        ffe: Math.round(ffe),
+        technology: Math.round(technology),
+        mep: Math.round(mep),
+        renewable: Math.round(renewable),
+        foundation: Math.round(foundation),
+        outdoor: Math.round(outdoor),
+        siteWorks,
+        land,
+        softCosts: Math.round(softCosts),
+        contingency: Math.round(contingency),
+        hurricaneUplift: Math.round(hurricaneSeismicUplift),
+        islandFactors: Math.round(islandFactors),
+        eiaAndPermits: Math.round(eiaAndPermits),
+      },
+    }
+  }
+
+  // ── Mt Brevitor Estates — residential cost model ───────────────────────────
+  if (projectId === 'mt-brevitor') {
+    // Use townhouse rate as representative (most units are 2-3 bed townhouses)
+    const hardCostPerM2 = MBE_FINANCIALS.hardCostPerM2Townhouse
+    const constructionBase = metrics.gia * hardCostPerM2 * mult
+    const hurricaneSeismicUplift = constructionBase * MBE_FINANCIALS.hurricaneSeismicUplift
+    const construction = constructionBase
+    const facade = metrics.gia * 0.2 * RATES.facadePerM2 * HURRICANE_DESIGN.windowsAndCladding
+    const mep = metrics.gia * MBE_FINANCIALS.mepPerM2
+    const renewable = 0
+    const ffe = metrics.totalKeys * MBE_FINANCIALS.ffePerUnit
+    const technology = 0  // residential — no hotel technology package
+    const outdoor = metrics.outdoorTotal * RATES.outdoorPerM2
+    const siteWorks = RATES.siteWorks
+    const land = MBE_FINANCIALS.land
+
+    const materialHardCosts = construction + hurricaneSeismicUplift + facade + ffe + mep
+    const islandFactors = materialHardCosts * MBE_FINANCIALS.islandFactorsPct
+
+    const eiaAndPermits = EIA_AND_PERMITS.eia + EIA_AND_PERMITS.permits
+
+    const pileCount = Math.ceil(metrics.footprint * FOUNDATION.pilesPerM2)
+    const pileCost = pileCount * FOUNDATION.costPerPile
+    const tieBeamLength = 4 * Math.sqrt(metrics.footprint)
+    const tieBeamCost = tieBeamLength * FOUNDATION.tieBeamCostPerM
+    const foundationBase = pileCost + tieBeamCost + FOUNDATION.geotechnicalSurvey
+    const foundation = foundationBase * SEISMIC_DESIGN.foundationMultiplier
+
+    const hardSubtotal = construction + facade + ffe + technology +
+      mep + renewable + foundation + outdoor + siteWorks +
+      hurricaneSeismicUplift + islandFactors + eiaAndPermits
+
+    const softCosts = hardSubtotal * MBE_FINANCIALS.softCostPct
+    const contingency = hardSubtotal * MBE_FINANCIALS.contingencyPct
 
     const total = land + hardSubtotal + softCosts + contingency
     const perKey = total / Math.max(1, metrics.totalKeys)

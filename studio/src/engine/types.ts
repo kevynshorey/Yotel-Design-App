@@ -1,6 +1,6 @@
 import type { AmenityProgramme } from './amenities'
 
-export type ProjectId = 'carlisle-bay' | 'abbeville'
+export type ProjectId = 'carlisle-bay' | 'abbeville' | 'mt-brevitor'
 
 // Form types
 export type FormType = 'BAR' | 'BAR_NS' | 'L' | 'U' | 'C'

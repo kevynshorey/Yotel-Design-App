@@ -1,6 +1,7 @@
 import type { RevenueProjection, YearlyRevenue, ProjectId } from './types'
 import { FINANCIALS } from '@/config/financials'
 import { FINANCIALS as ABBEVILLE_FINANCIALS } from '@/config/abbeville/programme'
+import { FINANCIALS as MBE_FINANCIALS } from '@/config/mt-brevitor/programme'
 
 /** Bottom-up opex ratios (from revenue.py) — % of total revenue.
  *  Calibrated to match FINANCIALS.gopMargin = 0.51 at stabilisation.
@@ -54,6 +55,68 @@ export function projectRevenue(
       const gopTarget = totalRevenue * ABBEVILLE_FINANCIALS.gopMargin
       const gop = Math.max(totalRevenue - totalOpex, gopTarget * 0.95)
       const gopMargin = totalRevenue > 0 ? gop / totalRevenue : 0
+
+      const ffr = totalRevenue * FFR_RESERVE_PCT
+      const insTax = totalRevenue * INSURANCE_TAX_PCT
+      const noi = gop - ffr - insTax
+
+      yearlyData.push({
+        year: y + 1,
+        yotelOcc: 0,
+        padOcc,
+        yotelAdr: 0,
+        padAdr,
+        totalRevenue: Math.round(totalRevenue),
+        gop: Math.round(gop),
+        noi: Math.round(noi),
+      })
+    }
+
+    const stabilised = yearlyData[Math.min(2, yearlyData.length - 1)]
+    const stabilisedGopMargin = stabilised.totalRevenue > 0
+      ? stabilised.gop / stabilised.totalRevenue : 0
+
+    return {
+      years: yearlyData,
+      stabilisedNoi: stabilised.noi,
+      stabilisedNoiPerKey: Math.round(stabilised.noi / Math.max(1, totalKeys)),
+      gopMargin: stabilisedGopMargin,
+      revPar: Math.round(stabilised.totalRevenue / (totalKeys * 365)),
+    }
+  }
+
+  // ── Mt Brevitor Estates — residential sales revenue proxy ─────────────────
+  // Mt Brevitor is a residential sales estate, not a hotel. The studio's revenue
+  // engine is hotel-focused (ADR × occupancy × nights). We provide a long-stay
+  // rental yield proxy so the engine returns meaningful numbers rather than zeros.
+  // GDV and absorption data are in studio/src/config/mt-brevitor/financials.ts.
+  if (projectId === 'mt-brevitor') {
+    const stableAdr = MBE_FINANCIALS.proxyADR
+    const stableOcc = MBE_FINANCIALS.proxyOccupancy
+    // 4-year absorption ramp (matches base-case 3-3.5 year sellout)
+    const occRamp = [0.60, 0.75, stableOcc, stableOcc, stableOcc]
+    const adrRamp = [
+      Math.round(stableAdr * 0.80),
+      Math.round(stableAdr * 0.90),
+      stableAdr,
+      Math.round(stableAdr * 1.03),
+      Math.round(stableAdr * 1.06),
+    ]
+
+    for (let y = 0; y < years; y++) {
+      const padOcc = occRamp[Math.min(y, occRamp.length - 1)]
+      const padAdr = adrRamp[Math.min(y, adrRamp.length - 1)]
+      const days = y === 0 ? 210 : 365
+      const padRoomNights = totalKeys * days * padOcc
+      const roomRevenue = padRoomNights * padAdr
+      const otherRevenue = MBE_FINANCIALS.otherIncome / 12 * (days / 30)
+      const totalRevenue = roomRevenue + otherRevenue
+
+      const totalOpex = Object.values(OPEX_RATIOS).reduce(
+        (sum, ratio) => sum + totalRevenue * ratio, 0,
+      )
+      const gopTarget = totalRevenue * MBE_FINANCIALS.gopMargin
+      const gop = Math.max(totalRevenue - totalOpex, gopTarget * 0.95)
 
       const ffr = totalRevenue * FFR_RESERVE_PCT
       const insTax = totalRevenue * INSURANCE_TAX_PCT

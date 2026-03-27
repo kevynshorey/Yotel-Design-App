@@ -13,6 +13,8 @@ import { SITE as CARLISLE_BAY_SITE } from '@/config/site'
 import { YOTEL_ROOMS, YOTELPAD_UNITS } from '@/config/programme'
 import { SITE as ABBEVILLE_SITE } from '@/config/abbeville/site'
 import { ABBEVILLE_UNITS } from '@/config/abbeville/programme'
+import { SITE as MT_BREVITOR_SITE } from '@/config/mt-brevitor/site'
+import { MBE_UNITS } from '@/config/mt-brevitor/programme'
 import { DEFAULT_WEIGHTS } from '@/config/scoring-weights'
 import { CURATED_OPTIONS } from '@/config/curated-options'
 
@@ -36,6 +38,13 @@ function getProjectConfig(projectId?: ProjectId): ProjectConfig {
       site: ABBEVILLE_SITE,
       ytRooms: ABBEVILLE_UNITS,
       padUnits: ABBEVILLE_UNITS,
+    }
+  }
+  if (projectId === 'mt-brevitor') {
+    return {
+      site: MT_BREVITOR_SITE,
+      ytRooms: MBE_UNITS,
+      padUnits: MBE_UNITS,
     }
   }
   // Default: carlisle-bay
@@ -104,7 +113,10 @@ export function buildOption(params: GenerationParams, projectId?: ProjectId): De
   // Calculate metrics
   const totalGia = floors.reduce((sum, f) => sum + f.gia, 0)
   const totalKeys = actualYtRooms + actualPadUnits
-  if (totalKeys < 130) throw new Error(`Below 130-key minimum (got ${totalKeys})`)
+  // 130-key minimum is a YOTEL brand requirement — not applicable to residential estates
+  if (projectId !== 'mt-brevitor' && totalKeys < 130) {
+    throw new Error(`Below 130-key minimum (got ${totalKeys})`)
+  }
   const height = GROUND_H + (params.storeys - 1) * FLOOR_H
   const coverage = formResult.footprint / site.buildableArea
   const outdoorTotal = params.outdoorPosition === 'BOTH' ? 660 + 80 :

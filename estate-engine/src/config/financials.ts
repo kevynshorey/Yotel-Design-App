@@ -16,7 +16,7 @@ export const ABSORPTION: AbsorptionScenario[] = [
 
 export const NON_RESIDENTIAL: NonResidentialZone[] = [
   { id: 'agri_estate', label: 'Agri-Estate', acresMin: 15, acresMax: 17, phase: 1, capexBBD: 4_000_000, annualRevenueBBD: 2_500_000, operatingCostBBD: 1_500_000, description: 'Aquaponics, dairy, cheese.', flags: [] },
-  { id: 'x_range', label: 'X Range Golf', acresMin: 6, acresMax: 8, phase: 2, capexBBD: 6_400_000, annualRevenueBBD: 2_800_000, operatingCostBBD: 1_800_000, description: 'Driving range + bar/restaurant.', flags: ['O-02: Operator terms undocumented'] },
+  { id: 'x_range', label: 'X Range Golf', acresMin: 6, acresMax: 8, phase: 2, capexBBD: 8_500_000, annualRevenueBBD: 3_600_000, operatingCostBBD: 2_700_000, description: 'XRU format: 30 bays, Trackman radar, Laservision Mega Media, XR Sports Bar + Forbidden Fruit dining (120 covers).', flags: ['O-02: Operator terms undocumented'] },
   { id: 'community', label: 'Community Facilities', acresMin: 4, acresMax: 5, phase: 1, capexBBD: 8_000_000, annualRevenueBBD: 0, operatingCostBBD: 1_200_000, description: 'Medical, supermarket, pool, gym, courts.', flags: [] },
   { id: 'green_infra', label: 'Green Infrastructure', acresMin: 5, acresMax: 6, phase: 1, capexBBD: 12_000_000, annualRevenueBBD: 800_000, operatingCostBBD: 400_000, description: '2-3 MW solar, battery, water treatment.', flags: [] },
   { id: 'commercial', label: 'Commercial Lots', acresMin: 3, acresMax: 4, phase: 3, capexBBD: 2_000_000, annualRevenueBBD: 1_200_000, operatingCostBBD: 200_000, description: 'Leased retail/service lots.', flags: [] },
@@ -29,12 +29,12 @@ export const COSTS: CostBreakdown = {
   communityFacilities: 8_000_000,      // Central hub: medical + supermarket + gym + 50m pool + courts
   clusterAmenities: 12_900_000,         // 7 × cluster pools + pavilions + amenity buildings (BBD 1.2-2.8M each); +2.2M Cluster G
   greenInfrastructure: 12_000_000,
-  xRangeCapex: 6_400_000,
+  xRangeCapex: 8_500_000,
   farmCapex: 4_000_000,
   softCosts: 18_550_000,
   contingency: 9_400_000,
   transactionTaxes: 6_900_000,
-  total: 247_400_000,                   // UPDATED: +2.2M Cluster G amenities
+  total: 249_500_000,                   // UPDATED: +2.2M Cluster G amenities; +2.1M XRU capex increase (6.4M → 8.5M)
 }
 
 export const TAX = {
@@ -84,9 +84,9 @@ export const FINANCIAL_SUMMARY: FinancialSummary = {
     totalGDV_USD: Math.round((TOTAL_GDV_BBD + NON_RESIDENTIAL.reduce((s, z) => s + z.annualRevenueBBD, 0) * 4) / 2),
   },
   costs: COSTS,
-  netProfit_USD: 33_903_500,
-  netProfit_BBD: 67_807_000,
-  netMargin: 0.217,
+  netProfit_USD: 33_903_500,   // NOTE: full reforecast needed with financing model after XRU capex increase
+  netProfit_BBD: 67_807_000,   // NOTE: full reforecast needed with financing model after XRU capex increase
+  netMargin: 0.217,             // NOTE: full reforecast needed with financing model after XRU capex increase
   unleveredIRR: [0.16, 0.22],
   financingSought_USD: 57_000_000,
   proposedRate: 0.065,

@@ -2,10 +2,12 @@ import type { OptionMetrics, Wing, Point2D, ValidationResult, Violation, Project
 import { RULES } from '@/config/rules'
 import { SITE as CARLISLE_BAY_SITE } from '@/config/site'
 import { SITE as ABBEVILLE_SITE } from '@/config/abbeville/site'
+import { SITE as MT_BREVITOR_SITE } from '@/config/mt-brevitor/site'
 import { getJurisdiction, type Jurisdiction } from '@/config/jurisdictions'
 
 function getProjectSite(projectId?: ProjectId) {
   if (projectId === 'abbeville') return ABBEVILLE_SITE
+  if (projectId === 'mt-brevitor') return MT_BREVITOR_SITE
   return CARLISLE_BAY_SITE
 }
 
