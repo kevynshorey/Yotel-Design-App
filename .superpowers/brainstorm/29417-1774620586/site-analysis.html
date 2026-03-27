@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mt Brevitor — Real Site Analysis</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0a; color: #ddd; font-family: system-ui, sans-serif; padding: 24px; }
+  h1 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .subtitle { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 24px; }
+
+  .site-wrap { display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
+
+  /* ANNOTATED SITE MAP */
+  .site-map { position: relative; background: #0d1a0d; border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+  .site-map svg { width: 100%; height: auto; display: block; }
+
+  /* FINDINGS PANEL */
+  .findings { display: flex; flex-direction: column; gap: 12px; }
+  .finding { border-radius: 8px; padding: 14px; border-left: 3px solid; }
+  .finding.critical { background: rgba(220,60,60,0.08); border-color: #dc3c3c; }
+  .finding.new { background: rgba(60,180,100,0.08); border-color: #3cb464; }
+  .finding.confirmed { background: rgba(200,169,110,0.08); border-color: #c8a96e; }
+  .finding-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; font-weight: 700; }
+  .finding.critical .finding-label { color: #dc3c3c; }
+  .finding.new .finding-label { color: #3cb464; }
+  .finding.confirmed .finding-label { color: #c8a96e; }
+  .finding h3 { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .finding p { font-size: 11px; color: #999; line-height: 1.5; }
+
+  .error-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .error-table th { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #888; text-align: left; padding: 6px 8px; border-bottom: 1px solid #222; }
+  .error-table td { font-size: 11px; padding: 7px 8px; border-bottom: 1px solid #1a1a1a; vertical-align: top; }
+  .error-table tr:last-child td { border-bottom: none; }
+  .error { color: #dc3c3c; }
+  .fix { color: #3cb464; }
+  .arrow { color: #555; padding: 0 4px; }
+
+  .north-arrow { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; }
+</style>
+</head>
+<body>
+
+<h1>Mt Brevitor — What The Site Actually Is</h1>
+<p class="subtitle">Satellite intelligence from Google Maps · 13.2611°N, 59.6204°W · St Peter, Barbados</p>
+
+<div class="site-wrap">
+
+  <!-- ANNOTATED SITE DIAGRAM -->
+  <div class="site-map">
+    <svg viewBox="0 0 820 580" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="forest" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+          <circle cx="4" cy="4" r="2.5" fill="#1e4020" opacity="0.8"/>
+        </pattern>
+        <pattern id="agri" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+          <rect width="12" height="12" fill="#1a2d10"/>
+          <rect x="0" y="0" width="6" height="6" fill="#1e3512" opacity="0.5"/>
+        </pattern>
+      </defs>
+
+      <!-- Background -->
+      <rect width="820" height="580" fill="#0d1a0d"/>
+
+      <!-- NORTH label -->
+      <text x="790" y="30" fill="#888" font-size="11" text-anchor="middle" font-family="system-ui">N ↑</text>
+
+      <!-- ===== SITE BOUNDARY ===== -->
+      <!-- The site: roughly NW-SE elongated parcel -->
+      <!-- Western open parkland + eastern forested hilltop -->
+
+      <!-- CLEARED HILLTOP (Eastern portion, ~65 acres) — brush/weed trees to be removed -->
+      <path d="M 430,70 Q 500,50 600,60 Q 700,65 760,100 Q 800,140 800,200 Q 810,280 790,360 Q 780,430 730,480 Q 670,520 590,530 Q 510,540 450,510 Q 400,490 380,440 Q 360,390 370,330 Q 380,270 420,200 Q 435,140 430,70Z" fill="#1a2810" stroke="#5a7a30" stroke-width="2" stroke-dasharray="6,3"/>
+      <!-- Clearing hatching to indicate vegetation removal -->
+      <line x1="480" y1="120" x2="520" y2="80" stroke="#5a7a30" stroke-width="1" opacity="0.4"/>
+      <line x1="540" y1="130" x2="580" y2="90" stroke="#5a7a30" stroke-width="1" opacity="0.4"/>
+      <line x1="600" y1="140" x2="640" y2="100" stroke="#5a7a30" stroke-width="1" opacity="0.4"/>
+      <line x1="660" y1="160" x2="700" y2="120" stroke="#5a7a30" stroke-width="1" opacity="0.4"/>
+      <line x1="700" y1="200" x2="740" y2="160" stroke="#5a7a30" stroke-width="1" opacity="0.4"/>
+      <text x="620" y="240" fill="#e8d070" font-size="12" text-anchor="middle" font-family="system-ui" font-weight="700">CLEARED HILLTOP</text>
+      <text x="620" y="256" fill="#b0a050" font-size="9" text-anchor="middle" font-family="system-ui">~65ac · brush/weed trees cleared</text>
+      <text x="620" y="270" fill="#b0a050" font-size="9" text-anchor="middle" font-family="system-ui">reveals 270° panoramic views</text>
+      <text x="620" y="286" fill="#c8a96e" font-size="10" text-anchor="middle" font-family="system-ui">→ PREMIUM clusters D, E + Cluster G?</text>
+      <!-- X icon to show vegetation cleared -->
+      <text x="580" y="310" fill="#e8d070" font-size="22" text-anchor="middle" font-family="system-ui" opacity="0.5">✕</text>
+      <text x="660" y="360" fill="#e8d070" font-size="22" text-anchor="middle" font-family="system-ui" opacity="0.5">✕</text>
+
+      <!-- OPEN PARKLAND (Western portion, ~55 acres) -->
+      <path d="M 100,120 Q 200,90 300,100 Q 380,110 430,70 Q 435,140 420,200 Q 380,270 370,330 Q 360,390 380,440 Q 400,490 450,510 Q 380,530 290,520 Q 200,510 140,470 Q 80,430 70,370 Q 60,300 75,220 Q 85,160 100,120Z" fill="url(#agri)" stroke="#2d4a20" stroke-width="2"/>
+      <text x="250" y="310" fill="#5a8a3a" font-size="13" text-anchor="middle" font-family="system-ui" font-weight="600">OPEN PARKLAND</text>
+      <text x="250" y="328" fill="#4a7a2a" font-size="10" text-anchor="middle" font-family="system-ui">~55 acres cleared agricultural</text>
+      <text x="250" y="344" fill="#c8a96e" font-size="10" text-anchor="middle" font-family="system-ui">→ Clusters A, B, C, F</text>
+
+      <!-- SITE BOUNDARY OUTLINE -->
+      <path d="M 100,120 Q 200,90 300,100 Q 380,110 430,70 Q 500,50 600,60 Q 700,65 760,100 Q 800,140 800,200 Q 810,280 790,360 Q 780,430 730,480 Q 670,520 590,530 Q 510,540 450,510 Q 380,530 290,520 Q 200,510 140,470 Q 80,430 70,370 Q 60,300 75,220 Q 85,160 100,120Z" fill="none" stroke="#c8a96e" stroke-width="2.5" stroke-dasharray="8,4"/>
+
+      <!-- ===== ROADS ===== -->
+
+      <!-- Ronald Mapp Highway H1 — left boundary, runs N-S -->
+      <rect x="18" y="0" width="16" height="580" fill="#8a7000" rx="2"/>
+      <text x="26" y="290" fill="#ffd700" font-size="10" text-anchor="middle" transform="rotate(-90,26,290)" font-family="system-ui" font-weight="700">RONALD MAPP HWY — H1</text>
+
+      <!-- French Village / Mount Brevitor Road — top boundary, runs E-W with slight diagonal -->
+      <path d="M 34,100 Q 200,75 430,70 Q 550,68 650,55 Q 720,45 820,30" stroke="#888" stroke-width="8" fill="none"/>
+      <text x="320" y="55" fill="#bbb" font-size="10" font-family="system-ui">French Village / Mount Brevitor Road</text>
+      <text x="320" y="68" fill="#888" font-size="9" font-family="system-ui">NORTHERN BOUNDARY ROAD → Vuemont access</text>
+
+      <!-- Hwy 2A — bottom left -->
+      <path d="M 34,560 Q 100,545 200,540 Q 280,538 340,540" stroke="#8a7000" stroke-width="8" fill="none"/>
+      <text x="180" y="558" fill="#ffd700" font-size="9" font-family="system-ui">Hwy 2A</text>
+
+      <!-- EXISTING INTERNAL ESTATE TRACK (plantation era) — sweeping loop through open area and into forest -->
+      <path d="M 100,120 Q 150,200 170,290 Q 190,370 230,420 Q 280,460 350,450 Q 410,445 430,390 Q 445,350 430,310 Q 415,270 440,230 Q 460,200 480,200 Q 520,200 550,240 Q 570,270 560,320 Q 545,370 510,400 Q 480,425 490,460" stroke="#c8a96e" stroke-width="3" fill="none" stroke-dasharray="0" opacity="0.7"/>
+      <text x="185" y="240" fill="#c8a96e" font-size="9" font-family="system-ui" transform="rotate(-20,185,240)">existing estate</text>
+      <text x="175" y="252" fill="#c8a96e" font-size="9" font-family="system-ui" transform="rotate(-20,175,252)">drive (plantation-era)</text>
+
+      <!-- ===== KEY FEATURES ===== -->
+
+      <!-- ENTRY GATE — north boundary road, off H1 (TOP LEFT AREA) -->
+      <rect x="34" y="95" width="60" height="22" fill="#c8a96e" rx="4"/>
+      <text x="64" y="110" fill="#000" font-size="9" text-anchor="middle" font-family="system-ui" font-weight="700">MAIN GATE</text>
+      <!-- Arrow pointing from gate into site -->
+      <line x1="94" y1="106" x2="140" y2="125" stroke="#c8a96e" stroke-width="2" marker-end="url(#arrow)"/>
+
+      <!-- WATER BODY (RESERVOIR) — north-center of open area -->
+      <ellipse cx="285" cy="185" rx="45" ry="32" fill="#1a4a7a" stroke="#4aa3df" stroke-width="2" opacity="0.9"/>
+      <text x="285" y="183" fill="#7ad4ff" font-size="11" text-anchor="middle" font-family="system-ui" font-weight="600">WATER</text>
+      <text x="285" y="197" fill="#7ad4ff" font-size="10" text-anchor="middle" font-family="system-ui">BODY</text>
+      <!-- Callout -->
+      <line x1="285" y1="217" x2="285" y2="245" stroke="#4aa3df" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="215" y="246" width="140" height="32" fill="rgba(26,74,122,0.4)" rx="4" stroke="#4aa3df" stroke-width="1"/>
+      <text x="285" y="260" fill="#7ad4ff" font-size="9" text-anchor="middle" font-family="system-ui">Existing plantation reservoir</text>
+      <text x="285" y="272" fill="#4aa3df" font-size="9" text-anchor="middle" font-family="system-ui">→ Community hub faces this</text>
+
+      <!-- EXISTING PLANTATION BUILDING -->
+      <rect x="368" y="390" width="24" height="20" fill="#4a3a1a" stroke="#c8a96e" stroke-width="1.5" rx="2"/>
+      <text x="380" y="385" fill="#c8a96e" font-size="9" text-anchor="middle" font-family="system-ui" font-weight="600">PLANTATION</text>
+      <text x="380" y="395" fill="#c8a96e" font-size="9" text-anchor="middle" font-family="system-ui" font-weight="600">BUILDING</text>
+      <line x1="380" y1="412" x2="380" y2="425" stroke="#c8a96e" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="380" y="435" fill="#a88a5a" font-size="8" text-anchor="middle" font-family="system-ui">Preserve + repurpose</text>
+      <text x="380" y="445" fill="#a88a5a" font-size="8" text-anchor="middle" font-family="system-ui">as club/amenity</text>
+
+      <!-- X RANGE DISTRICT — southern agricultural strip, XRU bay building + Mega Media Outfield -->
+
+      <!-- Outfield (south of building, inside boundary) — dark grass -->
+      <rect x="270" y="485" width="200" height="40" fill="#0d1a00" opacity="0.8"/>
+
+      <!-- Faint river path connecting outfield targets -->
+      <path d="M 300,518 Q 330,508 355,514 Q 385,522 410,507 Q 435,495 455,512" fill="none" stroke="#39ff14" stroke-width="4" opacity="0.15"/>
+
+      <!-- Outfield targets — XRange signature illuminated circles -->
+      <circle cx="305" cy="517" r="8" fill="none" stroke="#39ff14" stroke-width="1.5" opacity="0.8"/>
+      <circle cx="333" cy="507" r="6" fill="none" stroke="#39ff14" stroke-width="1.5" opacity="0.8"/>
+      <circle cx="360" cy="514" r="10" fill="none" stroke="#39ff14" stroke-width="1.5" opacity="0.8"/>
+      <circle cx="392" cy="504" r="7" fill="none" stroke="#39ff14" stroke-width="1.5" opacity="0.8"/>
+      <circle cx="420" cy="516" r="9" fill="none" stroke="#39ff14" stroke-width="1.5" opacity="0.8"/>
+
+      <!-- Mega Media Outfield label -->
+      <text x="370" y="510" fill="#2a6a10" font-size="7" text-anchor="middle" font-family="system-ui">MEGA MEDIA OUTFIELD</text>
+
+      <!-- Bay building footprint (north edge of X Range zone) -->
+      <rect x="270" y="455" width="200" height="30" fill="#1a1a1a" stroke="#39ff14" stroke-width="2"/>
+
+      <!-- Bay openings along south face of building -->
+      <rect x="276" y="483" width="18" height="8" fill="#2a2a2a" stroke="#39ff14" stroke-width="1"/>
+      <rect x="299" y="483" width="18" height="8" fill="#2a2a2a" stroke="#39ff14" stroke-width="1"/>
+      <rect x="322" y="483" width="18" height="8" fill="#2a2a2a" stroke="#39ff14" stroke-width="1"/>
+      <rect x="345" y="483" width="18" height="8" fill="#2a2a2a" stroke="#39ff14" stroke-width="1"/>
+      <rect x="368" y="483" width="18" height="8" fill="#2a2a2a" stroke="#39ff14" stroke-width="1"/>
+      <rect x="391" y="483" width="18" height="8" fill="#2a2a2a" stroke="#39ff14" stroke-width="1"/>
+      <rect x="414" y="483" width="18" height="8" fill="#2a2a2a" stroke="#39ff14" stroke-width="1"/>
+      <rect x="437" y="483" width="18" height="8" fill="#2a2a2a" stroke="#39ff14" stroke-width="1"/>
+
+      <!-- XR Sports Bar + Dining label inside building -->
+      <text x="370" y="468" fill="#888" font-size="7" text-anchor="middle" font-family="system-ui">XR SPORTS BAR + DINING</text>
+
+      <!-- X RANGE primary label -->
+      <text x="370" y="476" fill="#39ff14" font-size="10" text-anchor="middle" font-family="system-ui" font-weight="700">X RANGE</text>
+
+      <!-- Sub-label below building -->
+      <text x="370" y="496" fill="#39ff14" font-size="7" text-anchor="middle" font-family="system-ui">XRU · 30+ BAYS</text>
+
+      <!-- Golf ball flight arrow — faint, balls going south from bays -->
+      <line x1="370" y1="491" x2="370" y2="523" stroke="#39ff14" stroke-width="1.5" opacity="0.3" stroke-dasharray="3,2" marker-end="url(#arrow)"/>
+
+      <!-- WHITE HALL PLANTATION YARD — south -->
+      <rect x="120" y="545" width="140" height="22" fill="#1a1a0a" stroke="#888" stroke-width="1" rx="4"/>
+      <text x="190" y="559" fill="#aaa" font-size="10" text-anchor="middle" font-family="system-ui">White Hall Plantation Yard</text>
+      <line x1="190" y1="545" x2="210" y2="520" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="210" y="510" fill="#888" font-size="9" font-family="system-ui">Heritage asset</text>
+      <text x="210" y="520" fill="#888" font-size="9" font-family="system-ui">on S boundary</text>
+
+      <!-- VUEMONT (north, adjacent) -->
+      <rect x="480" y="0" width="140" height="55" fill="rgba(100,80,30,0.3)" stroke="#c8a96e" stroke-width="1.5" stroke-dasharray="4,3" rx="4"/>
+      <text x="550" y="22" fill="#c8a96e" font-size="11" text-anchor="middle" font-family="system-ui" font-weight="700">VUEMONT</text>
+      <text x="550" y="36" fill="#a88a5a" font-size="9" text-anchor="middle" font-family="system-ui">Country Estate</text>
+      <text x="550" y="48" fill="#888" font-size="9" text-anchor="middle" font-family="system-ui">Pricing comparable (adjacent N)</text>
+
+      <!-- WHITEHALL FC (northwest) -->
+      <circle cx="50" cy="330" r="20" fill="rgba(30,90,30,0.4)" stroke="#4a8a4a" stroke-width="1.5"/>
+      <text x="50" y="328" fill="#4a8a4a" font-size="8" text-anchor="middle" font-family="system-ui">W'hall</text>
+      <text x="50" y="339" fill="#4a8a4a" font-size="8" text-anchor="middle" font-family="system-ui">FC</text>
+
+      <!-- WIND ARROWS (NE trade winds) -->
+      <g transform="translate(700,480)">
+        <text x="0" y="0" fill="#6aa6d4" font-size="9" font-family="system-ui" font-weight="600">NE TRADE</text>
+        <text x="0" y="12" fill="#6aa6d4" font-size="9" font-family="system-ui">WINDS →</text>
+        <line x1="65" y1="7" x2="80" y2="7" stroke="#6aa6d4" stroke-width="1.5" marker-end="url(#windArrow)"/>
+      </g>
+
+      <!-- VIEW ARROWS (west to Caribbean) -->
+      <line x1="250" y1="310" x2="60" y2="310" stroke="#4aa3df" stroke-width="1.5" opacity="0.5" stroke-dasharray="4,2"/>
+      <text x="140" y="305" fill="#4aa3df" font-size="8" font-family="system-ui" text-anchor="middle">CARIBBEAN</text>
+      <text x="140" y="315" fill="#4aa3df" font-size="8" font-family="system-ui" text-anchor="middle">SEA VIEWS →</text>
+
+      <!-- CLUSTER PLACEMENT PROPOSALS -->
+      <!-- A: Entry, near gate, north parkland -->
+      <circle cx="155" cy="155" r="28" fill="rgba(200,169,110,0.15)" stroke="#c8a96e" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="155" y="150" fill="#c8a96e" font-size="11" text-anchor="middle" font-weight="700">A</text>
+      <text x="155" y="163" fill="#c8a96e" font-size="8" text-anchor="middle">Entry</text>
+
+      <!-- B: Mid parkland, west of hub -->
+      <circle cx="185" cy="330" r="30" fill="rgba(200,169,110,0.12)" stroke="#c8a96e" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="185" y="325" fill="#c8a96e" font-size="11" text-anchor="middle" font-weight="700">B</text>
+      <text x="185" y="338" fill="#c8a96e" font-size="8" text-anchor="middle">Terrace</text>
+
+      <!-- C: Mid parkland near water body -->
+      <circle cx="330" cy="280" r="28" fill="rgba(200,169,110,0.12)" stroke="#c8a96e" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="330" y="275" fill="#c8a96e" font-size="11" text-anchor="middle" font-weight="700">C</text>
+      <text x="330" y="288" fill="#c8a96e" font-size="8" text-anchor="middle">Pavilion</text>
+
+      <!-- D: Hilltop edge, upper east -->
+      <circle cx="510" cy="165" r="30" fill="rgba(200,169,110,0.12)" stroke="#c8a96e" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="510" y="160" fill="#c8a96e" font-size="11" text-anchor="middle" font-weight="700">D</text>
+      <text x="510" y="173" fill="#c8a96e" font-size="8" text-anchor="middle">Upper</text>
+
+      <!-- E: Premium cleared hilltop -->
+      <circle cx="660" cy="220" r="32" fill="rgba(200,169,110,0.15)" stroke="#c8a96e" stroke-width="2.5" stroke-dasharray="5,3"/>
+      <text x="660" y="215" fill="#c8a96e" font-size="13" text-anchor="middle" font-weight="700">E</text>
+      <text x="660" y="230" fill="#c8a96e" font-size="8" text-anchor="middle">Premium</text>
+
+      <!-- G: Potential new cluster — cleared hilltop, south-east -->
+      <circle cx="640" cy="380" r="26" fill="rgba(100,200,150,0.10)" stroke="#3cb464" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <text x="640" y="375" fill="#3cb464" font-size="11" text-anchor="middle" font-weight="700">G?</text>
+      <text x="640" y="388" fill="#3cb464" font-size="7" text-anchor="middle">+40-60 units</text>
+      <text x="640" y="398" fill="#3cb464" font-size="7" text-anchor="middle">cleared hilltop</text>
+
+      <!-- F: Social, south parkland -->
+      <circle cx="240" cy="455" r="28" fill="rgba(200,169,110,0.12)" stroke="#c8a96e" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="240" y="450" fill="#c8a96e" font-size="11" text-anchor="middle" font-weight="700">F</text>
+      <text x="240" y="463" fill="#c8a96e" font-size="8" text-anchor="middle">Social</text>
+
+      <!-- HUB: Centre, facing water -->
+      <rect x="285" y="225" width="75" height="42" fill="rgba(200,169,110,0.2)" stroke="#c8a96e" stroke-width="2" rx="6"/>
+      <text x="322" y="243" fill="#fff" font-size="10" text-anchor="middle" font-weight="700">HUB</text>
+      <text x="322" y="256" fill="#c8a96e" font-size="8" text-anchor="middle">faces water</text>
+
+      <!-- Scale bar -->
+      <line x1="650" y1="550" x2="750" y2="550" stroke="#888" stroke-width="2"/>
+      <line x1="650" y1="545" x2="650" y2="555" stroke="#888" stroke-width="2"/>
+      <line x1="750" y1="545" x2="750" y2="555" stroke="#888" stroke-width="2"/>
+      <text x="700" y="568" fill="#888" font-size="10" text-anchor="middle" font-family="system-ui">~300m</text>
+
+      <!-- Defs for markers -->
+      <defs>
+        <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="#c8a96e"/>
+        </marker>
+        <marker id="windArrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="#6aa6d4"/>
+        </marker>
+      </defs>
+
+    </svg>
+  </div>
+
+  <!-- FINDINGS PANEL -->
+  <div class="findings">
+
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#c8a96e;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:4px;">
+      Satellite Intelligence Findings
+    </div>
+
+    <div class="finding critical">
+      <div class="finding-label">❌ Critical Error</div>
+      <h3>Entry is from the NORTH, not south</h3>
+      <p>Main gate is off the French Village / Mount Brevitor Road (off H1). Previous plan had "Cluster A near gate (south)." Entirely wrong orientation.</p>
+    </div>
+
+    <div class="finding new">
+      <div class="finding-label">🔵 New Discovery</div>
+      <h3>Existing water body on site</h3>
+      <p>A plantation-era reservoir sits in the north-central open area. This is the natural community hub location — not invented, already there.</p>
+    </div>
+
+    <div class="finding new">
+      <div class="finding-label">🔵 New Discovery</div>
+      <h3>Existing plantation-era building</h3>
+      <p>A substantial structure visible in the central area. Repurpose as the Club/Estate Management building — massive character advantage.</p>
+    </div>
+
+    <div class="finding critical">
+      <div class="finding-label">❌ Critical Error</div>
+      <h3>Vuemont is NORTH, not southwest</h3>
+      <p>Vuemont Country Estate borders the northern boundary road directly. The north boundary is high-quality — it needs a designed transition, not just a back fence.</p>
+    </div>
+
+    <div class="finding critical">
+      <div class="finding-label">❌ Narrative Error — Now Corrected</div>
+      <h3>Eastern "forest" is brush and weed trees</h3>
+      <p>No mature tropical woodland. The eastern hilltop is overgrown brush to be cleared — revealing the true premium asset: 270° unobstructed panoramic Caribbean views. This is better than forest.</p>
+    </div>
+
+    <div class="finding new">
+      <div class="finding-label">🟢 Added to Diagram</div>
+      <h3>X Range — southern agricultural strip</h3>
+      <p>30-bay XRU format building (110m × 30m) with Mega Media Outfield, XR Sports Bar, Forbidden Fruit dining. Bays face south into 6-8ac agricultural outfield — NE trade wind carries noise away from all residential clusters. Heritage corridor connection to White Hall Plantation Yard. Buggy track from Cluster D (10 min). First XRange venue in the Caribbean.</p>
+    </div>
+
+    <div class="finding confirmed">
+      <div class="finding-label">✅ Confirmed Correct</div>
+      <h3>Premium clusters on eastern hilltop</h3>
+      <p>Eastern hilltop IS the correct location for clusters D & E. The clearing makes this even better — open sky, altitude, 270° views, and full trade-wind cooling. Cluster G also viable here.</p>
+    </div>
+
+    <div class="finding confirmed">
+      <div class="finding-label">✅ Confirmed Correct</div>
+      <h3>White Hall Plantation (south) heritage</h3>
+      <p>White Hall Plantation Yard is at the southern boundary on H1. Heritage anchor confirmed — design south cluster F with heritage narrative connection.</p>
+    </div>
+
+    <div class="finding new">
+      <div class="finding-label">🟡 Constraint</div>
+      <h3>Ronald Mapp Hwy borders west</h3>
+      <p>H1 is a significant arterial — western boundary is NOT quiet countryside. Landscape berm + tree buffer required. But it gives unmatched connectivity.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- WHAT CHANGES TABLE -->
+<table class="error-table" style="margin-top:20px;">
+  <thead>
+    <tr>
+      <th>Previous Plan</th>
+      <th></th>
+      <th>Corrected (Satellite-Based)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="error">Gate at south, Cluster A near south gate</td>
+      <td class="arrow">→</td>
+      <td class="fix">Gate at north on French Village/Mt Brevitor Road off H1</td>
+    </tr>
+    <tr>
+      <td class="error">Hub at geometric centre of 120ac</td>
+      <td class="arrow">→</td>
+      <td class="fix">Hub at water body (existing reservoir, north-centre parkland)</td>
+    </tr>
+    <tr>
+      <td class="error">No water feature in masterplan</td>
+      <td class="arrow">→</td>
+      <td class="fix">Plantation reservoir becomes central landscape amenity / hub focal point</td>
+    </tr>
+    <tr>
+      <td class="error">Vuemont to SW (vague adjacency)</td>
+      <td class="arrow">→</td>
+      <td class="fix">Vuemont borders north boundary road — design a considered transition</td>
+    </tr>
+    <tr>
+      <td class="error">Generic estate drive (south entry)</td>
+      <td class="arrow">→</td>
+      <td class="fix">Grand boulevard enters from north, curves to hub at reservoir</td>
+    </tr>
+    <tr>
+      <td class="error">Plantation building ignored</td>
+      <td class="arrow">→</td>
+      <td class="fix">Restore as Estate Club / concierge / heritage centrepiece</td>
+    </tr>
+    <tr>
+      <td class="error">X Range "SE downwind" on theoretical plot — generic driving range concept</td>
+      <td class="arrow">→</td>
+      <td class="fix">XRU format: 30-bay building (110m × 30m), bays face SOUTH into Mega Media Outfield (110m × 170m). XR Sports Bar + Forbidden Fruit dining. Trackman ball tracking. Laservision megamedia. Heritage corridor to White Hall. First Caribbean XRange venue.</td>
+    </tr>
+    <tr>
+      <td class="error">Eastern hilltop = mature tropical woodland (preserved)</td>
+      <td class="arrow">→</td>
+      <td class="fix">Brush/weed trees to be cleared — reveals 270° panoramic views. Premium asset improves.</td>
+    </tr>
+    <tr>
+      <td class="error">6 clusters (A–F), 435 units. No expansion considered.</td>
+      <td class="arrow">→</td>
+      <td class="fix">Cleared hilltop unlocks Cluster G (40-60 units, ~BBD 35-48M GDV). Density still below 6/ac planning ceiling.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="background:rgba(200,169,110,0.06);border:1px solid rgba(200,169,110,0.2);border-radius:8px;padding:16px;margin-top:20px;">
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#c8a96e;margin-bottom:8px;">Foster + Partners Would Say</div>
+  <p style="font-size:12px;color:#aaa;line-height:1.6;margin:0;">
+    <em>"The site tells you what it wants to be — you just have to listen."</em><br><br>
+    The existing reservoir, the plantation track, the cleared hilltop, the White Hall heritage anchor — this site already has a masterplan written into it. The estate boulevard follows the existing track. The hub faces the existing water. The plantation building becomes the heart. The cleared hilltop reveals the prize: altitude, open sky, and 270° of Caribbean horizon with nothing in the way. We're not imposing a plan; we're revealing the one that's already there.
+  </p>
+</div>
+
+</body>
+</html>
