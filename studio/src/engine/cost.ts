@@ -1,5 +1,6 @@
-import type { OptionMetrics, CostEstimate, FormType } from './types'
+import type { OptionMetrics, CostEstimate, FormType, ProjectId } from './types'
 import { FINANCIALS } from '@/config/financials'
+import { FINANCIALS as ABBEVILLE_FINANCIALS } from '@/config/abbeville/programme'
 import { HURRICANE_DESIGN, SEISMIC_DESIGN, FOUNDATION, ISLAND_COST_FACTORS } from '@/config/construction'
 import { calculateMepTotal } from '@/config/mep'
 
@@ -33,8 +34,70 @@ const FORM_MULTIPLIER: Record<FormType, number> = {
   BAR: 1.0, BAR_NS: 1.0, L: 1.08, U: 1.14, C: 1.11,
 }
 
-export function estimateCost(metrics: OptionMetrics): CostEstimate {
+export function estimateCost(metrics: OptionMetrics, projectId: ProjectId = 'carlisle-bay'): CostEstimate {
   const mult = FORM_MULTIPLIER[metrics.form]
+
+  // Abbeville uses simplified cost model driven by ABBEVILLE_FINANCIALS rates
+  if (projectId === 'abbeville') {
+    const hardCostPerM2 = ABBEVILLE_FINANCIALS.hardCostPerM2Tower
+    const constructionBase = metrics.gia * hardCostPerM2 * mult
+    const hurricaneSeismicUplift = constructionBase * ABBEVILLE_FINANCIALS.hurricaneSeismicUplift
+    const construction = constructionBase
+    const facade = metrics.gia * 0.3 * RATES.facadePerM2 * HURRICANE_DESIGN.windowsAndCladding
+    const mep = metrics.gia * ABBEVILLE_FINANCIALS.mepPerM2
+    const renewable = 0
+    const ffe = metrics.totalKeys * ABBEVILLE_FINANCIALS.ffePerUnit
+    const technology = metrics.totalKeys * RATES.techPerKey
+    const outdoor = metrics.outdoorTotal * RATES.outdoorPerM2
+    const siteWorks = RATES.siteWorks
+    const land = ABBEVILLE_FINANCIALS.land
+
+    const materialHardCosts = construction + hurricaneSeismicUplift + facade + ffe + mep
+    const islandFactors = materialHardCosts * ABBEVILLE_FINANCIALS.islandFactorsPct
+
+    const eiaAndPermits = EIA_AND_PERMITS.eia + EIA_AND_PERMITS.permits
+
+    const pileCount = Math.ceil(metrics.footprint * FOUNDATION.pilesPerM2)
+    const pileCost = pileCount * FOUNDATION.costPerPile
+    const tieBeamLength = 4 * Math.sqrt(metrics.footprint)
+    const tieBeamCost = tieBeamLength * FOUNDATION.tieBeamCostPerM
+    const foundationBase = pileCost + tieBeamCost + FOUNDATION.geotechnicalSurvey
+    const foundation = foundationBase * SEISMIC_DESIGN.foundationMultiplier
+
+    const hardSubtotal = construction + facade + ffe + technology +
+      mep + renewable + foundation + outdoor + siteWorks +
+      hurricaneSeismicUplift + islandFactors + eiaAndPermits
+
+    const softCosts = hardSubtotal * ABBEVILLE_FINANCIALS.softCostPct
+    const contingency = hardSubtotal * ABBEVILLE_FINANCIALS.contingencyPct
+
+    const total = land + hardSubtotal + softCosts + contingency
+    const perKey = total / Math.max(1, metrics.totalKeys)
+
+    return {
+      total: Math.round(total),
+      perKey: Math.round(perKey),
+      breakdown: {
+        construction: Math.round(construction),
+        facade: Math.round(facade),
+        ffe: Math.round(ffe),
+        technology: Math.round(technology),
+        mep: Math.round(mep),
+        renewable: Math.round(renewable),
+        foundation: Math.round(foundation),
+        outdoor: Math.round(outdoor),
+        siteWorks,
+        land,
+        softCosts: Math.round(softCosts),
+        contingency: Math.round(contingency),
+        hurricaneUplift: Math.round(hurricaneSeismicUplift),
+        islandFactors: Math.round(islandFactors),
+        eiaAndPermits: Math.round(eiaAndPermits),
+      },
+    }
+  }
+
+  // ── Carlisle Bay (default) ──────────────────────────────────────────────────
 
   // Base construction (before resilience uplifts)
   const constructionBase = metrics.gia * RATES.modularPerM2 * mult

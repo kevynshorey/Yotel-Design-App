@@ -1,7 +1,13 @@
-import type { OptionMetrics, Wing, Point2D, ValidationResult, Violation } from './types'
+import type { OptionMetrics, Wing, Point2D, ValidationResult, Violation, ProjectId } from './types'
 import { RULES } from '@/config/rules'
-import { OFFSET_BOUNDARY, BUILDING_PLACEMENT, SITE } from '@/config/site'
+import { SITE as CARLISLE_BAY_SITE } from '@/config/site'
+import { SITE as ABBEVILLE_SITE } from '@/config/abbeville/site'
 import { getJurisdiction, type Jurisdiction } from '@/config/jurisdictions'
+
+function getProjectSite(projectId?: ProjectId) {
+  if (projectId === 'abbeville') return ABBEVILLE_SITE
+  return CARLISLE_BAY_SITE
+}
 
 /** Ray-casting point-in-polygon test. */
 export function pointInPolygon(x: number, y: number, poly: Point2D[]): boolean {
@@ -29,14 +35,20 @@ function rotatePoint(x: number, y: number, angRad: number): [number, number] {
  * @param wings    - array of building wings
  * @param jurisdictionId - optional 2-letter jurisdiction code (e.g. 'bb', 'jm').
  *                         Falls back to Barbados defaults if omitted or not found.
+ * @param projectId - optional project identifier. When provided, uses that project's
+ *                    site config (maxFootprint, buildableEW/NS). Defaults to carlisle-bay.
  */
 export function validate(
   metrics: OptionMetrics,
   wings: Wing[],
   jurisdictionId?: string,
+  projectId?: ProjectId,
 ): ValidationResult {
   const violations: Violation[] = []
   const warnings: string[] = []
+
+  // Resolve site config based on projectId (defaults to carlisle-bay)
+  const SITE = getProjectSite(projectId)
 
   // Resolve jurisdiction — fall back to Barbados hardcoded RULES when absent
   const jurisdiction: Jurisdiction | undefined = jurisdictionId
