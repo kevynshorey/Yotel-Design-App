@@ -249,23 +249,27 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
   })
 
   // ── 2.  Entrance & Parking ──────────────────────────────────────────────
-  // From the plot plan: Bay Street access is from the SOUTHWEST corner —
-  // the narrow pointed tip of the site. Beckles Rd connects to Bay Street
-  // at this point. The entrance faces Carlisle Bay (west).
-  // In site coordinates, the SW corner is near x=1, y=0 (ORIGINAL_BOUNDARY[0]).
-  // In buildable-local coords, this is at x ≈ 1 - buildableMinX = -34.6, y ≈ -8.4
-  const swCorner = ORIGINAL_BOUNDARY[0]  // { x: 1.009, y: -0.301 } — SW tip
-  const entranceWorldX = swCorner.x + 5  // 5m east of SW corner for entrance drive
-  const entranceWorldY = swCorner.y       // at the SW tip
-  const entranceX = entranceWorldX - SITE.buildableMinX  // convert to buildable-local
-  const entranceY = entranceWorldY - SITE.buildableMinY  // will be negative (south of buildable)
+  // Entrance drive is centred on the amenity block's south face at the buildable
+  // boundary (y = SETBACK). Bay Street guests arrive from the south, drive north
+  // through the setback zone, and drop off at the amenity/lobby block.
+  //
+  // Parking occupies the east and west flanks of the entrance corridor, both
+  // blocks clear of the amenity block footprint. Each block is perpendicular-bay
+  // layout: 2.5 m-wide bays × 5 m deep, two rows = 10 m NS depth.
+  //
+  // All coordinates stay within the buildable area — no negative-Y anchoring to
+  // the original site tip (which is 30 m west and 8.7 m south of the buildable
+  // rectangle and therefore invisible / road-overlapping in the 3D viewer).
+
+  const driveX = amenityX + (amenityW - ENTRANCE_DRIVE_W) / 2   // aligned with lobby centre
+  const driveY = SETBACK                                          // south edge of buildable area
 
   elements.push({
     id: 'main-entrance',
     type: 'entrance',
     label: 'Bay Street Vehicular Entrance',
-    x: entranceX,
-    y: entranceY,
+    x: driveX,
+    y: driveY,
     width: ENTRANCE_DRIVE_W,
     depth: ENTRANCE_DRIVE_D,
     height: 0,
@@ -273,38 +277,39 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
     rationale: RATIONALES.entrance,
   })
 
-  // Parking — parallel bays on BOTH SIDES of the entrance drive, running from
-  // the SW tip up toward the buildable area boundary. Like a corridor of cars
-  // flanking the driveway. Each bay is 2.5m wide x 5m deep (standard parallel).
-  // The bays run along the same axis as the entrance drive (SW→NE).
-  const PARALLEL_BAY_W = 2.5   // width of one parallel bay
-  const PARALLEL_BAY_D = 5.0   // depth (length of car)
-  const NUM_BAYS_PER_SIDE = 8  // 8 parallel bays per side = 16 total spaces
-  const parkingStripLength = NUM_BAYS_PER_SIDE * PARALLEL_BAY_D  // 40m
+  // Perpendicular parking bays: 2.5 m wide × 5 m deep, 2 rows (10 m NS).
+  const PERP_BAY_W   = 2.5
+  const PERP_ROWS    = 2
+  const parkingDepth = PERP_ROWS * PARKING_BAY_D   // 10 m NS
 
-  // East side parking strip — runs parallel to entrance drive, east of it
+  // West block — from SETBACK to just west of the amenity block, capped at 20 m EW
+  const parkingWestWidth = Math.min(amenityX - SETBACK - 1, 20)
+  const numWestBays = Math.floor(parkingWestWidth / PERP_BAY_W)
   elements.push({
-    id: 'parking-east',
+    id: 'parking-west',
     type: 'parking',
-    label: `Parking East (${NUM_BAYS_PER_SIDE} bays)`,
-    x: entranceX + ENTRANCE_DRIVE_W + 0.5,  // just east of driveway
-    y: entranceY,                             // starts at entrance
-    width: PARALLEL_BAY_W,                    // narrow strip
-    depth: parkingStripLength,                // runs up toward buildable area
+    label: `Parking West (${numWestBays * PERP_ROWS} spaces)`,
+    x: SETBACK,
+    y: driveY,
+    width: parkingWestWidth,
+    depth: parkingDepth,
     height: 0,
     floor: 'ground',
     rationale: RATIONALES.parking,
   })
 
-  // West side parking strip — runs parallel to entrance drive, west of it
+  // East block — from just east of the amenity block to site east, capped at 20 m EW
+  const parkingEastX     = amenityX + amenityW + 1
+  const parkingEastWidth = Math.min(B_EW - SETBACK - parkingEastX, 20)
+  const numEastBays      = Math.floor(parkingEastWidth / PERP_BAY_W)
   elements.push({
-    id: 'parking-west',
+    id: 'parking-east',
     type: 'parking',
-    label: `Parking West (${NUM_BAYS_PER_SIDE} bays)`,
-    x: entranceX - PARALLEL_BAY_W - 0.5,    // just west of driveway
-    y: entranceY,                             // starts at entrance
-    width: PARALLEL_BAY_W,                    // narrow strip
-    depth: parkingStripLength,                // runs up toward buildable area
+    label: `Parking East (${numEastBays * PERP_ROWS} spaces)`,
+    x: parkingEastX,
+    y: driveY,
+    width: parkingEastWidth,
+    depth: parkingDepth,
     height: 0,
     floor: 'ground',
     rationale: RATIONALES.parking,
@@ -657,12 +662,12 @@ export function computeSiteLayout(option: DesignOption, config: SiteConfig): Sit
     limit: 1,
   })
 
-  // 12b. Parking outside buildable, inside site
-  const parkingOutsideBuildable = entranceY < 0 || entranceY < SETBACK
+  // 12b. Parking within buildable area at south edge setback
+  const parkingInBuildable = driveY >= SETBACK
   compliance.push({
-    rule: 'Parking outside buildable area but inside site boundary',
-    status: parkingOutsideBuildable ? 'pass' : 'fail',
-    value: parkingOutsideBuildable ? 1 : 0,
+    rule: 'Parking at south edge of buildable area (within site boundary)',
+    status: parkingInBuildable ? 'pass' : 'fail',
+    value: parkingInBuildable ? 1 : 0,
     limit: 1,
   })
 
