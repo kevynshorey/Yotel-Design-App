@@ -8,10 +8,12 @@ import { loadBasemapTiles, clearBasemapTiles } from './basemap'
 import { addSiteOverlays } from './site-overlays'
 import { WalkthroughController } from './walkthrough'
 import { CinematicController, getCinematicPath } from './cinematic'
-import type { DesignOption, BasemapType } from '@/engine/types'
+import type { DesignOption, BasemapType, ProjectId } from '@/engine/types'
 import { computeSiteLayout } from '@/engine/site-layout'
+import { computeAbbevilleSiteLayout } from '@/engine/abbeville-site-layout'
 import type { PlacedElement, SiteConfig } from '@/engine/site-layout'
 import { SITE } from '@/config/site'
+import { getViewerSiteConfig } from './project-site-config'
 import { getLayoutOverrides, LAYOUT_CHANGED_EVENT } from '@/store/layout-store'
 
 // ── Time-of-day types and presets ──────────────────────────────────
@@ -96,6 +98,7 @@ const MATERIALS: Record<string, THREE.MeshStandardMaterial> = {
 interface Viewer3DProps {
   selectedOption?: DesignOption | null
   className?: string
+  projectId?: ProjectId
   onCameraChange?: (preset: string) => void
   activePreset?: string
   activeBasemap?: string
@@ -185,12 +188,15 @@ function makeLabelWithSubtitle(
 /** Compute the 3D bounding box of all wings in the option.
  *  Returns { minX, maxX, minZ, maxZ } in Three.js world coordinates.
  *  In Three.js: +X = east, -Z = north. */
-function computeWingBBox(wings: DesignOption['wings']): { minX: number; maxX: number; minZ: number; maxZ: number } {
+function computeWingBBox(wings: DesignOption['wings'], pid?: ProjectId): { minX: number; maxX: number; minZ: number; maxZ: number } {
+  const vc = getViewerSiteConfig(pid)
+  const bx = vc.buildableMinX - vc.centroidX
+  const bz = -(vc.buildableMinY - vc.centroidY)
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity
   for (const wing of wings) {
     // Convert site coords to Three.js world coords
-    const wx = BUILD_X + wing.x
-    const wz = BUILD_Z - wing.y
+    const wx = bx + wing.x
+    const wz = bz - wing.y
     const eastExtent = wing.direction === 'EW' ? wing.length : wing.width
     const northExtent = wing.direction === 'EW' ? wing.width : wing.length
     minX = Math.min(minX, wx)
@@ -218,41 +224,33 @@ const ELEMENT_COLORS: Record<PlacedElement['type'], number> = {
   service_yard: 0x64748b,
 }
 
-/** Build the SiteConfig required by computeSiteLayout from the SITE constant. */
-function buildSiteConfig(): SiteConfig {
+/** Build the SiteConfig required by computeSiteLayout — project-aware. */
+function buildSiteConfig(pid?: ProjectId): SiteConfig {
+  const vc = getViewerSiteConfig(pid)
   return {
-    grossArea: SITE.grossArea,
-    buildableAreaSqm: SITE.buildableArea,
-    maxCoverage: SITE.maxCoverage,
-    maxHeight: SITE.maxHeight,
-    buildableEW: SITE.buildableEW,
-    buildableNS: SITE.buildableNS,
-    buildableMinX: SITE.buildableMinX,
-    buildableMaxX: SITE.buildableMaxX,
-    buildableMinY: SITE.buildableMinY,
-    buildableMaxY: SITE.buildableMaxY,
-    beachSide: SITE.beachSide,
+    grossArea: vc.grossArea,
+    buildableAreaSqm: vc.buildableArea,
+    maxCoverage: vc.maxCoverage,
+    maxHeight: vc.maxHeight,
+    buildableEW: vc.buildableEW,
+    buildableNS: vc.buildableNS,
+    buildableMinX: vc.buildableMinX,
+    buildableMaxX: vc.buildableMaxX,
+    buildableMinY: vc.buildableMinY,
+    buildableMaxY: vc.buildableMaxY,
+    beachSide: vc.beachSide as 'W' | 'E' | 'N' | 'S',
   }
 }
 
 /**
  * Convert engine site-local coordinates to Three.js world coordinates.
- *
- * Engine coordinate system:
- *   origin = buildable-area SW corner (buildableMinX, buildableMinY)
- *   x = metres east, y = metres north
- *
- * Three.js coordinate system:
- *   origin = centroid of site (SITE_CX, SITE_CY)
- *   +X = east, -Z = north, +Y = up
- *
- * So: worldX = buildableMinX + engineX - SITE_CX
- *     worldZ = -(buildableMinY + engineY - SITE_CY)
+ * Uses project-specific centroid and buildable origin.
  */
-function siteToWorld(engineX: number, engineY: number): { wx: number; wz: number } {
+function siteToWorld(engineX: number, engineY: number, pid?: ProjectId): { wx: number; wz: number } {
+  const vc = getViewerSiteConfig(pid)
   return {
-    wx: SITE.buildableMinX + engineX - SITE_CX,
-    wz: -(SITE.buildableMinY + engineY - SITE_CY),
+    wx: vc.buildableMinX + engineX - vc.centroidX,
+    wz: -(vc.buildableMinY + engineY - vc.centroidY),
   }
 }
 
@@ -286,12 +284,15 @@ function applyOverridesToLayout(engineElements: PlacedElement[]): PlacedElement[
 /** Create amenity meshes from the architectural reasoning engine.
  *  ALL placement decisions come from computeSiteLayout — no hardcoded positions.
  *  If layout overrides exist (from the interactive planner), they are merged in. */
-function buildAmenitiesFromLayout(option: DesignOption, buildingTopY: number): THREE.Group {
+function buildAmenitiesFromLayout(option: DesignOption, buildingTopY: number, projectId?: ProjectId): THREE.Group {
   const group = new THREE.Group()
   group.name = 'amenities'
 
-  const siteConfig = buildSiteConfig()
-  const layout = computeSiteLayout(option, siteConfig)
+  const siteConfig = buildSiteConfig(projectId)
+  // Use project-specific layout engine
+  const layout = projectId === 'abbeville'
+    ? computeAbbevilleSiteLayout(option)
+    : computeSiteLayout(option, siteConfig)
 
   // Merge in any overrides from the interactive planner
   layout.elements = applyOverridesToLayout(layout.elements)
@@ -303,7 +304,7 @@ function buildAmenitiesFromLayout(option: DesignOption, buildingTopY: number): T
   const canopyMat = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.7 })
 
   for (const el of layout.elements) {
-    const { wx, wz } = siteToWorld(el.x, el.y)
+    const { wx, wz } = siteToWorld(el.x, el.y, projectId)
     const elColor = ELEMENT_COLORS[el.type] ?? 0xcccccc
     const w = el.width   // EW dimension
     const d = el.depth    // NS dimension
@@ -411,6 +412,7 @@ function buildAmenitiesFromLayout(option: DesignOption, buildingTopY: number): T
 export function Viewer3D({
   selectedOption,
   className,
+  projectId,
   activePreset = '3D',
   activeBasemap = 'Google',
   showBoundaries = true,
@@ -435,6 +437,11 @@ export function Viewer3D({
   const cinematicRef = useRef<CinematicController | null>(null)
   /** Store original (non-exploded) Y positions for building meshes */
   const floorOriginalYRef = useRef<Map<THREE.Object3D, number>>(new Map())
+
+  // Project-aware building placement origin
+  const vc = getViewerSiteConfig(projectId)
+  const projBuildX = vc.buildableMinX - vc.centroidX
+  const projBuildZ = -(vc.buildableMinY - vc.centroidY)
 
   // Stable callback refs so we can use them inside animate loop
   const onWalkthroughExitRef = useRef(onWalkthroughExit)
@@ -465,7 +472,7 @@ export function Viewer3D({
     pmremGenerator.dispose()
 
     loadBasemapTiles(scene, 'Google')
-    addSiteOverlays(scene)
+    addSiteOverlays(scene, getViewerSiteConfig(projectId))
 
     const buildingGroup = new THREE.Group()
     scene.add(buildingGroup)
@@ -597,7 +604,7 @@ export function Viewer3D({
 
       const wt = new WalkthroughController(camera, canvas)
       // Start at pool deck area
-      const startPos = new THREE.Vector3(BUILD_X - 10, 0, BUILD_Z + 6)
+      const startPos = new THREE.Vector3(projBuildX - 10, 0, projBuildZ + 6)
       wt.enable(startPos)
       walkthroughRef.current = wt
 
@@ -630,7 +637,7 @@ export function Viewer3D({
       controls.enabled = false
       walkthroughRef.current?.disable()
 
-      const center = new THREE.Vector3(BUILD_X + 20, 0, BUILD_Z + 10)
+      const center = new THREE.Vector3(projBuildX + 20, 0, projBuildZ + 10)
       const keyframes = getCinematicPath(center)
       const cc = new CinematicController(camera, keyframes)
       cc.onComplete = () => {
@@ -719,9 +726,9 @@ export function Viewer3D({
         const mesh = new THREE.Mesh(geometry, mat)
         const yPos = currentY + geoH / 2
         mesh.position.set(
-          wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2) + BUILD_X,
+          wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2) + projBuildX,
           yPos,
-          -(wing.y + (wing.direction === 'EW' ? wing.width / 2 : wing.length / 2)) + BUILD_Z,
+          -(wing.y + (wing.direction === 'EW' ? wing.width / 2 : wing.length / 2)) + projBuildZ,
         )
         mesh.castShadow = true
         mesh.receiveShadow = true
@@ -741,7 +748,7 @@ export function Viewer3D({
     }
 
     // Add amenities — all placements computed by the architectural reasoning engine
-    const amenities = buildAmenitiesFromLayout(selectedOption, maxBuildingY)
+    const amenities = buildAmenitiesFromLayout(selectedOption, maxBuildingY, projectId)
     amenityGroup.add(amenities)
 
     // Re-apply amenity visibility

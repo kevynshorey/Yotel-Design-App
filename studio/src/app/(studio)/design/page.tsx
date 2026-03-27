@@ -26,6 +26,7 @@ const InteractivePlanner = dynamic(
   { ssr: false }
 )
 import { generateAll } from '@/engine/generator'
+import { generateAbbevilleOptions } from '@/engine/abbeville-generator'
 import type { ProjectId } from '@/engine/types'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
@@ -125,7 +126,10 @@ function DesignPageInner() {
 
   const handleGenerate = useCallback(() => {
     startTransition(() => {
-      const generated = generateAll(40, getEngineProjectId())
+      const pid = getEngineProjectId()
+      const generated = pid === 'abbeville'
+        ? generateAbbevilleOptions()
+        : generateAll(40, pid)
       setOptions(generated)
       if (generated.length > 0) selectOption(generated[0].id)
       // Reset compare state on new generation
@@ -341,6 +345,7 @@ function DesignPageInner() {
         {/* z-5: 3D viewer fills the viewport */}
         <Viewer3D
           selectedOption={selectedOption}
+          projectId={getEngineProjectId()}
           className="h-full w-full"
           activePreset={activePreset}
           activeBasemap={activeBasemap}
