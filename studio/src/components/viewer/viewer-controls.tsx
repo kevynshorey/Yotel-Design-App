@@ -47,8 +47,21 @@ const CAMERA_PRESETS = [
 
 const BASEMAP_OPTIONS = [
   { id: 'Google', label: 'Google' },
+  { id: 'ESRI Street', label: 'ESRI Street' },
+  { id: 'OSM Standard', label: 'OSM Standard' },
+  { id: 'OSM HOT', label: 'OSM HOT' },
+  { id: 'OpenTopo', label: 'OpenTopo' },
+  { id: 'Carto Voyager', label: 'Carto Voyager' },
+  { id: 'Wikimedia OSM', label: 'Wikimedia OSM' },
   { id: 'Street', label: 'Street' },
   { id: 'Topo', label: 'Topo' },
+  { id: 'Copernicus', label: 'Copernicus' },
+  { id: 'Mapbox Streets', label: 'Mapbox Streets' },
+  { id: 'Mapbox Satellite', label: 'Mapbox Satellite' },
+  { id: 'Mapbox Outdoors', label: 'Mapbox Outdoors' },
+  { id: 'MapTiler Streets', label: 'MapTiler Streets' },
+  { id: 'MapTiler Outdoor', label: 'MapTiler Outdoor' },
+  { id: 'MapTiler Satellite', label: 'MapTiler Satellite' },
   { id: 'None', label: 'None' },
 ] as const
 
@@ -267,22 +280,17 @@ export function ViewerControls({
             <div className="px-1 pb-0.5 text-[9px] font-medium uppercase tracking-wider text-white/30">
               Basemap
             </div>
-            <div className="flex gap-0.5">
+            <select
+              value={activeBasemap}
+              onChange={(e) => onBasemapChange(e.target.value)}
+              className="w-full rounded-md border border-white/10 bg-slate-900 px-2 py-1 text-[10px] text-white/80 outline-none focus:border-sky-500/40"
+            >
               {BASEMAP_OPTIONS.map(({ id, label }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => onBasemapChange(id)}
-                  className={`rounded-lg px-2 py-0.5 text-[10px] transition-colors ${
-                    activeBasemap === id
-                      ? 'bg-sky-500/20 text-sky-400'
-                      : 'text-white/70 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
+                <option key={id} value={id}>
                   {label}
-                </button>
+                </option>
               ))}
-            </div>
+            </select>
           </div>
         </>
       )}

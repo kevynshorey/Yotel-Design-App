@@ -70,7 +70,7 @@ function DesignPageInner() {
 
   // Viewer control state
   const [activePreset, setActivePreset] = useState('3D')
-  const [activeBasemap, setActiveBasemap] = useState('Google')
+  const [activeBasemap, setActiveBasemap] = useState('OSM Standard')
   const [showBoundaries, setShowBoundaries] = useState(true)
   const [showAmenities, setShowAmenities] = useState(true)
   const [explodedView, setExplodedView] = useState(false)

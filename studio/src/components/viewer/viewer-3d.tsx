@@ -464,7 +464,7 @@ export function Viewer3D({
     scene.environment = envMap
     pmremGenerator.dispose()
 
-    loadBasemapTiles(scene, 'Google')
+    loadBasemapTiles(scene, activeBasemap as BasemapType)
     addSiteOverlays(scene)
 
     const buildingGroup = new THREE.Group()

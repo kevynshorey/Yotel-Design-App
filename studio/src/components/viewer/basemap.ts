@@ -25,15 +25,66 @@ function getSiteCoords(): { lat: number; lon: number } {
 }
 
 /** Tile URL generators for each basemap type. */
-const TILE_URL: Record<string, (z: number, y: number, x: number) => string> = {
+const TILE_URL: Record<string, (z: number, y: number, x: number) => string | null> = {
   Google: (z, y, x) =>
     `https://mt1.google.com/vt/lyrs=s&x=${x}&y=${y}&z=${z}`,
   Satellite: (z, y, x) =>
     `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
   Street: (z, y, x) =>
     `https://tile.openstreetmap.org/${z}/${x}/${y}.png`,
+  'OSM Standard': (z, y, x) =>
+    `https://tile.openstreetmap.org/${z}/${x}/${y}.png`,
+  'ESRI Street': (z, y, x) =>
+    `https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}`,
+  'OSM HOT': (z, y, x) =>
+    `https://tile.openstreetmap.fr/hot/${z}/${x}/${y}.png`,
+  OpenTopo: (z, y, x) =>
+    `https://tile.opentopomap.org/${z}/${x}/${y}.png`,
+  'Carto Voyager': (z, y, x) =>
+    `https://basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}.png`,
+  'Wikimedia OSM': (z, y, x) =>
+    `https://maps.wikimedia.org/osm-intl/${z}/${x}/${y}.png`,
   Topo: (z, y, x) =>
     `https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}`,
+  Copernicus: (z, y, x) =>
+    `https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/${z}/${y}/${x}.jpg`,
+  'Mapbox Streets': (z, y, x) => {
+    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+    if (!token) return null
+    return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/512/${z}/${x}/${y}@2x?access_token=${token}`
+  },
+  'Mapbox Satellite': (z, y, x) => {
+    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+    if (!token) return null
+    return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/${z}/${x}/${y}@2x?access_token=${token}`
+  },
+  'Mapbox Outdoors': (z, y, x) => {
+    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+    if (!token) return null
+    return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/tiles/512/${z}/${x}/${y}@2x?access_token=${token}`
+  },
+  'MapTiler Streets': (z, y, x) => {
+    const key = process.env.NEXT_PUBLIC_MAPTILER_API_KEY
+    if (!key) return null
+    return `https://api.maptiler.com/maps/streets/256/${z}/${x}/${y}.png?key=${key}`
+  },
+  'MapTiler Outdoor': (z, y, x) => {
+    const key = process.env.NEXT_PUBLIC_MAPTILER_API_KEY
+    if (!key) return null
+    return `https://api.maptiler.com/maps/outdoor/256/${z}/${x}/${y}.png?key=${key}`
+  },
+  'MapTiler Satellite': (z, y, x) => {
+    const key = process.env.NEXT_PUBLIC_MAPTILER_API_KEY
+    if (!key) return null
+    return `https://api.maptiler.com/maps/satellite/256/${z}/${x}/${y}.png?key=${key}`
+  },
+}
+
+function getBasemapZoom(basemap: BasemapType, fallbackZoom: number): number {
+  if (String(basemap).startsWith('Mapbox ')) return 16
+  if (String(basemap).startsWith('MapTiler ')) return 17
+  if (basemap === 'OpenTopo') return 16
+  return fallbackZoom
 }
 
 /** Convert lat/lon to tile coords + subpixel offset + tile size in metres. */
@@ -71,8 +122,9 @@ export function loadBasemapTiles(
   if (basemap === 'None' || !TILE_URL[basemap]) return
 
   const urlFn = TILE_URL[basemap]
+  const resolvedZoom = getBasemapZoom(basemap, zoom)
   const { lat: SITE_LAT, lon: SITE_LON } = getSiteCoords()
-  const { tileX, tileY, fracX, fracY, tileM } = getTileInfo(SITE_LAT, SITE_LON, zoom)
+  const { tileX, tileY, fracX, fracY, tileM } = getTileInfo(SITE_LAT, SITE_LON, resolvedZoom)
   const loader = new THREE.TextureLoader()
   loader.crossOrigin = 'anonymous'
 
@@ -85,7 +137,8 @@ export function loadBasemapTiles(
 
   for (let dx = -3; dx <= 3; dx++) {
     for (let dy = -3; dy <= 3; dy++) {
-      const url = urlFn(zoom, tileY + dy, tileX + dx)
+      const url = urlFn(resolvedZoom, tileY + dy, tileX + dx)
+      if (!url) continue
       // dx>0 = east tile → +X;  dy>0 = south tile → -Z (negated)
       const px = cx + dx * tileM
       const pz = cz - dy * tileM  // negated: tileY increases south → -Z
