@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { ChevronDown, Plus, Trash2, FolderOpen } from 'lucide-react'
+import Link from 'next/link'
+import { ChevronDown, Plus, Trash2, FolderOpen, LayoutGrid } from 'lucide-react'
 import {
   getProjects,
   getActiveProject,
@@ -132,7 +133,15 @@ export function ProjectSwitcher() {
                 </button>
               ))}
             </div>
-            <div className="border-t border-slate-100 p-1.5">
+            <div className="border-t border-slate-100 p-1.5 space-y-0.5">
+              <Link
+                href="/select-project"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                All Projects
+              </Link>
               <button
                 onClick={() => {
                   setOpen(false)

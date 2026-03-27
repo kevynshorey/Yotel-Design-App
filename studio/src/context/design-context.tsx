@@ -34,6 +34,18 @@ export function DesignProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  // Clear options and selected design when the active project changes
+  useEffect(() => {
+    function handleProjectChange() {
+      setOptions([])
+      setSelectedId(null)
+      clearSelectedOption()
+      setStoredOption(null)
+    }
+    window.addEventListener('active-project-changed', handleProjectChange)
+    return () => window.removeEventListener('active-project-changed', handleProjectChange)
+  }, [])
+
   // Prefer in-memory option (from generator) over stored option (from localStorage)
   const selectedOption = options.find(o => o.id === selectedId) ?? storedOption
 
