@@ -9,4 +9,8 @@ export const PROJECTS: Record<ProjectId, { name: string; description: string }> 
     name: 'YOTELPAD Abbeville',
     description: '60 units | Worthing | 4 towers | YOTELPAD resort',
   },
+  'mt-brevitor': {
+    name: 'Mt Brevitor Estates',
+    description: 'Mixed-use | Sports · Farming · Residential · Community | Small YOTEL TBC',
+  },
 }

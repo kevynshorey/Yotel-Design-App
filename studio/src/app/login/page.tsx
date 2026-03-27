@@ -33,7 +33,7 @@ export default function LoginPage() {
       window.dispatchEvent(new Event('user-changed'))
       // Brief delay to show welcome message
       setTimeout(() => {
-        router.push('/dashboard')
+        router.push('/select-project')
         router.refresh()
       }, 1200)
     } else {

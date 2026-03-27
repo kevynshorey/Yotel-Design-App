@@ -57,6 +57,7 @@ const ACTIVE_KEY = 'yotel-active-project'
 const DEFAULT_PROJECTS: { id: string; factory: () => Project }[] = [
   { id: 'yotel-barbados-carlisle-bay', factory: createCarlisleBayProject },
   { id: 'abbeville-yotelpad', factory: createAbbevilleProject },
+  { id: 'mt-brevitor-estates', factory: createMtBrevitorProject },
 ]
 
 function createCarlisleBayProject(): Project {
@@ -172,6 +173,59 @@ function createAbbevilleProject(): Project {
       heritageZone: false,
     },
     createdAt: '2026-03-26T00:00:00.000Z',
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+function createMtBrevitorProject(): Project {
+  return {
+    id: 'mt-brevitor-estates',
+    name: 'Mt Brevitor Estates',
+    location: 'Mount Brevitor, St Peter',
+    description: '355-unit mixed-use estate | Sports · Farming · Residential · Community | 120 acres',
+    totalKeys: 355,
+    brandConfig: {
+      primary: 'ESTATE',
+      secondary: 'YOTEL TBC',
+      primaryKeys: 355,
+      secondaryKeys: 0,
+    },
+    siteConfig: {
+      boundary: [
+        { x: 0, y: 0 },
+        { x: 0, y: 200 },
+        { x: 300, y: 220 },
+        { x: 350, y: 180 },
+        { x: 380, y: 100 },
+        { x: 350, y: 0 },
+      ],
+      buildableArea: [
+        { x: 10, y: 10 },
+        { x: 10, y: 190 },
+        { x: 290, y: 210 },
+        { x: 340, y: 170 },
+        { x: 370, y: 90 },
+        { x: 340, y: 10 },
+      ],
+      offsets: { W: 10, N: 10, E: 10, S: 10 },
+      grossArea: 485_623,       // 120 acres in m²
+      buildableAreaSqm: 445_154, // 110 acres in m²
+      maxCoverage: 0.50,
+      maxHeight: 12.0,
+    },
+    planningRules: {
+      jurisdiction: 'Barbados',
+      coastalSetback: 0,        // inland site
+      maxCoverage: 0.50,
+      maxHeight: 12.0,
+      maxStoreys: 3,
+      sideSetback: 1.83,
+      rearSetback: 3.0,
+      roadSetback: 9.75,
+      eiaRequired: true,
+      heritageZone: false,
+    },
+    createdAt: '2026-03-27T00:00:00.000Z',
     updatedAt: new Date().toISOString(),
   }
 }
