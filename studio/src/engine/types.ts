@@ -1,5 +1,7 @@
 import type { AmenityProgramme } from './amenities'
 
+export type ProjectId = 'carlisle-bay' | 'abbeville'
+
 // Form types
 export type FormType = 'BAR' | 'BAR_NS' | 'L' | 'U' | 'C'
 export type CorridorType = 'single_loaded' | 'double_loaded'
