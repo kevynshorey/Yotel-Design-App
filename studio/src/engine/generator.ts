@@ -1,6 +1,6 @@
 import type {
   GenerationParams, DesignOption, FormType, CorridorType,
-  OutdoorPosition, OptionMetrics, OptionGroups,
+  OutdoorPosition, OptionMetrics, OptionGroups, ProjectId, RoomType,
 } from './types'
 import { generateForm } from './forms'
 import { roomsPerFloor, buildFloorProgramme } from './rooms'
@@ -9,10 +9,42 @@ import { scoreOption } from './scorer'
 import { estimateCost } from './cost'
 import { projectRevenue } from './revenue'
 import { calculateAmenities } from './amenities'
-import { SITE } from '@/config/site'
+import { SITE as CARLISLE_BAY_SITE } from '@/config/site'
 import { YOTEL_ROOMS, YOTELPAD_UNITS } from '@/config/programme'
+import { SITE as ABBEVILLE_SITE } from '@/config/abbeville/site'
+import { ABBEVILLE_UNITS } from '@/config/abbeville/programme'
 import { DEFAULT_WEIGHTS } from '@/config/scoring-weights'
 import { CURATED_OPTIONS } from '@/config/curated-options'
+
+interface SiteConfig {
+  buildableArea: number
+  maxCoverage: number
+  maxFootprint: number
+  maxHeight: number
+  [key: string]: unknown
+}
+
+interface ProjectConfig {
+  site: SiteConfig
+  ytRooms: Record<string, RoomType>
+  padUnits: Record<string, RoomType>
+}
+
+function getProjectConfig(projectId?: ProjectId): ProjectConfig {
+  if (projectId === 'abbeville') {
+    return {
+      site: ABBEVILLE_SITE,
+      ytRooms: ABBEVILLE_UNITS,
+      padUnits: ABBEVILLE_UNITS,
+    }
+  }
+  // Default: carlisle-bay
+  return {
+    site: CARLISLE_BAY_SITE,
+    ytRooms: YOTEL_ROOMS,
+    padUnits: YOTELPAD_UNITS,
+  }
+}
 
 const GROUND_H = 4.5
 const FLOOR_H = 3.2
@@ -30,8 +62,9 @@ const DESIGN_SPACE = {
 
 let optionCounter = 0
 
-export function buildOption(params: GenerationParams): DesignOption {
+export function buildOption(params: GenerationParams, projectId?: ProjectId): DesignOption {
   const id = `opt-${++optionCounter}`
+  const { site, ytRooms, padUnits } = getProjectConfig(projectId)
 
   // Generate form geometry
   const formResult = generateForm(params.form, params.targetFloorArea, params.wingWidth)
@@ -40,8 +73,8 @@ export function buildOption(params: GenerationParams): DesignOption {
   const wings = formResult.wings.map(w => ({ ...w, floors: params.storeys }))
 
   // Calculate rooms per floor dynamically (per generator.py)
-  const ytPerFloor = roomsPerFloor(wings, params.corridorType, YOTEL_ROOMS)
-  const padPerFloor = roomsPerFloor(wings, params.corridorType, YOTELPAD_UNITS)
+  const ytPerFloor = roomsPerFloor(wings, params.corridorType, ytRooms)
+  const padPerFloor = roomsPerFloor(wings, params.corridorType, padUnits)
 
   // Dynamic floor allocation (per generator.py lines 60-61):
   const upperFloors = params.storeys - 1  // exclude ground
@@ -73,7 +106,7 @@ export function buildOption(params: GenerationParams): DesignOption {
   const totalKeys = actualYtRooms + actualPadUnits
   if (totalKeys < 130) throw new Error(`Below 130-key minimum (got ${totalKeys})`)
   const height = GROUND_H + (params.storeys - 1) * FLOOR_H
-  const coverage = formResult.footprint / SITE.buildableArea
+  const coverage = formResult.footprint / site.buildableArea
   const outdoorTotal = params.outdoorPosition === 'BOTH' ? 660 + 80 :
                        params.outdoorPosition === 'ROOFTOP' ? 80 : 660
 
@@ -130,15 +163,16 @@ export function buildOption(params: GenerationParams): DesignOption {
  *  Tests splits from 60% to 85% YOTEL (in 5% steps) and picks
  *  the one with highest yield on cost. */
 function optimizeUnitMix(
-  form: FormType, area: number, width: number, storeys: number
+  form: FormType, area: number, width: number, storeys: number, projectId?: ProjectId
 ): { ytRooms: number; padUnits: number; yieldOnCost: number } | null {
   let bestYield = -1
   let bestSplit = { ytRooms: 100, padUnits: 30, yieldOnCost: 0 }
+  const { ytRooms: ytRoomConfig } = getProjectConfig(projectId)
 
   // Total capacity estimate
   const formResult = generateForm(form, area, width)
   const wings = formResult.wings.map(w => ({ ...w, floors: storeys }))
-  const roomsFloor = roomsPerFloor(wings, 'double_loaded', YOTEL_ROOMS)
+  const roomsFloor = roomsPerFloor(wings, 'double_loaded', ytRoomConfig)
   const upperFloors = storeys - 1
   const maxRooms = Math.floor(roomsFloor * upperFloors)
 
@@ -154,7 +188,7 @@ function optimizeUnitMix(
         storeys, corridorType: 'double_loaded' as const,
         ytRooms: yt, padUnits: pad, outdoorPosition: 'WEST' as const,
       }
-      const opt = buildOption(params)
+      const opt = buildOption(params, projectId)
       if (!opt.validation.isValid) continue
 
       const yoc = opt.cost.total > 0 ? opt.revenue.stabilisedNoi / opt.cost.total : 0
@@ -170,14 +204,14 @@ function optimizeUnitMix(
   return bestYield > 0 ? bestSplit : null
 }
 
-export function generateAll(maxOptions: number = 50): DesignOption[] {
+export function generateAll(maxOptions: number = 50, projectId?: ProjectId): DesignOption[] {
   optionCounter = 0
 
   // ── Phase 1: Generate 5 curated Architect's Options ─────────────────
   const curated: DesignOption[] = []
   for (const cfg of CURATED_OPTIONS) {
     try {
-      const opt = buildOption(cfg.params)
+      const opt = buildOption(cfg.params, projectId)
       opt.curatedId = cfg.id
       opt.curatedName = cfg.name
       opt.curatedConcept = cfg.concept
@@ -215,7 +249,7 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
                 ytRooms: yt, padUnits: pad, outdoorPosition: 'WEST',
               }
               try {
-                const opt = buildOption(params)
+                const opt = buildOption(params, projectId)
                 if (opt.validation.isValid) sweepOptions.push(opt)
               } catch {
                 // Skip invalid parameter combinations
@@ -232,7 +266,7 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
     for (const area of DESIGN_SPACE.floorAreas) {
       for (const width of DESIGN_SPACE.wingWidths) {
         for (const storeys of DESIGN_SPACE.storeys) {
-          const optimal = optimizeUnitMix(form, area, width, storeys)
+          const optimal = optimizeUnitMix(form, area, width, storeys, projectId)
           if (optimal) {
             try {
               const params: GenerationParams = {
@@ -241,7 +275,7 @@ export function generateAll(maxOptions: number = 50): DesignOption[] {
                 ytRooms: optimal.ytRooms, padUnits: optimal.padUnits,
                 outdoorPosition: 'WEST' as const,
               }
-              const opt = buildOption(params)
+              const opt = buildOption(params, projectId)
               if (opt.validation.isValid) sweepOptions.push(opt)
             } catch {
               // Skip invalid optimized combinations
