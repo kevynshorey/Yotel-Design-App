@@ -26,6 +26,7 @@ const InteractivePlanner = dynamic(
   { ssr: false }
 )
 import { generateAll } from '@/engine/generator'
+import type { ProjectId } from '@/engine/types'
 import { useDesign } from '@/context/design-context'
 import { exportToExcel } from '@/lib/export-excel'
 import { ExportDxfButton } from '@/components/design/export-dxf-button'
@@ -36,6 +37,17 @@ import { logAudit } from '@/store/audit-store'
 import type { DesignOption } from '@/engine/types'
 
 const MODULE_ROUTES = ['/design', '/planning', '/finance', '/dataroom', '/invest'] as const
+
+/** Map the localStorage project ID to the engine's ProjectId union */
+function getEngineProjectId(): ProjectId | undefined {
+  if (typeof window === 'undefined') return undefined
+  const storeId = localStorage.getItem('yotel-active-project')
+  if (!storeId) return undefined
+  if (storeId === 'carlisle-bay' || storeId.includes('carlisle')) return 'carlisle-bay'
+  if (storeId === 'abbeville' || storeId.includes('abbeville')) return 'abbeville'
+  if (storeId === 'mt-brevitor' || storeId.includes('mt-brevitor')) return 'mt-brevitor'
+  return undefined
+}
 
 function GeneratingOverlay() {
   return (
@@ -113,7 +125,7 @@ function DesignPageInner() {
 
   const handleGenerate = useCallback(() => {
     startTransition(() => {
-      const generated = generateAll(40)
+      const generated = generateAll(40, getEngineProjectId())
       setOptions(generated)
       if (generated.length > 0) selectOption(generated[0].id)
       // Reset compare state on new generation

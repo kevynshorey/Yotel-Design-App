@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { LogOut } from 'lucide-react'
+import { LogOut, LayoutGrid } from 'lucide-react'
 import { getSelectedOption } from '@/store/design-store'
 import { useUser } from '@/lib/use-user'
 import { ProjectSwitcher } from '@/components/project/project-switcher'
@@ -39,6 +40,13 @@ export function CommandBar() {
   return (
     <div className="flex h-10 items-center justify-between border-b border-[rgba(0,0,0,0.08)] bg-white/80 px-2 md:px-4 backdrop-blur-sm">
       <div className="flex items-center gap-2 min-w-0">
+        <Link
+          href="/select-project"
+          title="All Projects"
+          className="rounded p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 flex-shrink-0"
+        >
+          <LayoutGrid className="h-3.5 w-3.5" />
+        </Link>
         <ProjectSwitcher />
       </div>
       <div className="flex items-center gap-2 text-xs text-slate-500 flex-shrink-0">

@@ -52,14 +52,14 @@ export interface Project {
 const PROJECTS_KEY = 'yotel-projects'
 const ACTIVE_KEY = 'yotel-active-project'
 const SEED_VERSION_KEY = 'yotel-seed-version'
-const SEED_VERSION = 'v3'   // bump this whenever factory defaults change
+const SEED_VERSION = 'v4'   // bump this whenever factory defaults change
 
 // ── Default projects (seeded on first load) ────────────────────────────────
 
 const DEFAULT_PROJECTS: { id: string; factory: () => Project }[] = [
   { id: 'yotel-barbados-carlisle-bay', factory: createCarlisleBayProject },
   { id: 'abbeville-yotelpad', factory: createAbbevilleProject },
-  { id: 'mt-brevitor-estates', factory: createMtBrevitorProject },
+  { id: 'mt-brevitor', factory: createMtBrevitorProject },
 ]
 
 function createCarlisleBayProject(): Project {
@@ -181,7 +181,7 @@ function createAbbevilleProject(): Project {
 
 function createMtBrevitorProject(): Project {
   return {
-    id: 'mt-brevitor-estates',
+    id: 'mt-brevitor',
     name: 'Mt Brevitor Estates',
     location: 'Mount Brevitor, St Peter',
     description: '485-unit mixed-use estate | X Range · Farming · 7 Clusters · Heritage | 120 acres',
