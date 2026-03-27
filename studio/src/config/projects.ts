@@ -11,6 +11,6 @@ export const PROJECTS: Record<ProjectId, { name: string; description: string }> 
   },
   'mt-brevitor': {
     name: 'Mt Brevitor Estates',
-    description: 'Mixed-use | Sports · Farming · Residential · Community | Small YOTEL TBC',
+    description: '485 units | 120 acres | X Range · Farming · 7 Clusters · Heritage | St Peter',
   },
 }

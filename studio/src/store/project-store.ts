@@ -51,6 +51,8 @@ export interface Project {
 
 const PROJECTS_KEY = 'yotel-projects'
 const ACTIVE_KEY = 'yotel-active-project'
+const SEED_VERSION_KEY = 'yotel-seed-version'
+const SEED_VERSION = 'v3'   // bump this whenever factory defaults change
 
 // ── Default projects (seeded on first load) ────────────────────────────────
 
@@ -182,12 +184,11 @@ function createMtBrevitorProject(): Project {
     id: 'mt-brevitor-estates',
     name: 'Mt Brevitor Estates',
     location: 'Mount Brevitor, St Peter',
-    description: '355-unit mixed-use estate | Sports · Farming · Residential · Community | 120 acres',
-    totalKeys: 355,
+    description: '485-unit mixed-use estate | X Range · Farming · 7 Clusters · Heritage | 120 acres',
+    totalKeys: 485,
     brandConfig: {
       primary: 'ESTATE',
-      secondary: 'YOTEL TBC',
-      primaryKeys: 355,
+      primaryKeys: 485,
       secondaryKeys: 0,
     },
     siteConfig: {
@@ -253,6 +254,18 @@ function ensureSeeded(): Project[] {
   let projects = readProjects()
   let dirty = false
 
+  // Version check: if factory data has changed, flush stale default projects
+  // so they are re-created with current values (user-created projects are kept)
+  const storedVersion = typeof window !== 'undefined'
+    ? localStorage.getItem(SEED_VERSION_KEY)
+    : null
+
+  if (storedVersion !== SEED_VERSION) {
+    const defaultIds = new Set(DEFAULT_PROJECTS.map((d) => d.id))
+    projects = projects.filter((p) => !defaultIds.has(p.id))
+    dirty = true
+  }
+
   // Add any missing default projects
   for (const def of DEFAULT_PROJECTS) {
     if (!projects.some((p) => p.id === def.id)) {
@@ -261,7 +274,13 @@ function ensureSeeded(): Project[] {
     }
   }
 
-  if (dirty) writeProjects(projects)
+  if (dirty) {
+    writeProjects(projects)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SEED_VERSION_KEY, SEED_VERSION)
+    }
+  }
+
   return projects
 }
 
