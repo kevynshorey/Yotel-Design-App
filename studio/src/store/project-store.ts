@@ -52,16 +52,19 @@ export interface Project {
 const PROJECTS_KEY = 'yotel-projects'
 const ACTIVE_KEY = 'yotel-active-project'
 
-// ── Default YOTEL Barbados project (seeded from current config/site.ts) ─────
+// ── Default projects (seeded on first load) ────────────────────────────────
 
-const DEFAULT_PROJECT_ID = 'yotel-barbados-carlisle-bay'
+const DEFAULT_PROJECTS: { id: string; factory: () => Project }[] = [
+  { id: 'yotel-barbados-carlisle-bay', factory: createCarlisleBayProject },
+  { id: 'abbeville-yotelpad', factory: createAbbevilleProject },
+]
 
-function createDefaultProject(): Project {
+function createCarlisleBayProject(): Project {
   return {
-    id: DEFAULT_PROJECT_ID,
-    name: 'YOTEL Barbados',
-    location: 'Carlisle Bay, Bridgetown',
-    description: '130-key dual-brand hotel & residences on Barbados\u2019 west coast',
+    id: 'yotel-barbados-carlisle-bay',
+    name: 'YOTEL Carlisle Bay',
+    location: 'Bridgetown, St Michael',
+    description: '130-key dual-brand YOTEL & YOTELPAD on Barbados\u2019 west coast',
     totalKeys: 130,
     brandConfig: {
       primary: 'YOTEL',
@@ -117,6 +120,62 @@ function createDefaultProject(): Project {
   }
 }
 
+function createAbbevilleProject(): Project {
+  return {
+    id: 'abbeville-yotelpad',
+    name: 'Abbeville YOTELPAD',
+    location: 'Worthing, Christ Church',
+    description: '60-unit YOTELPAD serviced apartments with retail podium',
+    totalKeys: 60,
+    brandConfig: {
+      primary: 'YOTELPAD',
+      primaryKeys: 60,
+      secondaryKeys: 0,
+    },
+    siteConfig: {
+      boundary: [
+        { x: 0, y: 0 },
+        { x: 0, y: 55 },
+        { x: 15, y: 70 },
+        { x: 55, y: 75 },
+        { x: 75, y: 60 },
+        { x: 80, y: 30 },
+        { x: 70, y: 0 },
+        { x: 30, y: -5 },
+      ],
+      buildableArea: [
+        { x: 3, y: 10 },
+        { x: 3, y: 52 },
+        { x: 18, y: 67 },
+        { x: 52, y: 72 },
+        { x: 70, y: 57 },
+        { x: 75, y: 27 },
+        { x: 65, y: 10 },
+        { x: 30, y: 5 },
+      ],
+      offsets: { W: 3, N: 3, E: 5, S: 10 },
+      grossArea: 4008,
+      buildableAreaSqm: 3036,
+      maxCoverage: 0.50,
+      maxHeight: 20.5,
+    },
+    planningRules: {
+      jurisdiction: 'Barbados',
+      coastalSetback: 0,
+      maxCoverage: 0.50,
+      maxHeight: 20.5,
+      maxStoreys: 7,
+      sideSetback: 1.83,
+      rearSetback: 3.0,
+      roadSetback: 9.75,
+      eiaRequired: true,
+      heritageZone: false,
+    },
+    createdAt: '2026-03-26T00:00:00.000Z',
+    updatedAt: new Date().toISOString(),
+  }
+}
+
 // ── Storage helpers ─────────────────────────────────────────────────────────
 
 function readProjects(): Project[] {
@@ -138,10 +197,17 @@ function writeProjects(projects: Project[]): void {
 
 function ensureSeeded(): Project[] {
   let projects = readProjects()
-  if (projects.length === 0) {
-    projects = [createDefaultProject()]
-    writeProjects(projects)
+  let dirty = false
+
+  // Add any missing default projects
+  for (const def of DEFAULT_PROJECTS) {
+    if (!projects.some((p) => p.id === def.id)) {
+      projects.push(def.factory())
+      dirty = true
+    }
   }
+
+  if (dirty) writeProjects(projects)
   return projects
 }
 
