@@ -1,0 +1,33 @@
+{
+  "name": "yotel-design-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caro-aimai/Yotel-Design-App.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/caro-aimai/Yotel-Design-App/issues"
+  },
+  "homepage": "https://github.com/caro-aimai/Yotel-Design-App#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@swc/cli": "^0.8.0",
+    "@swc/core": "^1.15.21",
+    "@swc/html": "^1.15.21",
+    "chokidar": "^5.0.0",
+    "typescript": "^6.0.2"
+  }
+}
