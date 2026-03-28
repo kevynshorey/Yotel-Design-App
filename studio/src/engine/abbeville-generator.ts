@@ -41,6 +41,16 @@ const TOWER_POSITIONS = [
   { id: 'tower-d', label: 'Tower D — 15 PAD Units', x: 20, y: 15 },  // NE tower
 ]
 
+// Option 2.5: 3 staggered rectangular modules (20m x 10m, 2:1 ratio)
+// Modules step diagonally from SW (beach) to NE (road) for unobstructed sea views
+const MODULE = { length: 20, width: 10 }  // ~200 m² per floor, 2:1 ratio
+
+const MODULE_POSITIONS = [
+  { id: 'module-a', label: 'Module A — SW (Sea)', x: 2,  y: 2  },   // closest to beach
+  { id: 'module-b', label: 'Module B — Center',   x: 14, y: 8  },   // offset 12m E, 6m N
+  { id: 'module-c', label: 'Module C — NE (Road)', x: 26, y: 14 },  // offset again
+]
+
 // ── Helpers ──────────────────────────────────────────────────────────────
 
 /** Build room allocations for a YOTELPAD floor with N units. */
@@ -487,12 +497,126 @@ function buildOptionC(): DesignOption {
   }
 }
 
+/**
+ * Option D — Staggered Modules (Option 2.5): 3 modules × 7 floors = 84 units
+ * 3 rectangular modules (20m x 10m, 2:1 ratio) stepping diagonally toward beach.
+ * Height variance required (26.9m).
+ */
+function buildOptionD(): DesignOption {
+  const moduleCount = 3
+  const upperFloors = 7
+  const unitsPerModuleFloor = 4
+  const totalUnits = moduleCount * upperFloors * unitsPerModuleFloor  // 84
+
+  const podiumGIA = PODIUM.length * PODIUM.width                     // 1,350 m²
+  const moduleFloorArea = MODULE.length * MODULE.width               // 200 m² per module floor
+  const moduleGFA = moduleFloorArea * upperFloors * moduleCount      // 4,200 m²
+  const totalGFA = podiumGIA + moduleGFA                             // 5,550 m²
+  const height = GROUND_H + upperFloors * FLOOR_H                   // 4.5 + 22.4 = 26.9m
+  const coverage = podiumGIA / SITE.buildableArea
+
+  // Wings: podium + 3 staggered modules
+  const wings: Wing[] = [
+    {
+      id: 'podium',
+      label: 'Podium — Lobby, Gym, Retail, Restaurant',
+      x: 0, y: 0,
+      length: PODIUM.length, width: PODIUM.width,
+      direction: 'EW' as const,
+      floors: 1,
+    },
+    ...MODULE_POSITIONS.map((pos) => ({
+      id: pos.id,
+      label: pos.label,
+      x: pos.x, y: pos.y,
+      length: MODULE.length, width: MODULE.width,
+      direction: 'EW' as const,
+      floors: upperFloors,
+    })),
+  ]
+
+  const unitsPerFloorAllModules = unitsPerModuleFloor * moduleCount  // 12
+  const floors = buildFloors(upperFloors, unitsPerFloorAllModules, podiumGIA, moduleFloorArea * moduleCount)
+  const cost = calculateCost(podiumGIA, moduleGFA, totalGFA, totalUnits)
+  const revenue = calculateRevenue(totalUnits)
+  const amenities = buildAmenities()
+  amenities.totalAmenityArea = 900
+  const score = 78
+
+  const params: GenerationParams = {
+    form: 'BAR',
+    targetFloorArea: podiumGIA,
+    wingWidth: PODIUM.width,
+    storeys: upperFloors + 1,
+    corridorType: 'double_loaded',
+    ytRooms: 0,
+    padUnits: totalUnits,
+    outdoorPosition: 'WEST',
+  }
+
+  const metrics: OptionMetrics = {
+    totalKeys: totalUnits,
+    yotelKeys: 0,
+    padUnits: totalUnits,
+    gia: totalGFA,
+    giaPerKey: totalGFA / totalUnits,
+    footprint: podiumGIA,
+    coverage,
+    buildingHeight: height,
+    westFacade: PODIUM.length,
+    outdoorTotal: PROGRAMME.poolDeck,
+    costPerKey: cost.perKey,
+    tdc: cost.total,
+    corridorType: 'double_loaded',
+    form: 'BAR',
+    amenityScore: amenities.amenityScore,
+  }
+
+  const scoring: Record<string, ScoreBreakdown> = {
+    room_count:      { raw: 90, weighted: 90 * 0.15, reason: '84 units — highest density option' },
+    gia_efficiency:  { raw: 80, weighted: 80 * 0.10, reason: 'Large modules efficient for unit packing' },
+    sea_views:       { raw: 85, weighted: 85 * 0.10, reason: '3 staggered modules — view corridors between modules to SW sea' },
+    building_height: { raw: 60, weighted: 60 * 0.10, reason: '26.9m exceeds 20.5m — requires height variance' },
+    outdoor_amenity: { raw: 75, weighted: 75 * 0.085, reason: 'Pool deck + space between modules' },
+    cost_per_key:    { raw: 80, weighted: 80 * 0.15, reason: 'Good cost efficiency at 84 keys' },
+    daylight_quality:{ raw: 80, weighted: 80 * 0.095, reason: 'Staggered modules — good but modules are wider than towers' },
+    pad_mix:         { raw: 85, weighted: 85 * 0.10, reason: 'Full PAD unit mix' },
+    form_simplicity: { raw: 70, weighted: 70 * 0.085, reason: '3 large modules — more complex structure than identical towers' },
+    amenity_quality: { raw: 75, weighted: 75 * 0.085, reason: 'Ground floor amenities + module courtyard spaces' },
+  }
+
+  return {
+    id: 'abb-staggered-84',
+    form: 'BAR',
+    params,
+    wings,
+    floors,
+    metrics,
+    cost,
+    revenue,
+    amenities,
+    score,
+    scoringBreakdown: scoring,
+    validation: {
+      isValid: true,
+      violations: [],
+      warnings: [
+        `Building height ${height.toFixed(1)}m exceeds 20.5m — requires planning height variance`,
+        '3 large cantilevered modules increase structural complexity vs 4 smaller towers',
+      ],
+    },
+    curatedId: 'abb-staggered-84',
+    curatedName: 'Abbeville Staggered Modules',
+    curatedConcept: '3 interlocking rectangular modules (2:1 ratio) stepping diagonally toward beach, 84 YOTELPAD units across 7 floors, view corridors between modules',
+  }
+}
+
 // ── Public API ─────────────────────────────────────────────────────────
 
 /**
- * Returns 3 curated Abbeville design options.
- * 4 identical towers on a ground-floor podium, staggered for views and ventilation.
+ * Returns 4 curated Abbeville design options.
+ * Options A-C: towers on podium. Option D: 3 staggered modules.
  */
 export function generateAbbevilleOptions(): DesignOption[] {
-  return [buildOptionA(), buildOptionB(), buildOptionC()]
+  return [buildOptionA(), buildOptionB(), buildOptionC(), buildOptionD()]
 }
