@@ -1,17 +1,14 @@
 /**
- * Abbeville YOTELPAD — Terraced single-building design options generator.
+ * Abbeville YOTELPAD — 4 identical towers on a ground-floor podium.
  *
- * Returns 3 curated design options for the Abbeville site in Worthing,
- * Christ Church, Barbados. Each option models a SINGLE terraced building
- * with stepped-back upper floors creating a wedge/"wedding cake" profile
- * oriented 30 degrees for SW sea-view corridors.
+ * Building concept (per iR Architecture):
+ * - ONE ground-floor podium with lobby, gym, retail, restaurant, pool
+ * - FOUR identical residential towers sitting ON the podium
+ * - Towers are the SAME SIZE — not tapering or terraced
+ * - Towers are STAGGERED in position (offset from each other, not grid-aligned)
+ * - Building oriented ~30° to catch SW sea views and trade winds
  *
- * Building geometry: wider podium at ground, narrowing toward the top.
- * Each floor group is a separate Wing in the wings array so the viewer
- * renders different footprints per floor group.
- *
- * Unlike the parametric sweep in generator.ts, this file produces
- * fixed options that can be consumed directly as DesignOption[].
+ * This file produces hardcoded design options — not a parametric sweep.
  */
 
 import type {
@@ -25,31 +22,34 @@ import { SITE } from '@/config/abbeville/site'
 
 // ── Constants ────────────────────────────────────────────────────────────
 
-const GROUND_FLOOR_H = PROGRAMME.groundFloorHeight // 4.5 m
-const FLOOR_H = PROGRAMME.floorToFloor             // 3.2 m
+const GROUND_H = PROGRAMME.groundFloorHeight  // 4.5 m
+const FLOOR_H = PROGRAMME.floorToFloor        // 3.2 m
 
-/**
- * Terraced building geometry — one continuous structure, wider at bottom.
- * Each tier is a separate wing so the 3D viewer renders stepped footprints.
- *
- * All tiers share the same x origin (NE / road side stays flush).
- * Width decreases on the SW side, creating terraced balconies.
- */
-const PODIUM = { length: 40, width: 28 }  // Ground floor (Level 0)
-const TIER1  = { length: 40, width: 26 }  // Levels 1-2 (2 m setback from podium on SW)
-const TIER2  = { length: 40, width: 23 }  // Levels 3-4 (3 m setback from Tier 1)
-const TIER3  = { length: 40, width: 20 }  // Levels 5-6 (3 m setback from Tier 2)
+// Podium: full ground floor — lobby, gym, retail, restaurant, pool access
+const PODIUM = { length: 45, width: 30 }  // ~1,350 m²
 
-// ── Helpers ────────────────────────────────────────────────────────────
+// Each tower: identical dimensions, 15 units per tower across 5 floors = 3 units/floor
+const TOWER = { length: 12.5, width: 11.8 }  // ~147.5 m² per floor
 
-/** Build room allocations for a single YOTELPAD floor with N units. */
+// Tower positions — staggered on the podium for view corridors and cross-ventilation
+// Positions are in buildable-local coordinates (x = east, y = north from buildable SW corner)
+// Stagger pattern: towers offset diagonally so no tower blocks another's SW sea view
+const TOWER_POSITIONS = [
+  { id: 'tower-a', label: 'Tower A — 15 PAD Units', x: 3,  y: 4  },  // SW tower (closest to sea)
+  { id: 'tower-b', label: 'Tower B — 15 PAD Units', x: 17, y: 2  },  // SE tower
+  { id: 'tower-c', label: 'Tower C — 15 PAD Units', x: 6,  y: 17 },  // NW tower
+  { id: 'tower-d', label: 'Tower D — 15 PAD Units', x: 20, y: 15 },  // NE tower
+]
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+/** Build room allocations for a YOTELPAD floor with N units. */
 function buildPadRoomAllocations(unitsOnFloor: number): RoomAllocation[] {
   const allocations: RoomAllocation[] = []
   for (const [type, room] of Object.entries(ABBEVILLE_UNITS)) {
     const count = Math.max(1, Math.round(unitsOnFloor * room.pct))
     allocations.push({ type, count, nia: room.nia })
   }
-  // Adjust to hit exact unit count — trim or add from largest bucket
   const total = allocations.reduce((s, a) => s + a.count, 0)
   if (total !== unitsOnFloor) {
     const largest = allocations.reduce((a, b) => (a.count > b.count ? a : b))
@@ -58,33 +58,27 @@ function buildPadRoomAllocations(unitsOnFloor: number): RoomAllocation[] {
   return allocations
 }
 
-/** Build ground-floor (podium) room allocations — amenity + retail, no keys. */
+/** Ground-floor podium allocations — amenity + retail, no keys. */
 function buildGroundFloorAllocations(): RoomAllocation[] {
   return [
-    { type: 'Lobby',           count: 1, nia: 130 },
-    { type: 'Restaurant',      count: 1, nia: 280 },
-    { type: 'Gym',             count: 1, nia: 93  },
-    { type: 'CoWorking',       count: 1, nia: 111 },
-    { type: 'Retail',          count: 1, nia: 46  },
-    { type: 'BOH',             count: 1, nia: 167 },
+    { type: 'Lobby',      count: 1, nia: 130 },
+    { type: 'Restaurant', count: 1, nia: 280 },
+    { type: 'Gym',        count: 1, nia: 93  },
+    { type: 'CoWorking',  count: 1, nia: 111 },
+    { type: 'Retail',     count: 1, nia: 46  },
+    { type: 'BOH',        count: 1, nia: 167 },
   ]
 }
 
 /**
- * Build Floor[] for the terraced building.
- *
- * Level 0 = FOH_BOH (podium — full footprint)
- * Level 1-N = YOTELPAD with per-floor room allocations
- *
- * @param tierConfig Array of { floors, unitsPerFloor, footprint } per tier
+ * Build Floor[] for the 4-tower-on-podium scheme.
+ * Level 0 = podium (FOH_BOH)
+ * Levels 1-N = YOTELPAD (units across all 4 towers combined)
  */
-function buildTerracedFloors(
-  tierConfig: { floors: number; unitsPerFloor: number; footprint: number }[],
-  podiumGIA: number,
-): Floor[] {
+function buildFloors(upperFloors: number, unitsPerFloor: number, podiumGIA: number, towerFloorArea: number): Floor[] {
   const floors: Floor[] = []
 
-  // Level 0: podium / ground floor
+  // Level 0: podium
   floors.push({
     level: 0,
     use: 'FOH_BOH',
@@ -92,30 +86,55 @@ function buildTerracedFloors(
     gia: podiumGIA,
   })
 
-  // Upper levels from tier configs
-  let levelCounter = 1
-  for (const tier of tierConfig) {
-    for (let f = 0; f < tier.floors; f++) {
-      floors.push({
-        level: levelCounter,
-        use: 'YOTELPAD',
-        rooms: buildPadRoomAllocations(tier.unitsPerFloor),
-        gia: tier.footprint,
-      })
-      levelCounter++
-    }
+  // Upper levels — each level has units across all towers combined
+  for (let i = 1; i <= upperFloors; i++) {
+    floors.push({
+      level: i,
+      use: 'YOTELPAD',
+      rooms: buildPadRoomAllocations(unitsPerFloor),
+      gia: towerFloorArea,
+    })
   }
 
   return floors
 }
 
-/** Cost calculation per the Abbeville financial model. */
-function calculateCost(
-  podiumGFA: number,
-  towerGFA: number,
-  totalGFA: number,
-  totalUnits: number,
-): CostEstimate {
+/** Build wings array — podium + 4 identical towers. */
+function buildWings(towerCount: number, upperFloors: number): Wing[] {
+  const wings: Wing[] = []
+
+  // Podium wing — ground floor only
+  wings.push({
+    id: 'podium',
+    label: 'Podium — Lobby, Gym, Retail, Restaurant',
+    x: 0,
+    y: 0,
+    length: PODIUM.length,
+    width: PODIUM.width,
+    direction: 'EW' as const,
+    floors: 1,
+  })
+
+  // Tower wings — identical size, staggered positions
+  for (let i = 0; i < towerCount; i++) {
+    const pos = TOWER_POSITIONS[i]
+    wings.push({
+      id: pos.id,
+      label: pos.label,
+      x: pos.x,
+      y: pos.y,
+      length: TOWER.length,
+      width: TOWER.width,
+      direction: 'EW' as const,
+      floors: upperFloors,
+    })
+  }
+
+  return wings
+}
+
+/** Cost calculation per Abbeville financial model. */
+function calculateCost(podiumGFA: number, towerGFA: number, totalGFA: number, totalUnits: number): CostEstimate {
   const basePodium = podiumGFA * FINANCIALS.hardCostPerM2Podium
   const baseTower = towerGFA * FINANCIALS.hardCostPerM2Tower
   const baseConstruction = basePodium + baseTower
@@ -185,14 +204,12 @@ function calculateRevenue(totalUnits: number): RevenueProjection {
     noi: noi * factor,
   }))
 
-  const revPar = occupancy * blendedADR
-
   return {
     years,
     stabilisedNoi: noi,
     stabilisedNoiPerKey: noi / Math.max(1, totalUnits),
     gopMargin: FINANCIALS.gopMargin,
-    revPar,
+    revPar: occupancy * blendedADR,
   }
 }
 
@@ -230,76 +247,43 @@ function buildAmenities(): AmenityProgramme {
   }
 }
 
-/** Build a scoring breakdown record. */
+/** Build scoring breakdown. */
 function buildScoring(score: number): Record<string, ScoreBreakdown> {
   return {
     room_count:      { raw: score, weighted: score * 0.15, reason: 'Unit count' },
     gia_efficiency:  { raw: score, weighted: score * 0.10, reason: 'GIA efficiency' },
-    sea_views:       { raw: score * 0.85, weighted: score * 0.085, reason: 'Terraced setbacks create SW sea-view balconies' },
+    sea_views:       { raw: score * 0.90, weighted: score * 0.09, reason: '4 staggered towers — view corridors between towers to SW sea' },
     building_height: { raw: score, weighted: score * 0.10, reason: 'Height compliance' },
-    outdoor_amenity: { raw: score * 0.85, weighted: score * 0.085, reason: 'Pool deck + terrace amenity' },
+    outdoor_amenity: { raw: score * 0.85, weighted: score * 0.085, reason: 'Pool deck + podium courtyard' },
     cost_per_key:    { raw: score, weighted: score * 0.15, reason: 'Cost per key' },
-    daylight_quality:{ raw: score * 0.95, weighted: score * 0.095, reason: 'Stepped profile — excellent daylight to all terraces' },
+    daylight_quality:{ raw: score * 0.95, weighted: score * 0.095, reason: 'Staggered towers — excellent cross-ventilation and daylight' },
     pad_mix:         { raw: score, weighted: score * 0.10, reason: 'PAD unit mix' },
-    form_simplicity: { raw: score * 0.9, weighted: score * 0.09, reason: 'Single terraced form — efficient structure' },
-    amenity_quality: { raw: score * 0.85, weighted: score * 0.085, reason: 'Ground floor amenities + terrace decks' },
+    form_simplicity: { raw: score * 0.85, weighted: score * 0.085, reason: '4 identical towers — repetitive, efficient to build' },
+    amenity_quality: { raw: score * 0.85, weighted: score * 0.085, reason: 'Ground floor amenities + pool courtyard' },
   }
 }
 
-// ── Wing builders ─────────────────────────────────────────────────────
+// ── Option Builders ──────────────────────────────────────────────────────
 
 /**
- * Build wings for the terraced building.
- * Each wing represents a floor group with its own footprint.
- * y offset increases for upper tiers (SW face moves inward).
- */
-function buildTerracedWings(
-  tiers: { id: string; label: string; length: number; width: number; floors: number; yOffset: number }[],
-): Wing[] {
-  return tiers.map((t) => ({
-    id: t.id,
-    label: t.label,
-    x: 6,            // All tiers start at same x (centred in buildable area)
-    y: t.yOffset,     // NE (road) side flush; SW side steps inward
-    length: t.length,
-    width: t.width,
-    direction: 'EW' as const,
-    floors: t.floors,
-  }))
-}
-
-// ── Option builders ────────────────────────────────────────────────────
-
-/**
- * Option A — Base Case
- * 6 upper floors + ground, 60 units, 20.5m height
- * L1-2: 12 units/floor (24), L3-4: 10 units/floor (20), L5-6: 8 units/floor (16)
+ * Option A — Base Case: 4 towers × 5 floors = 60 units
  */
 function buildOptionA(): DesignOption {
-  const totalUnits = 60
-  const podiumGIA = PODIUM.length * PODIUM.width           // 1120 m²
-  const tier1GFA = TIER1.length * TIER1.width * 2           // 2080 m²
-  const tier2GFA = TIER2.length * TIER2.width * 2           // 1840 m²
-  const tier3GFA = TIER3.length * TIER3.width * 2           // 1600 m²
-  const towerGFA = tier1GFA + tier2GFA + tier3GFA           // 5520 m²
-  const totalGFA = podiumGIA + towerGFA                     // 6640 m²
-  const height = GROUND_FLOOR_H + 6 * FLOOR_H              // 4.5 + 19.2 = 23.7 → cap at 20.5 via planning
-  const actualHeight = 20.5                                  // Design height within planning limit
+  const towerCount = 4
+  const upperFloors = 5
+  const unitsPerTowerFloor = 3
+  const totalUnits = towerCount * upperFloors * unitsPerTowerFloor  // 60
+
+  const podiumGIA = PODIUM.length * PODIUM.width                   // 1,350 m²
+  const towerFloorArea = TOWER.length * TOWER.width                // 147.5 m² per tower floor
+  const towerGFA = towerFloorArea * upperFloors * towerCount       // 2,950 m²
+  const totalGFA = podiumGIA + towerGFA                            // 4,300 m²
+  const height = GROUND_H + upperFloors * FLOOR_H                  // 4.5 + 16.0 = 20.5m
   const coverage = podiumGIA / SITE.buildableArea
 
-  const wings = buildTerracedWings([
-    { id: 'podium',  label: 'Ground — Podium',        length: PODIUM.length, width: PODIUM.width, floors: 1, yOffset: 10 },
-    { id: 'tier-1',  label: 'L1-2 — 12 units/floor',  length: TIER1.length,  width: TIER1.width,  floors: 2, yOffset: 10 },
-    { id: 'tier-2',  label: 'L3-4 — 10 units/floor',  length: TIER2.length,  width: TIER2.width,  floors: 2, yOffset: 10 + (PODIUM.width - TIER2.width) },
-    { id: 'tier-3',  label: 'L5-6 — 8 units/floor',   length: TIER3.length,  width: TIER3.width,  floors: 2, yOffset: 10 + (PODIUM.width - TIER3.width) },
-  ])
-
-  const tierConfig = [
-    { floors: 2, unitsPerFloor: 12, footprint: TIER1.length * TIER1.width },
-    { floors: 2, unitsPerFloor: 10, footprint: TIER2.length * TIER2.width },
-    { floors: 2, unitsPerFloor: 8,  footprint: TIER3.length * TIER3.width },
-  ]
-  const floors = buildTerracedFloors(tierConfig, podiumGIA)
+  const wings = buildWings(towerCount, upperFloors)
+  const unitsPerFloorAllTowers = unitsPerTowerFloor * towerCount   // 12 units combined across all towers per level
+  const floors = buildFloors(upperFloors, unitsPerFloorAllTowers, podiumGIA, towerFloorArea * towerCount)
   const cost = calculateCost(podiumGIA, towerGFA, totalGFA, totalUnits)
   const revenue = calculateRevenue(totalUnits)
   const amenities = buildAmenities()
@@ -307,9 +291,9 @@ function buildOptionA(): DesignOption {
 
   const params: GenerationParams = {
     form: 'BAR',
-    targetFloorArea: PODIUM.length * PODIUM.width,
+    targetFloorArea: podiumGIA,
     wingWidth: PODIUM.width,
-    storeys: 7, // ground + 6 upper
+    storeys: upperFloors + 1,
     corridorType: 'double_loaded',
     ytRooms: 0,
     padUnits: totalUnits,
@@ -324,7 +308,7 @@ function buildOptionA(): DesignOption {
     giaPerKey: totalGFA / totalUnits,
     footprint: podiumGIA,
     coverage,
-    buildingHeight: actualHeight,
+    buildingHeight: height,
     westFacade: PODIUM.length,
     outdoorTotal: PROGRAMME.poolDeck,
     costPerKey: cost.perKey,
@@ -332,12 +316,6 @@ function buildOptionA(): DesignOption {
     corridorType: 'double_loaded',
     form: 'BAR',
     amenityScore: amenities.amenityScore,
-  }
-
-  const validation: ValidationResult = {
-    isValid: true,
-    violations: [],
-    warnings: [],
   }
 
   return {
@@ -352,42 +330,32 @@ function buildOptionA(): DesignOption {
     amenities,
     score,
     scoringBreakdown: buildScoring(score),
-    validation,
+    validation: { isValid: true, violations: [], warnings: [] },
     curatedId: 'abb-base-60',
     curatedName: 'Abbeville Base Case',
-    curatedConcept: 'Single terraced building, 60 YOTELPAD units across 6 upper floors, stepped-back upper floors for SW sea-view terraces',
+    curatedConcept: '4 identical towers on podium, 60 YOTELPAD units, staggered for SW sea views and trade wind ventilation',
   }
 }
 
 /**
- * Option B — Height Upside
- * 7 upper floors + ground, 72 units, ~23m (requires height variance)
- * L1-2: 12 units/floor (24), L3-4: 10 units/floor (20), L5-7: 9-10 units/floor (28)
+ * Option B — Height Upside: 4 towers × 6 floors = 72 units (needs height variance)
  */
 function buildOptionB(): DesignOption {
-  const totalUnits = 72
+  const towerCount = 4
+  const upperFloors = 6
+  const unitsPerTowerFloor = 3
+  const totalUnits = towerCount * upperFloors * unitsPerTowerFloor  // 72
+
   const podiumGIA = PODIUM.length * PODIUM.width
-  const tier1GFA = TIER1.length * TIER1.width * 2
-  const tier2GFA = TIER2.length * TIER2.width * 2
-  const tier3GFA = TIER3.length * TIER3.width * 3           // 3 floors in top tier
-  const towerGFA = tier1GFA + tier2GFA + tier3GFA
+  const towerFloorArea = TOWER.length * TOWER.width
+  const towerGFA = towerFloorArea * upperFloors * towerCount
   const totalGFA = podiumGIA + towerGFA
-  const height = GROUND_FLOOR_H + 7 * FLOOR_H              // 4.5 + 22.4 = 26.9 → needs variance
+  const height = GROUND_H + upperFloors * FLOOR_H                  // 4.5 + 19.2 = 23.7m — needs variance
   const coverage = podiumGIA / SITE.buildableArea
 
-  const wings = buildTerracedWings([
-    { id: 'podium',  label: 'Ground — Podium',          length: PODIUM.length, width: PODIUM.width, floors: 1, yOffset: 10 },
-    { id: 'tier-1',  label: 'L1-2 — 12 units/floor',    length: TIER1.length,  width: TIER1.width,  floors: 2, yOffset: 10 },
-    { id: 'tier-2',  label: 'L3-4 — 10 units/floor',    length: TIER2.length,  width: TIER2.width,  floors: 2, yOffset: 10 + (PODIUM.width - TIER2.width) },
-    { id: 'tier-3',  label: 'L5-7 — 9-10 units/floor',  length: TIER3.length,  width: TIER3.width,  floors: 3, yOffset: 10 + (PODIUM.width - TIER3.width) },
-  ])
-
-  const tierConfig = [
-    { floors: 2, unitsPerFloor: 12, footprint: TIER1.length * TIER1.width },
-    { floors: 2, unitsPerFloor: 10, footprint: TIER2.length * TIER2.width },
-    { floors: 3, unitsPerFloor: 9,  footprint: TIER3.length * TIER3.width },  // 9×3=27, + 24 + 20 = 71, round up
-  ]
-  const floors = buildTerracedFloors(tierConfig, podiumGIA)
+  const wings = buildWings(towerCount, upperFloors)
+  const unitsPerFloorAllTowers = unitsPerTowerFloor * towerCount
+  const floors = buildFloors(upperFloors, unitsPerFloorAllTowers, podiumGIA, towerFloorArea * towerCount)
   const cost = calculateCost(podiumGIA, towerGFA, totalGFA, totalUnits)
   const revenue = calculateRevenue(totalUnits)
   const amenities = buildAmenities()
@@ -395,9 +363,9 @@ function buildOptionB(): DesignOption {
 
   const params: GenerationParams = {
     form: 'BAR',
-    targetFloorArea: PODIUM.length * PODIUM.width,
+    targetFloorArea: podiumGIA,
     wingWidth: PODIUM.width,
-    storeys: 8, // ground + 7 upper
+    storeys: upperFloors + 1,
     corridorType: 'double_loaded',
     ytRooms: 0,
     padUnits: totalUnits,
@@ -422,14 +390,6 @@ function buildOptionB(): DesignOption {
     amenityScore: amenities.amenityScore,
   }
 
-  const validation: ValidationResult = {
-    isValid: true,
-    violations: [],
-    warnings: [
-      `Building height ${Math.round(height * 10) / 10}m exceeds 20.5m site maximum — requires planning height variance`,
-    ],
-  }
-
   return {
     id: 'abb-height-72',
     form: 'BAR',
@@ -442,51 +402,48 @@ function buildOptionB(): DesignOption {
     amenities,
     score,
     scoringBreakdown: buildScoring(score),
-    validation,
+    validation: {
+      isValid: true,
+      violations: [],
+      warnings: [`Building height ${height.toFixed(1)}m exceeds 20.5m — requires planning height variance`],
+    },
     curatedId: 'abb-height-72',
     curatedName: 'Abbeville Height Upside',
-    curatedConcept: 'Single terraced building, 72 YOTELPAD units across 7 upper floors, +1 floor on top tier (height variance required)',
+    curatedConcept: '4 identical towers on podium, 72 YOTELPAD units (6 upper floors), requires height variance approval',
   }
 }
 
 /**
- * Option C — Conservative
- * 4 upper floors + ground, 48 units, ~17m height
- * L1-2: 12 units/floor (24), L3-4: 12 units/floor (24) — only 2 tiers
+ * Option C — Conservative: 3 towers × 5 floors = 45 units
  */
 function buildOptionC(): DesignOption {
-  const totalUnits = 48
+  const towerCount = 3
+  const upperFloors = 5
+  const unitsPerTowerFloor = 3
+  const totalUnits = towerCount * upperFloors * unitsPerTowerFloor  // 45
+
   const podiumGIA = PODIUM.length * PODIUM.width
-  const tier1GFA = TIER1.length * TIER1.width * 2
-  const tier2GFA = TIER2.length * TIER2.width * 2
-  const towerGFA = tier1GFA + tier2GFA
+  const towerFloorArea = TOWER.length * TOWER.width
+  const towerGFA = towerFloorArea * upperFloors * towerCount
   const totalGFA = podiumGIA + towerGFA
-  const height = GROUND_FLOOR_H + 4 * FLOOR_H              // 4.5 + 12.8 = 17.3
+  const height = GROUND_H + upperFloors * FLOOR_H                  // 20.5m
   const coverage = podiumGIA / SITE.buildableArea
 
-  const wings = buildTerracedWings([
-    { id: 'podium',  label: 'Ground — Podium',        length: PODIUM.length, width: PODIUM.width, floors: 1, yOffset: 10 },
-    { id: 'tier-1',  label: 'L1-2 — 12 units/floor',  length: TIER1.length,  width: TIER1.width,  floors: 2, yOffset: 10 },
-    { id: 'tier-2',  label: 'L3-4 — 12 units/floor',  length: TIER2.length,  width: TIER2.width,  floors: 2, yOffset: 10 + (PODIUM.width - TIER2.width) },
-  ])
-
-  const tierConfig = [
-    { floors: 2, unitsPerFloor: 12, footprint: TIER1.length * TIER1.width },
-    { floors: 2, unitsPerFloor: 12, footprint: TIER2.length * TIER2.width },
-  ]
-  const floors = buildTerracedFloors(tierConfig, podiumGIA)
+  const wings = buildWings(towerCount, upperFloors)
+  const unitsPerFloorAllTowers = unitsPerTowerFloor * towerCount   // 9
+  const floors = buildFloors(upperFloors, unitsPerFloorAllTowers, podiumGIA, towerFloorArea * towerCount)
   const cost = calculateCost(podiumGIA, towerGFA, totalGFA, totalUnits)
   const revenue = calculateRevenue(totalUnits)
   const amenities = buildAmenities()
-  amenities.totalAmenityArea = 900  // extra amenity space with fewer floors
+  amenities.totalAmenityArea = 950
   amenities.loungerCapacity = 40
   const score = 75
 
   const params: GenerationParams = {
     form: 'BAR',
-    targetFloorArea: PODIUM.length * PODIUM.width,
+    targetFloorArea: podiumGIA,
     wingWidth: PODIUM.width,
-    storeys: 5, // ground + 4 upper
+    storeys: upperFloors + 1,
     corridorType: 'double_loaded',
     ytRooms: 0,
     padUnits: totalUnits,
@@ -503,7 +460,7 @@ function buildOptionC(): DesignOption {
     coverage,
     buildingHeight: height,
     westFacade: PODIUM.length,
-    outdoorTotal: PROGRAMME.poolDeck + 120, // extra terrace deck from fewer floors
+    outdoorTotal: PROGRAMME.poolDeck + 150,
     costPerKey: cost.perKey,
     tdc: cost.total,
     corridorType: 'double_loaded',
@@ -511,14 +468,8 @@ function buildOptionC(): DesignOption {
     amenityScore: amenities.amenityScore,
   }
 
-  const validation: ValidationResult = {
-    isValid: true,
-    violations: [],
-    warnings: [],
-  }
-
   return {
-    id: 'abb-conservative-48',
+    id: 'abb-conservative-45',
     form: 'BAR',
     params,
     wings,
@@ -529,19 +480,18 @@ function buildOptionC(): DesignOption {
     amenities,
     score,
     scoringBreakdown: buildScoring(score),
-    validation,
-    curatedId: 'abb-conservative-48',
+    validation: { isValid: true, violations: [], warnings: [] },
+    curatedId: 'abb-conservative-45',
     curatedName: 'Abbeville Conservative',
-    curatedConcept: 'Single terraced building, 48 YOTELPAD units across 4 upper floors, generous terrace decks + expanded amenities',
+    curatedConcept: '3 towers on podium, 45 YOTELPAD units, more amenity space, easier planning approval',
   }
 }
 
 // ── Public API ─────────────────────────────────────────────────────────
 
 /**
- * Returns 3 curated, hardcoded Abbeville design options.
- * Each models a single terraced building with stepped-back upper floors
- * creating SW sea-view terrace balconies — per iR Architecture concept.
+ * Returns 3 curated Abbeville design options.
+ * 4 identical towers on a ground-floor podium, staggered for views and ventilation.
  */
 export function generateAbbevilleOptions(): DesignOption[] {
   return [buildOptionA(), buildOptionB(), buildOptionC()]

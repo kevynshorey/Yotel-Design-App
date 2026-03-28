@@ -705,20 +705,19 @@ export function Viewer3D({
     const { wings } = selectedOption
     let maxBuildingY = 0
 
-    // For terraced buildings (Abbeville), each wing has its own floor count
-    // and stacks sequentially. For legacy tower designs, each wing gets
-    // all floors rendered independently.
-    const isTerraced = projectId === 'abbeville'
+    // Abbeville: 4 towers on a podium — podium is 1 floor at ground,
+    // each tower stacks its floors starting ABOVE the podium (y = 4.5m).
+    // Legacy (Carlisle Bay): each wing gets all floors stacked independently.
+    const isTowersOnPodium = projectId === 'abbeville'
 
-    if (isTerraced) {
-      // Terraced: wings stack sequentially — podium first, then tier by tier.
-      // Each wing's `floors` count determines how many slabs it gets.
-      let currentY = 0
+    if (isTowersOnPodium) {
       for (const wing of wings) {
+        const isPodium = wing.id === 'podium'
+        const startY = isPodium ? 0 : GROUND_H  // Towers start above podium
+
         for (let f = 0; f < wing.floors; f++) {
-          const isGround = currentY === 0
-          const h = isGround ? GROUND_H : FLOOR_H
-          const floorUse = isGround ? 'FOH_BOH' : 'YOTELPAD'
+          const h = (isPodium && f === 0) ? GROUND_H : FLOOR_H
+          const floorUse = isPodium ? 'FOH_BOH' : 'YOTELPAD'
           const mat = MATERIALS[floorUse]?.clone() ?? new THREE.MeshStandardMaterial({
             color: 0xcccccc,
             roughness: 0.7,
@@ -734,7 +733,7 @@ export function Viewer3D({
             wing.direction === 'EW' ? wing.width : wing.length,
           )
           const mesh = new THREE.Mesh(geometry, mat)
-          const yPos = currentY + geoH / 2
+          const yPos = startY + f * h + geoH / 2
           mesh.position.set(
             wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2),
             yPos,
@@ -752,12 +751,12 @@ export function Viewer3D({
           group.add(wireframe)
           floorOriginalYRef.current.set(wireframe, yPos)
 
-          currentY += h
+          const topY = startY + (f + 1) * h
+          if (topY > maxBuildingY) maxBuildingY = topY
         }
       }
-      maxBuildingY = currentY
 
-      // Position the building group in world coords and apply 30-degree rotation
+      // Position building group in world coords and apply 30° rotation for SW sea views
       group.position.set(projBuildX, 0, projBuildZ)
       group.rotation.y = (30 * Math.PI) / 180
     } else {
