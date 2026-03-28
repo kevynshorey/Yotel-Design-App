@@ -705,46 +705,104 @@ export function Viewer3D({
     const { wings } = selectedOption
     let maxBuildingY = 0
 
-    for (const wing of wings) {
+    // For terraced buildings (Abbeville), each wing has its own floor count
+    // and stacks sequentially. For legacy tower designs, each wing gets
+    // all floors rendered independently.
+    const isTerraced = projectId === 'abbeville'
+
+    if (isTerraced) {
+      // Terraced: wings stack sequentially — podium first, then tier by tier.
+      // Each wing's `floors` count determines how many slabs it gets.
       let currentY = 0
-      for (const floor of selectedOption.floors) {
-        const h = floor.level === 0 ? GROUND_H : FLOOR_H
-        const mat = MATERIALS[floor.use]?.clone() ?? new THREE.MeshStandardMaterial({
-          color: 0xcccccc,
-          roughness: 0.7,
-          metalness: 0.1,
-          transparent: true,
-          opacity: 0.85,
-        })
+      for (const wing of wings) {
+        for (let f = 0; f < wing.floors; f++) {
+          const isGround = currentY === 0
+          const h = isGround ? GROUND_H : FLOOR_H
+          const floorUse = isGround ? 'FOH_BOH' : 'YOTELPAD'
+          const mat = MATERIALS[floorUse]?.clone() ?? new THREE.MeshStandardMaterial({
+            color: 0xcccccc,
+            roughness: 0.7,
+            metalness: 0.1,
+            transparent: true,
+            opacity: 0.85,
+          })
 
-        const geoH = h - 0.1
-        const geometry = new THREE.BoxGeometry(
-          wing.direction === 'EW' ? wing.length : wing.width,
-          geoH,
-          wing.direction === 'EW' ? wing.width : wing.length,
-        )
-        const mesh = new THREE.Mesh(geometry, mat)
-        const yPos = currentY + geoH / 2
-        mesh.position.set(
-          wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2) + projBuildX,
-          yPos,
-          -(wing.y + (wing.direction === 'EW' ? wing.width / 2 : wing.length / 2)) + projBuildZ,
-        )
-        mesh.castShadow = true
-        mesh.receiveShadow = true
-        group.add(mesh)
-        floorOriginalYRef.current.set(mesh, yPos)
+          const geoH = h - 0.1
+          const geometry = new THREE.BoxGeometry(
+            wing.direction === 'EW' ? wing.length : wing.width,
+            geoH,
+            wing.direction === 'EW' ? wing.width : wing.length,
+          )
+          const mesh = new THREE.Mesh(geometry, mat)
+          const yPos = currentY + geoH / 2
+          mesh.position.set(
+            wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2),
+            yPos,
+            -(wing.y + (wing.direction === 'EW' ? wing.width / 2 : wing.length / 2)),
+          )
+          mesh.castShadow = true
+          mesh.receiveShadow = true
+          group.add(mesh)
+          floorOriginalYRef.current.set(mesh, yPos)
 
-        const edges = new THREE.EdgesGeometry(geometry)
-        const lineMat = new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.3 })
-        const wireframe = new THREE.LineSegments(edges, lineMat)
-        wireframe.position.copy(mesh.position)
-        group.add(wireframe)
-        floorOriginalYRef.current.set(wireframe, yPos)
+          const edges = new THREE.EdgesGeometry(geometry)
+          const lineMat = new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.3 })
+          const wireframe = new THREE.LineSegments(edges, lineMat)
+          wireframe.position.copy(mesh.position)
+          group.add(wireframe)
+          floorOriginalYRef.current.set(wireframe, yPos)
 
-        currentY += h
+          currentY += h
+        }
       }
-      if (currentY > maxBuildingY) maxBuildingY = currentY
+      maxBuildingY = currentY
+
+      // Position the building group in world coords and apply 30-degree rotation
+      group.position.set(projBuildX, 0, projBuildZ)
+      group.rotation.y = (30 * Math.PI) / 180
+    } else {
+      // Legacy: each wing gets all floors stacked independently
+      for (const wing of wings) {
+        let currentY = 0
+        for (const floor of selectedOption.floors) {
+          const h = floor.level === 0 ? GROUND_H : FLOOR_H
+          const mat = MATERIALS[floor.use]?.clone() ?? new THREE.MeshStandardMaterial({
+            color: 0xcccccc,
+            roughness: 0.7,
+            metalness: 0.1,
+            transparent: true,
+            opacity: 0.85,
+          })
+
+          const geoH = h - 0.1
+          const geometry = new THREE.BoxGeometry(
+            wing.direction === 'EW' ? wing.length : wing.width,
+            geoH,
+            wing.direction === 'EW' ? wing.width : wing.length,
+          )
+          const mesh = new THREE.Mesh(geometry, mat)
+          const yPos = currentY + geoH / 2
+          mesh.position.set(
+            wing.x + (wing.direction === 'EW' ? wing.length / 2 : wing.width / 2) + projBuildX,
+            yPos,
+            -(wing.y + (wing.direction === 'EW' ? wing.width / 2 : wing.length / 2)) + projBuildZ,
+          )
+          mesh.castShadow = true
+          mesh.receiveShadow = true
+          group.add(mesh)
+          floorOriginalYRef.current.set(mesh, yPos)
+
+          const edges = new THREE.EdgesGeometry(geometry)
+          const lineMat = new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.3 })
+          const wireframe = new THREE.LineSegments(edges, lineMat)
+          wireframe.position.copy(mesh.position)
+          group.add(wireframe)
+          floorOriginalYRef.current.set(wireframe, yPos)
+
+          currentY += h
+        }
+        if (currentY > maxBuildingY) maxBuildingY = currentY
+      }
     }
 
     // Add amenities — all placements computed by the architectural reasoning engine

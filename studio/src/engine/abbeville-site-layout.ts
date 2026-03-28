@@ -5,10 +5,10 @@
  * elements using architectural reasoning specific to the Abbeville site
  * in Worthing, Christ Church, Barbados.
  *
- * Layout concept: 4 staggered towers on a ground-floor podium, entrance
- * from Worthing Main Road (south), pool deck courtyard between towers.
- * Towers rotated 30 degrees to create SW sea-view corridors and maximise
- * natural light between buildings.
+ * Layout concept: SINGLE terraced building with stepped-back upper floors
+ * creating a wedge/"wedding cake" profile. Entrance from Worthing Main
+ * Road (south), pool deck SW of building, terraced balconies on SW face.
+ * Building rotated 30 degrees for SW sea-view corridors.
  *
  * Coordinate system:
  *   origin = buildable-area southwest corner (buildableMinX, buildableMinY)
@@ -22,47 +22,39 @@ import { SITE, PLANNING_REGS } from '@/config/abbeville/site'
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-/** Podium dimensions (m) */
-const PODIUM_W = 30        // EW
-const PODIUM_D = 26        // NS
-const PODIUM_H = 4.5       // single storey height
-const PODIUM_AREA = PODIUM_W * PODIUM_D  // ~786 m²
+/** Podium dimensions (m) — full ground-floor building footprint */
+const PODIUM_W = 40         // EW (length)
+const PODIUM_D = 28         // NS (width)
+const PODIUM_H = 4.5        // single storey height
+const FLOOR_HEIGHT = 3.2    // m per upper floor
 
-/** Tower dimensions (m) — identical for all towers */
-const TOWER_W = 12.5       // EW
-const TOWER_D = 11.8       // NS
-const TOWER_ROTATION = 30  // degrees — SW sea-view corridor
-const FLOOR_HEIGHT = 3.2   // m per upper floor
-const UNITS_PER_TOWER = 15
+/** Building position — centred in buildable area */
+const BLDG_X = 6            // from west edge of buildable
+const BLDG_Y = 10           // from south edge of buildable
 
-/** Tower positions in buildable-local coordinates */
-const TOWER_POSITIONS = {
-  A: { x: 5,  y: 15, label: 'Tower A — 15 PAD Units', quadrant: 'SW' },
-  B: { x: 8,  y: 28, label: 'Tower B — 15 PAD Units', quadrant: 'NW' },
-  C: { x: 25, y: 12, label: 'Tower C — 15 PAD Units', quadrant: 'SE' },
-  D: { x: 28, y: 25, label: 'Tower D — 15 PAD Units', quadrant: 'NE' },
-} as const
+/** Pool deck — SW of building */
+const POOL_DECK_X = 3
+const POOL_DECK_Y = 0
+const POOL_DECK_W = 20
+const POOL_DECK_D = 15
 
-/** Pool deck */
-const POOL_X = 14
-const POOL_Y = 18
-const POOL_W = 20
-const POOL_D = 15
-const POOL_AREA = POOL_W * POOL_D  // 300 m²
+/** Pool water — inside pool deck */
+const POOL_WATER_W = 15
+const POOL_WATER_D = 8
 
-/** Entrance drive — from Worthing Main Road (south) */
+/** Entrance drive — south edge */
 const ENTRANCE_W = 6
-const ENTRANCE_D = 12
+const ENTRANCE_D = 15
 
 /** Parking — east side */
-const PARKING_X = 40
-const PARKING_Y = 5
+const PARKING_X = 30
+const PARKING_Y = 0
 const PARKING_W = 25
 const PARKING_D = 10
 const PARKING_SPACES = 17
 
-/** Service yard — northeast corner */
-const SERVICE_X = 45
+/** Service yard — NE corner */
+const SERVICE_X = 40
 const SERVICE_Y = 35
 const SERVICE_W = 10
 const SERVICE_D = 8
@@ -74,32 +66,46 @@ const LANDSCAPE_STRIP_W = 2.5  // m — perimeter planting width
 
 const RATIONALES = {
   podium:
-    'Ground-floor podium at south edge maximises road frontage on Worthing Main Road; ' +
-    'houses lobby, gym, retail, and shared amenities beneath towers',
-  towerSW:
-    'SW tower positioned for direct sea-view corridor through 30-degree rotation; ' +
-    'stagger creates privacy separation from adjacent towers',
-  towerNW:
-    'NW tower offset 8 m north and 3 m east of Tower A; stagger maintains minimum ' +
-    '6 m separation while opening diagonal view corridors to the southwest',
-  towerSE:
-    'SE tower mirrors SW layout on east side; 30-degree rotation aligns views ' +
-    'between towers rather than into each other',
-  towerNE:
-    'NE tower completes the pinwheel pattern; can be omitted for 45-unit ' +
-    'conservative scheme without impacting podium or courtyard',
+    'Full-footprint ground-floor podium (40m x 28m) houses lobby, restaurant/bar, ' +
+    'gym, co-working, retail, and BOH/kitchen at grade',
+  lobby:
+    'Front-of-house lobby (130 m\u00B2) at NE corner near entrance drive for ' +
+    'direct sight-line from arrival',
+  restaurant:
+    'Restaurant/bar (280 m\u00B2) on SW face with sea-view orientation; ' +
+    'opens onto pool deck for seamless indoor-outdoor dining',
+  gym:
+    'Fitness centre (93 m\u00B2) at NW corner; morning light and cross-ventilation ' +
+    'from NE trade winds',
+  coworking:
+    'Co-working lounge (111 m\u00B2) on west face; natural light and ' +
+    'sea views for extended-stay guests',
+  retail:
+    'Retail unit (46 m\u00B2) near entrance for street-facing visibility ' +
+    'and passing trade from Worthing Main Road',
+  boh:
+    'Back-of-house (167 m\u00B2) at NE corner; service access from parking side, ' +
+    'screened from guest areas and pool deck',
+  terraceL3:
+    'L3 terrace deck created by Tier 2 setback (3 m deep, 40 m long); ' +
+    'semi-private outdoor space for upper-floor units with SW sea views',
+  terraceL5:
+    'L5 terrace deck created by Tier 3 setback (3 m deep, 40 m long); ' +
+    'premium terrace with panoramic SW sea views at upper levels',
   pool:
-    'Central courtyard pool between towers creates resort heart; 300 m² deck ' +
-    'provides shared outdoor amenity visible from all units',
+    'Pool deck SW of building catches afternoon sun and captures sea views; ' +
+    'direct access from ground-floor restaurant and lobby',
+  poolWater:
+    'Lap pool (15 m x 8 m) oriented E-W for morning and afternoon sun exposure',
   entrance:
-    'Vehicular arrival centred on podium south face from Worthing Main Road; ' +
+    'Vehicular arrival centred on south face from Worthing Main Road; ' +
     'direct sight-line to lobby reception',
   parking:
-    'Surface parking on east side — 17 spaces at 0.28 spaces/key satisfies ' +
-    'Barbados planning minimum (0.25) while preserving west-side views',
+    'Surface parking east of building — 17 spaces at 0.28 spaces/key satisfies ' +
+    'Barbados planning minimum (0.25) without blocking sea views',
   service:
-    'Service functions consolidated in northeast corner — waste, MEP, delivery ' +
-    'screened from guest areas and road frontage',
+    'Service functions at NE corner — waste, MEP, delivery ' +
+    'screened from guest areas, pool, and road frontage',
   landscape:
     'Native Caribbean species buffer around perimeter for privacy, wind break, ' +
     'and LEED credits; frames arrival sequence',
@@ -110,11 +116,9 @@ const RATIONALES = {
 /**
  * Compute the Abbeville YOTELPAD site layout from a DesignOption.
  *
- * Returns a SiteLayout with PlacedElement[] for all site components:
- * podium, towers (3 or 4), pool deck, entrance, parking, service yard,
- * and landscape zones.
- *
- * If the option specifies <= 45 PAD units (3 towers), Tower D is omitted.
+ * Returns a SiteLayout with PlacedElement[] for the single terraced building:
+ * podium with coloured zone overlays, terrace decks at setbacks,
+ * pool deck, entrance, parking, service yard, and landscape zones.
  */
 export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
   const elements: PlacedElement[] = []
@@ -122,21 +126,18 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
   const compliance: SiteLayout['compliance'] = []
 
   const storeys = option.params.storeys
-  const towerHeight = storeys * FLOOR_HEIGHT + PODIUM_H
+  const totalUpperFloors = storeys - 1  // exclude ground
+  const buildingHeight = PODIUM_H + totalUpperFloors * FLOOR_HEIGHT
   const totalPadUnits = option.params.padUnits ?? option.metrics.padUnits ?? 60
-  const useFourTowers = totalPadUnits > 45
 
   // ── 1. Podium Block ────────────────────────────────────────────────────
-
-  const podiumX = (SITE.buildableEW - PODIUM_W) / 2  // centred E-W
-  const podiumY = 0  // at south edge (near road)
 
   elements.push({
     id: 'podium',
     type: 'amenity_block',
-    label: 'Podium \u2014 Lobby, Gym, Retail, Amenities',
-    x: podiumX,
-    y: podiumY,
+    label: 'Podium \u2014 Lobby, Gym, Retail, Restaurant',
+    x: BLDG_X,
+    y: BLDG_Y,
     width: PODIUM_W,
     depth: PODIUM_D,
     height: PODIUM_H,
@@ -145,77 +146,170 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     rationale: RATIONALES.podium,
   })
 
-  // ── 2. Towers ──────────────────────────────────────────────────────────
+  // ── 2. Podium zone overlays ────────────────────────────────────────────
+  // Thin coloured overlays on ground floor showing functional zones
 
-  const towerEntries: [string, typeof TOWER_POSITIONS[keyof typeof TOWER_POSITIONS], string][] = [
-    ['tower-a', TOWER_POSITIONS.A, RATIONALES.towerSW],
-    ['tower-b', TOWER_POSITIONS.B, RATIONALES.towerNW],
-    ['tower-c', TOWER_POSITIONS.C, RATIONALES.towerSE],
-  ]
+  // Lobby — NE corner near entrance
+  elements.push({
+    id: 'zone-lobby',
+    type: 'amenity_block',
+    label: 'Lobby \u2014 130 m\u00B2',
+    x: BLDG_X + 2,
+    y: BLDG_Y + 2,
+    width: 15,
+    depth: 8,
+    height: 0.2,
+    floor: 'ground',
+    rationale: RATIONALES.lobby,
+  })
 
-  if (useFourTowers) {
-    towerEntries.push(['tower-d', TOWER_POSITIONS.D, RATIONALES.towerNE])
-  }
+  // Restaurant/Bar — SW face
+  elements.push({
+    id: 'zone-restaurant',
+    type: 'amenity_block',
+    label: 'Restaurant/Bar \u2014 280 m\u00B2',
+    x: BLDG_X + 18,
+    y: BLDG_Y + 2,
+    width: 20,
+    depth: 14,
+    height: 0.2,
+    floor: 'ground',
+    rationale: RATIONALES.restaurant,
+  })
 
-  for (const [id, pos, rationale] of towerEntries) {
+  // Gym — NW corner
+  elements.push({
+    id: 'zone-gym',
+    type: 'amenity_block',
+    label: 'Gym \u2014 93 m\u00B2',
+    x: BLDG_X + 2,
+    y: BLDG_Y + 12,
+    width: 10,
+    depth: 9,
+    height: 0.2,
+    floor: 'ground',
+    rationale: RATIONALES.gym,
+  })
+
+  // Co-working — west face
+  elements.push({
+    id: 'zone-coworking',
+    type: 'amenity_block',
+    label: 'Co-Working \u2014 111 m\u00B2',
+    x: BLDG_X + 2,
+    y: BLDG_Y + 22,
+    width: 12,
+    depth: 9,
+    height: 0.2,
+    floor: 'ground',
+    rationale: RATIONALES.coworking,
+  })
+
+  // Retail — near entrance
+  elements.push({
+    id: 'zone-retail',
+    type: 'amenity_block',
+    label: 'Retail \u2014 46 m\u00B2',
+    x: BLDG_X + 14,
+    y: BLDG_Y + 22,
+    width: 8,
+    depth: 6,
+    height: 0.2,
+    floor: 'ground',
+    rationale: RATIONALES.retail,
+  })
+
+  // BOH/Kitchen — NE corner
+  elements.push({
+    id: 'zone-boh',
+    type: 'service_yard',
+    label: 'BOH/Kitchen \u2014 167 m\u00B2',
+    x: BLDG_X + 30,
+    y: BLDG_Y + 16,
+    width: 10,
+    depth: 12,
+    height: 0.2,
+    floor: 'ground',
+    rationale: RATIONALES.boh,
+  })
+
+  // ── 3. Terrace decks at setbacks ───────────────────────────────────────
+
+  // L3 terrace — at the setback between Tier 1 and Tier 2
+  // Height: ground (4.5) + 2 floors (6.4) = 10.9 m
+  const terraceL3Height = PODIUM_H + 2 * FLOOR_HEIGHT
+  elements.push({
+    id: 'terrace-l3',
+    type: 'pool_deck',
+    label: 'L3 Terrace Deck \u2014 120 m\u00B2',
+    x: BLDG_X,
+    y: BLDG_Y,
+    width: PODIUM_W,
+    depth: 3,
+    height: terraceL3Height,
+    floor: 'ground',
+    rationale: RATIONALES.terraceL3,
+  })
+
+  // L5 terrace — at the setback between Tier 2 and Tier 3
+  // Height: ground (4.5) + 4 floors (12.8) = 17.3 m
+  if (totalUpperFloors >= 5) {
+    const terraceL5Height = PODIUM_H + 4 * FLOOR_HEIGHT
     elements.push({
-      id,
-      type: 'amenity_block',
-      label: pos.label,
-      x: pos.x,
-      y: pos.y,
-      width: TOWER_W,
-      depth: TOWER_D,
-      height: towerHeight,
-      rotation: TOWER_ROTATION,
+      id: 'terrace-l5',
+      type: 'pool_deck',
+      label: 'L5 Terrace Deck \u2014 120 m\u00B2',
+      x: BLDG_X,
+      y: BLDG_Y + 3,
+      width: PODIUM_W,
+      depth: 3,
+      height: terraceL5Height,
       floor: 'ground',
-      rationale,
+      rationale: RATIONALES.terraceL5,
     })
   }
 
-  // ── 3. Pool Deck ───────────────────────────────────────────────────────
+  // ── 4. Pool Deck — SW of building ──────────────────────────────────────
 
   elements.push({
     id: 'pool-deck',
     type: 'pool_deck',
-    label: `Pool Deck \u2014 ${POOL_AREA} m\u00B2`,
-    x: POOL_X,
-    y: POOL_Y,
-    width: POOL_W,
-    depth: POOL_D,
+    label: `Pool Deck \u2014 ${POOL_DECK_W * POOL_DECK_D} m\u00B2`,
+    x: POOL_DECK_X,
+    y: POOL_DECK_Y,
+    width: POOL_DECK_W,
+    depth: POOL_DECK_D,
     height: 0,
     floor: 'ground',
     rationale: RATIONALES.pool,
   })
 
-  // ── 4. Pool (water surface within deck) ────────────────────────────────
+  // ── 5. Pool Water ──────────────────────────────────────────────────────
 
-  const poolWaterW = 12
-  const poolWaterD = 8
   elements.push({
     id: 'pool',
     type: 'pool',
-    label: 'Lap Pool \u2014 96 m\u00B2',
-    x: POOL_X + (POOL_W - poolWaterW) / 2,
-    y: POOL_Y + (POOL_D - poolWaterD) / 2,
-    width: poolWaterW,
-    depth: poolWaterD,
+    label: `Lap Pool \u2014 ${POOL_WATER_W * POOL_WATER_D} m\u00B2`,
+    x: POOL_DECK_X + (POOL_DECK_W - POOL_WATER_W) / 2,
+    y: POOL_DECK_Y + (POOL_DECK_D - POOL_WATER_D) / 2,
+    width: POOL_WATER_W,
+    depth: POOL_WATER_D,
     height: 0,
     floor: 'ground',
-    rationale: 'Central lap pool oriented E-W for morning and afternoon sun exposure',
+    rationale: RATIONALES.poolWater,
   })
 
-  // ── 5. Main Entrance ───────────────────────────────────────────────────
+  // ── 6. Main Entrance ───────────────────────────────────────────────────
 
-  const entranceX = podiumX + (PODIUM_W - ENTRANCE_W) / 2
-  const entranceY = podiumY - ENTRANCE_D  // south of podium, towards road
+  const entranceX = BLDG_X + PODIUM_W / 2 - ENTRANCE_W / 2
+  const entranceY = 0
 
   elements.push({
     id: 'entrance',
     type: 'entrance',
     label: 'Main Entrance \u2014 Worthing Main Road',
     x: entranceX,
-    y: Math.max(entranceY, -SITE.buildableMinY + SITE.buildableMinY),  // clamp to buildable
+    y: entranceY,
     width: ENTRANCE_W,
     depth: ENTRANCE_D,
     height: 0,
@@ -223,7 +317,7 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     rationale: RATIONALES.entrance,
   })
 
-  // ── 6. Parking ─────────────────────────────────────────────────────────
+  // ── 7. Parking — east side ─────────────────────────────────────────────
 
   elements.push({
     id: 'parking',
@@ -238,7 +332,7 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     rationale: RATIONALES.parking,
   })
 
-  // ── 7. Service Yard ────────────────────────────────────────────────────
+  // ── 8. Service Yard — NE corner ────────────────────────────────────────
 
   elements.push({
     id: 'service-yard',
@@ -253,7 +347,7 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     rationale: RATIONALES.service,
   })
 
-  // ── 8. Landscape Zones ─────────────────────────────────────────────────
+  // ── 9. Landscape Zones ─────────────────────────────────────────────────
 
   // West boundary strip
   elements.push({
@@ -297,13 +391,13 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     rationale: RATIONALES.landscape,
   })
 
-  // Entrance forecourt planting (flanking entrance drive)
+  // Entrance forecourt planting
   elements.push({
     id: 'landscape-entrance-w',
     type: 'landscape',
     label: 'Entrance Planting \u2014 West',
     x: entranceX - 3,
-    y: Math.max(entranceY, 0),
+    y: 0,
     width: 3,
     depth: ENTRANCE_D,
     height: 0,
@@ -316,7 +410,7 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     type: 'landscape',
     label: 'Entrance Planting \u2014 East',
     x: entranceX + ENTRANCE_W,
-    y: Math.max(entranceY, 0),
+    y: 0,
     width: 3,
     depth: ENTRANCE_D,
     height: 0,
@@ -324,15 +418,15 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     rationale: 'Native planting frames arrival sequence and screens parking from road',
   })
 
-  // ── 9. Mature Trees ────────────────────────────────────────────────────
+  // ── 10. Mature Trees ────────────────────────────────────────────────────
 
   const treePositions = [
-    { x: 2, y: 5, label: 'Mahogany' },
-    { x: 2, y: 20, label: 'Flamboyant' },
-    { x: 2, y: 38, label: 'Caribbean Pine' },
+    { x: 1, y: 5, label: 'Mahogany' },
+    { x: 1, y: 22, label: 'Flamboyant' },
+    { x: 1, y: 40, label: 'Caribbean Pine' },
     { x: 50, y: 8, label: 'Sea Grape' },
     { x: 50, y: 30, label: 'Casuarina' },
-    { x: 30, y: 42, label: 'Breadfruit' },
+    { x: 30, y: 44, label: 'Breadfruit' },
   ]
 
   for (const tree of treePositions) {
@@ -350,41 +444,19 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     })
   }
 
-  // ── 10. Covered Walkway ────────────────────────────────────────────────
-
-  elements.push({
-    id: 'path-lobby-to-pool',
-    type: 'path',
-    label: 'Covered Walkway \u2014 Lobby to Pool',
-    x: podiumX + PODIUM_W / 2 - 1.5,
-    y: PODIUM_D,
-    width: 3,
-    depth: POOL_Y - PODIUM_D,
-    height: 3.5,
-    floor: 'ground',
-    rationale: 'Shaded circulation connecting lobby to pool courtyard',
-  })
-
   // ── Circulation ────────────────────────────────────────────────────────
 
   circulation.push(
     { from: 'entrance', to: 'podium', path: 'covered' },
     { from: 'podium', to: 'pool-deck', path: 'covered' },
-    { from: 'pool-deck', to: 'tower-a', path: 'direct' },
-    { from: 'pool-deck', to: 'tower-b', path: 'direct' },
-    { from: 'pool-deck', to: 'tower-c', path: 'direct' },
+    { from: 'pool-deck', to: 'podium', path: 'direct' },
     { from: 'entrance', to: 'parking', path: 'direct' },
     { from: 'service-yard', to: 'podium', path: 'direct' },
   )
 
-  if (useFourTowers) {
-    circulation.push({ from: 'pool-deck', to: 'tower-d', path: 'direct' })
-  }
-
   // ── Compliance Checks ──────────────────────────────────────────────────
 
-  const towerCount = useFourTowers ? 4 : 3
-  const totalFootprint = PODIUM_AREA + towerCount * TOWER_W * TOWER_D
+  const totalFootprint = PODIUM_W * PODIUM_D
   const siteCoverage = totalFootprint / SITE.grossArea
 
   compliance.push(
@@ -396,14 +468,14 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
     },
     {
       rule: 'Building height \u2264 20.5 m',
-      status: towerHeight <= PLANNING_REGS.maxHeight ? 'pass' : 'fail',
-      value: Math.round(towerHeight * 10) / 10,
+      status: buildingHeight <= PLANNING_REGS.maxHeight ? 'pass' : 'fail',
+      value: Math.round(buildingHeight * 10) / 10,
       limit: PLANNING_REGS.maxHeight,
     },
     {
       rule: 'Parking ratio \u2265 0.25 spaces/key',
-      status: PARKING_SPACES / (towerCount * UNITS_PER_TOWER) >= PLANNING_REGS.parkingRatioMin ? 'pass' : 'fail',
-      value: Math.round((PARKING_SPACES / (towerCount * UNITS_PER_TOWER)) * 100) / 100,
+      status: PARKING_SPACES / totalPadUnits >= PLANNING_REGS.parkingRatioMin ? 'pass' : 'fail',
+      value: Math.round((PARKING_SPACES / totalPadUnits) * 100) / 100,
       limit: PLANNING_REGS.parkingRatioMin,
     },
   )
@@ -411,19 +483,17 @@ export function computeAbbevilleSiteLayout(option: DesignOption): SiteLayout {
   // ── Design Narrative ───────────────────────────────────────────────────
 
   const designNarrative = [
-    `Abbeville YOTELPAD: ${towerCount}-tower staggered layout on a single-storey podium.`,
-    `${towerCount * UNITS_PER_TOWER} PAD units across ${towerCount} towers, each rotated ${TOWER_ROTATION}\u00B0 ` +
-      'to create diagonal sea-view corridors to the southwest.',
-    `Ground-floor podium (${PODIUM_AREA} m\u00B2) houses lobby, gym, retail, and shared amenities ` +
-      'with direct frontage to Worthing Main Road.',
-    `Central courtyard pool deck (${POOL_AREA} m\u00B2) creates a resort-style heart ` +
-      'between towers, visible from all units.',
-    `Tower staggering provides minimum 6 m separation for fire access, privacy, ` +
-      'and cross-ventilation via prevailing NE trade winds.',
-    `${PARKING_SPACES} surface parking spaces on the east side satisfy Barbados planning ` +
-      'requirements without compromising west-side sea views.',
-    `Service functions consolidated in the northeast corner, screened from ` +
-      'guest areas and the road.',
+    `Abbeville YOTELPAD: single terraced building with stepped-back upper floors.`,
+    `${totalPadUnits} PAD units across ${totalUpperFloors} upper floors, building rotated 30\u00B0 ` +
+      'for diagonal sea-view corridors to the southwest.',
+    `Ground-floor podium (${totalFootprint} m\u00B2) houses lobby, restaurant/bar, ` +
+      'gym, co-working, retail, and BOH/kitchen at grade.',
+    `Upper floors step back on the SW face creating terraced balconies: ` +
+      'wider at bottom (L1-2: 26 m), narrowing toward top (L5-6: 20 m).',
+    `Pool deck (${POOL_DECK_W * POOL_DECK_D} m\u00B2) SW of building catches afternoon sun ` +
+      'and sea views; terrace decks at L3 and L5 setbacks add 240 m\u00B2 outdoor amenity.',
+    `${PARKING_SPACES} surface parking spaces east of building satisfy Barbados planning ` +
+      'requirements without compromising sea views or pool amenity.',
   ].join(' ')
 
   return { elements, circulation, compliance, designNarrative }
